@@ -34,7 +34,7 @@ const EXTRACT_LAST_CLAIM_ID = `SELECT id FROM cnf.claim ORDER BY id DESC LIMIT 1
 const UPLOAD_TIME_LAYOUT = "2006-01-02T15:04:05-07:00"
 
 
-func upload_and_convert_claim_file(r *http.Request) map[string]interface{} {
+func uploadAndConvertClaimFile(r *http.Request) map[string]interface{} {
 
 	r.ParseMultipartForm(10 << 20)
 	
