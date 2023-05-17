@@ -53,7 +53,7 @@ func uploadAndConvertClaimFile(r *http.Request) map[string]interface{} {
 	return claimFileMap[CLAIM_TAG].(map[string]interface{})
 }
 
-func insert_to_claim_table(r *http.Request, db *sql.DB, claimFileMap map[string]interface{}) {
+func insertToClaimTable(r *http.Request, db *sql.DB, claimFileMap map[string]interface{}) {
 
 	versions := claimFileMap[VERSIONS_TAG].(map[string]interface{})
 	metadata := claimFileMap[METADATA_TAG].(map[string]interface{})
@@ -75,7 +75,7 @@ func insert_to_claim_table(r *http.Request, db *sql.DB, claimFileMap map[string]
 	}
 }
 
-func insert_to_claim_result_table(db *sql.DB, claimFileMap map[string]interface{}) {
+func insertToClaimResultTable(db *sql.DB, claimFileMap map[string]interface{}) {
 	results := claimFileMap[RESULTS_TAG].(map[string]interface{})
 
 	var claimId string
@@ -95,14 +95,14 @@ func insert_to_claim_result_table(db *sql.DB, claimFileMap map[string]interface{
 	}
 }
 
-func parse_claim_file(r *http.Request, db *sql.DB, claimFileMap map[string]interface{}) {
+func parseClaimFile(r *http.Request, db *sql.DB, claimFileMap map[string]interface{}) {
 	_, err := db.Exec(USE_COLLECTOR_SQL_CMD)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	insert_to_claim_table(r, db, claimFileMap)
-	insert_to_claim_result_table(db, claimFileMap)
+	insertToClaimTable(r, db, claimFileMap)
+	insertToClaimResultTable(db, claimFileMap)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -110,8 +110,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	claimFileMap := upload_and_convert_claim_file(r)
-	parse_claim_file(r, db, claimFileMap)
+	claimFileMap := uploadAndConvertClaimFile(r)
+	parseClaimFile(r, db, claimFileMap)
 
 	fmt.Fprintf(w, "File was uploaded succesfully!")
 }
