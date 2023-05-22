@@ -110,7 +110,7 @@ func createCollectorJsonFile(collector []ClaimCollector){
 	}
 }
 
-func printCollectotJsonFile(w http.ResponseWriter) {
+func printCollectorJsonFile(w http.ResponseWriter) {
 	file, err := os.Open(RESULT_JSON_PATH)
 	if err != nil {
 		fmt.Println(err)
