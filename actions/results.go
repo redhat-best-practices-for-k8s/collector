@@ -12,10 +12,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const SELECT_ALL_FROM_CLAIM = "SELECT * FROM cnf.claim"
-const SELECT_ALL_FROM_CLAIM_RESULT = "SELECT * FROM cnf.claim_result"
-const RESULT_JSON_PATH = "results.json"
-
 type Claim struct {
 	ID            int    `json:"id"`
 	CnfVersion    string `json:"cnf_version"`
