@@ -129,5 +129,5 @@ func ResultsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	claimResults := mapClaimResultsToStruct(claimResultsRows)
 	collector := combineClaimAndResultsToStruct(claims, claimResults)
 	createCollectorJsonFile(collector)
-	printCollectotJsonFile(w)
+	printCollectorJsonFile(w)
 }
