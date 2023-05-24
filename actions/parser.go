@@ -3,10 +3,10 @@ package actions
 import (
 	"database/sql"
 	"encoding/json"
+	"io"
 	"time"
 
 	"fmt"
-	"io/ioutil"
 
 	"net/http"
 
@@ -15,20 +15,23 @@ import (
 
 func uploadAndConvertClaimFile(r *http.Request) map[string]interface{} {
 
-	r.ParseMultipartForm(10 << 20)
-	
+	_ = r.ParseMultipartForm(10 << 20)
+
 	claimFile, _, err := r.FormFile(CLAIM_FILE_INPUT_NAME)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer claimFile.Close()
 
-	claimFileBytes, err := ioutil.ReadAll(claimFile)
+	claimFileBytes, err := io.ReadAll(claimFile)
 	if err != nil {
 		fmt.Println(err)
 	}
 	var claimFileMap map[string]interface{}
-	json.Unmarshal([]byte(claimFileBytes), &claimFileMap)
+	err = json.Unmarshal([]byte(claimFileBytes), &claimFileMap)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return claimFileMap[CLAIM_TAG].(map[string]interface{})
 }
 
@@ -36,7 +39,7 @@ func insertToClaimTable(r *http.Request, db *sql.DB, claimFileMap map[string]int
 
 	versions := claimFileMap[VERSIONS_TAG].(map[string]interface{})
 
-	// saving users input reffering to who created claim file and partner's name
+	// saving users input referring to who created claim file and partner's name
 	created_by := r.FormValue(CREATED_BY_INPUT_NAME)
 	partner_name := r.FormValue(PARTNER_NAME_INPUT_NAME)
 
@@ -81,5 +84,5 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	claimFileMap := uploadAndConvertClaimFile(r)
 	parseClaimFile(r, db, claimFileMap)
 
-	fmt.Fprintf(w, "File was uploaded succesfully!")
+	fmt.Fprintf(w, "File was uploaded successfully!")
 }

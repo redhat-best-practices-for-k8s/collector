@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"net/http"
 	"os"
@@ -89,7 +89,7 @@ func combineClaimAndResultsToStruct(claims []Claim, claimResults []ClaimResults)
 	return collector
 }
 
-func createCollectorJsonFile(collector []ClaimCollector){
+func createCollectorJsonFile(collector []ClaimCollector) {
 	claimFile, err := json.MarshalIndent(collector, "", "	")
 	if err != nil {
 		fmt.Println(err)
@@ -112,11 +112,11 @@ func printCollectorJsonFile(w http.ResponseWriter) {
 		fmt.Println(err)
 	}
 
-	content, err := ioutil.ReadAll(file)
+	content, err := io.ReadAll(file)
 	if err != nil {
 		fmt.Println(err)
 	}
-	
+
 	fmt.Fprint(w, string(content))
 }
 
