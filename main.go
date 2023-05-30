@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/test-network-function/collector/actions"
 
@@ -12,16 +13,16 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const DB_CONN_STR = "root:@tcp(127.0.0.1:3306)/"
+const DBConnStr = "sqluser:password@tcp(127.0.0.1:3306)/"
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", DB_CONN_STR)
+	db, err := sql.Open("mysql", DBConnStr)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	if r.Method == http.MethodGet {
-		actions.ResultsHandler(w, r, db)
+		actions.ResultsHandler(w, db)
 	}
 	if r.Method == http.MethodPost {
 		actions.ParserHandler(w, r, db)
@@ -30,5 +31,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	server := &http.Server{
+		Addr:         ":8080",
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

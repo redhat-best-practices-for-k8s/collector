@@ -8,8 +8,6 @@ import (
 
 	"net/http"
 	"os"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 type Claim struct {
@@ -23,9 +21,9 @@ type Claim struct {
 
 type ClaimResults struct {
 	ID        int    `json:"id"`
-	ClaimId   int    `json:"claim_id"`
+	ClaimID   int    `json:"claim_id"`
 	SuiteName string `json:"suite_name"`
-	TestId    string `json:"test_id"`
+	TestID    string `json:"test_id"`
 	TesStatus string `json:"test_status"`
 }
 
@@ -34,13 +32,13 @@ type ClaimCollector struct {
 	ClaimResults []ClaimResults
 }
 
-func getCollectorTables(db *sql.DB) (*sql.Rows, *sql.Rows) {
-	claimRows, err := db.Query(SELECT_ALL_FROM_CLAIM)
+func getCollectorTables(db *sql.DB) (claimRows, claimResultsRows *sql.Rows) {
+	claimRows, err := db.Query(SelectAllFromClaim)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	claimResultsRows, err := db.Query(SELECT_ALL_FROM_CLAIM_RESULT)
+	claimResultsRows, err = db.Query(SelectAllFromClaimResult)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -65,7 +63,7 @@ func mapClaimResultsToStruct(claimResultsRows *sql.Rows) []ClaimResults {
 	var claimResults []ClaimResults
 	for claimResultsRows.Next() {
 		var row ClaimResults
-		err := claimResultsRows.Scan(&row.ID, &row.ClaimId, &row.SuiteName, &row.TestId, &row.TesStatus)
+		err := claimResultsRows.Scan(&row.ID, &row.ClaimID, &row.SuiteName, &row.TestID, &row.TesStatus)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -80,7 +78,7 @@ func combineClaimAndResultsToStruct(claims []Claim, claimResults []ClaimResults)
 		var curClaim ClaimCollector
 		curClaim.Claim = claim
 		for _, res := range claimResults {
-			if res.ClaimId == claim.ID {
+			if res.ClaimID == claim.ID {
 				curClaim.ClaimResults = append(curClaim.ClaimResults, res)
 			}
 		}
@@ -89,13 +87,13 @@ func combineClaimAndResultsToStruct(claims []Claim, claimResults []ClaimResults)
 	return collector
 }
 
-func createCollectorJsonFile(collector []ClaimCollector) {
+func createCollectorJSONFile(collector []ClaimCollector) {
 	claimFile, err := json.MarshalIndent(collector, "", "	")
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	file, err := os.Create(RESULT_JSON_PATH)
+	file, err := os.Create(ResultJSONPath)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -106,8 +104,8 @@ func createCollectorJsonFile(collector []ClaimCollector) {
 	}
 }
 
-func printCollectorJsonFile(w http.ResponseWriter) {
-	file, err := os.Open(RESULT_JSON_PATH)
+func printCollectorJSONFile(w http.ResponseWriter) {
+	file, err := os.Open(ResultJSONPath)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -120,7 +118,7 @@ func printCollectorJsonFile(w http.ResponseWriter) {
 	fmt.Fprint(w, string(content))
 }
 
-func ResultsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func ResultsHandler(w http.ResponseWriter, db *sql.DB) {
 	claimRows, claimResultsRows := getCollectorTables(db)
 	defer claimRows.Close()
 	defer claimResultsRows.Close()
@@ -128,6 +126,6 @@ func ResultsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	claims := mapClaimsToStruct(claimRows)
 	claimResults := mapClaimResultsToStruct(claimResultsRows)
 	collector := combineClaimAndResultsToStruct(claims, claimResults)
-	createCollectorJsonFile(collector)
-	printCollectorJsonFile(w)
+	createCollectorJSONFile(collector)
+	printCollectorJSONFile(w)
 }
