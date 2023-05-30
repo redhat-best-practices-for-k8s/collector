@@ -16,6 +16,8 @@ GOLANGCI_VERSION=v1.52.2
 LINKER_TNF_RELEASE_FLAGS=-X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitCommit=${GIT_COMMIT}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitRelease=${GIT_RELEASE}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
+CREATE_SCHEMA_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/database/create_schema.sql"
+CREATE_MYSQL_USER_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/database/create_user.sql"
 
 .PHONY: all clean test
 
@@ -50,3 +52,28 @@ install-mac-brew-tools:
 		golangci-lint \
 		hadolint \
 		shfmt
+
+# Builds a local container based on mysql image
+build-mysql-container-local:
+	docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=pa55 \
+		 -h 127.0.0.1 -p 3306:3306 -d mysql:latest
+
+# Builds a local mysql user for the above container
+build-mysql-user-local:
+	curl -sSL -o create_user.sql ${CREATE_MYSQL_USER_RAW_URL}
+	docker exec -i mysql-container mysql -u root -ppa55 < create_user.sql
+	rm -f create_user.sql
+
+# Builds local schema
+build-schema:
+	curl -sSL -o create_schema.sql ${CREATE_SCHEMA_RAW_URL}
+	docker exec -i mysql-container mysql -u root -ppa55 < create_schema.sql
+	rm -f create_schema.sql
+
+# Pulls collector image from quay.io
+pull-image-collector:
+	docker pull quay.io/testnetworkfunction/collector:latest
+
+# Runs collector with docker
+run-collector:
+	docker run --network=host -p 8080:8080 quay.io/testnetworkfunction/collector:latest
