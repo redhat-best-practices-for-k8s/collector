@@ -57,18 +57,18 @@ install-mac-brew-tools:
 build-mysql-container-local:
 	docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=pa55 \
 		 -h 127.0.0.1 -p 3306:3306 -d mysql:latest
+		 
+# Builds local schema
+build-schema:
+	curl -sSL -o create_schema.sql ${CREATE_SCHEMA_RAW_URL}
+	docker exec -i mysql-container mysql -u root -ppa55 < create_schema.sql
+	rm -f create_schema.sql
 
 # Builds a local mysql user for the above container
 build-mysql-user-local:
 	curl -sSL -o create_user.sql ${CREATE_MYSQL_USER_RAW_URL}
 	docker exec -i mysql-container mysql -u root -ppa55 < create_user.sql
 	rm -f create_user.sql
-
-# Builds local schema
-build-schema:
-	curl -sSL -o create_schema.sql ${CREATE_SCHEMA_RAW_URL}
-	docker exec -i mysql-container mysql -u root -ppa55 < create_schema.sql
-	rm -f create_schema.sql
 
 # Pulls collector image from quay.io
 pull-image-collector:
