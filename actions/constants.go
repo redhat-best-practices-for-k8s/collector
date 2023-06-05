@@ -22,4 +22,3 @@ const ParseUpperBound = 20
 // results.go constants
 const SelectAllFromClaim = "SELECT * FROM cnf.claim"
 const SelectAllFromClaimResult = "SELECT * FROM cnf.claim_result"
-const ResultJSONPath = "results.json"
