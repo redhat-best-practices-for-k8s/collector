@@ -75,13 +75,3 @@ pull-image-collector:
 # Runs collector with docker
 run-collector:
 	docker run --network=host -p 8080:8080 quay.io/testnetworkfunction/collector:latest
-
-remove-all:
-	docker rmi localhost/collector-image quay.io/testnetworkfunction/collector
-	oc delete deployment collector-deployment
-
-build-all:
-	docker build -f Dockerfile -t collector-image
-	docker tag collector-image quay.io/testnetworkfunction/collector:latest
-	docker push quay.io/testnetworkfunction/collector:latest
-	oc apply -f /home/shmoran/go/src/github.com/test-network-function/collector-deployment/collector-deployment.yml
