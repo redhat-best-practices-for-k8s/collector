@@ -13,7 +13,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const DBConnStr = "sqluser:password@tcp(127.0.0.1:3306)/"
+const DBConnStr = "collectoruser:password@tcp(127.0.0.1:3306)/"
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("mysql", DBConnStr)
