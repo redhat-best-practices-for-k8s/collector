@@ -12,7 +12,7 @@ jobs:
     name: Run Linter and Vet
     runs-on: ${{ matrix.os }}
     strategy:
-    matrix:
+      matrix:
         os: [ubuntu-22.04, macos-latest]
     env:
       SHELL: /bin/bash
