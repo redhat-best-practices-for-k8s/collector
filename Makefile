@@ -36,22 +36,17 @@ build:
 install-lint:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_VERSION}
 
-install-shfmt:
-	go install mvdan.cc/sh/v3/cmd/shfmt@latest
-
 # Runs configured linters
 lint:
 	checkmake Makefile
 	golangci-lint run --timeout 10m0s
 	hadolint Dockerfile
-	shfmt -d *.sh script
 
 install-mac-brew-tools:
 	brew install \
 		checkmake \
 		golangci-lint \
-		hadolint \
-		shfmt
+		hadolint
 
 # Builds a local container based on mysql image
 build-mysql-container-local:

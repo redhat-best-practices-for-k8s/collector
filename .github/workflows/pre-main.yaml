@@ -16,6 +16,8 @@ jobs:
         os: [ubuntu-22.04, macos-latest]
     env:
       SHELL: /bin/bash
+      CM_BIN: /usr/local/bin/checkmake
+      CM_URL_LINUX: https://github.com/mrtazz/checkmake/releases/download/0.2.2/checkmake-0.2.2.linux.amd64 # yamllint disable-line
 
     steps:
     - name: Set up Go 1.20
@@ -58,14 +60,6 @@ jobs:
     - name: Install hadolint (MacOS)
       run: |
         brew install hadolint
-      if: runner.os == 'macOS'
-
-    - name: Install shfmt (Linux)
-      run: make install-shfmt
-      if: runner.os == 'Linux'
-
-    - name: Install shfmt (MacOS)
-      run: brew install shfmt
       if: runner.os == 'macOS'
 
     - name: make lint
