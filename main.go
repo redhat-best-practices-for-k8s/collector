@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"os"
 	"time"
 
 	"github.com/test-network-function/collector/actions"
@@ -13,10 +14,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const DBConnStr = "collectoruser:password@tcp(mysql.default.svc.cluster.local:3306)/"
-
 func handler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", DBConnStr)
+	db, err := sql.Open("mysql", os.Getenv("DB_CONN_STR"))
 	if err != nil {
 		fmt.Println(err)
 	}
