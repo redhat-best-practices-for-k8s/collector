@@ -4,10 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io"
 
 	"net/http"
-	"os"
 )
 
 type Claim struct {
@@ -87,35 +85,12 @@ func combineClaimAndResultsToStruct(claims []Claim, claimResults []ClaimResults)
 	return collector
 }
 
-func createCollectorJSONFile(collector []ClaimCollector) {
-	claimFile, err := json.MarshalIndent(collector, "", "	")
+func printCollectorJSONFile(w http.ResponseWriter, collector []ClaimCollector) {
+	claimFileJSON, err := json.MarshalIndent(collector, "", "	")
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	file, err := os.Create(ResultJSONPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	_, err = file.Write(claimFile)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func printCollectorJSONFile(w http.ResponseWriter) {
-	file, err := os.Open(ResultJSONPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	content, err := io.ReadAll(file)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Fprint(w, string(content))
+	fmt.Fprint(w, string(claimFileJSON))
 }
 
 func ResultsHandler(w http.ResponseWriter, db *sql.DB) {
@@ -126,6 +101,5 @@ func ResultsHandler(w http.ResponseWriter, db *sql.DB) {
 	claims := mapClaimsToStruct(claimRows)
 	claimResults := mapClaimResultsToStruct(claimResultsRows)
 	collector := combineClaimAndResultsToStruct(claims, claimResults)
-	createCollectorJSONFile(collector)
-	printCollectorJSONFile(w)
+	printCollectorJSONFile(w, collector)
 }
