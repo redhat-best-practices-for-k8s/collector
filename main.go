@@ -15,7 +15,14 @@ import (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", os.Getenv("DB_CONN_STR"))
+	DBUsername := os.Getenv("DB_USER")
+	DBPassword := os.Getenv("DB_PASSWORD")
+	DBURL := os.Getenv("DB_URL")
+	DBPort := os.Getenv("DB_PORT")
+
+	DBConnStr := DBUsername + ":" + DBPassword + "@tcp(" + DBURL + ":" + DBPort + ")/"
+	db, err := sql.Open("mysql", DBConnStr)
+
 	if err != nil {
 		fmt.Println(err)
 	}
