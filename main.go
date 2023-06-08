@@ -22,6 +22,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	DBConnStr := DBUsername + ":" + DBPassword + "@tcp(" + DBURL + ":" + DBPort + ")/"
 	db, err := sql.Open("mysql", DBConnStr)
+
 	if err != nil {
 		fmt.Println(err)
 	}
