@@ -9,11 +9,8 @@ WORKDIR $SRC_DIR
 
 COPY . .
 
-# Fetch dependencies
-RUN go get -d -v
-
-# Build the Go application
-RUN go build
+# Fetch dependencies and Build the Go application
+RUN go get -d -v && go build
 
 #### Build small image ####
 FROM alpine:3.18
