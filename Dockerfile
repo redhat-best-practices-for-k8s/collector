@@ -22,7 +22,7 @@ ENV COLLECTOR_USER_UID=1000
 
 RUN adduser -D -u "$COLLECTOR_USER_UID" collectoruser
 
-USER collectoruser
+USER $COLLECTOR_USER_UID
 
 WORKDIR $SRC_DIR/collectoruser
 
