@@ -3,7 +3,7 @@ FROM golang:alpine AS builder
 
 ENV SRC_DIR=/tnf
 
-RUN apk update && apk add --no-cache git
+RUN apk update && apk add --no-cache git=2.40.1-r0
 
 WORKDIR $SRC_DIR
 
@@ -16,7 +16,7 @@ RUN go get -d -v
 RUN go build
 
 #### Build small image ####
-FROM alpine
+FROM alpine:3.18
 
 ENV COLLECTOR_USER_UID=1000
 
