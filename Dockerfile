@@ -4,7 +4,7 @@ ARG COLLECTOR_USER_UID=1000
 FROM golang:alpine AS builder
 
 #hadolint ignore=DL3041
-RUN apk update && apk add --no-cache git=2.40.1-r0
+RUN apk update && apk add --no-cache git
 
 ENV SRC_DIR=/tnf
 
