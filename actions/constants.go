@@ -1,6 +1,8 @@
 package actions
 
-const FailedToConnectDBErr = "Unable to connect database: "
+const FailedToConnectDBErr = "Unable to connect database."
+const InvalidRequest = "Invalid request."
+const InvalidRequestContentType = "request Content-Type isn't multipart/form-data"
 
 // parser.go constants
 const ClaimTag = "claim"

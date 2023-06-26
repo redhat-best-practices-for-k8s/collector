@@ -90,7 +90,10 @@ func printCollectorJSONFile(w http.ResponseWriter, collector []ClaimCollector) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Fprint(w, string(claimFileJSON))
+	_, err = w.Write(claimFileJSON)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func ResultsHandler(w http.ResponseWriter, db *sql.DB) {

@@ -11,36 +11,53 @@ import (
 	"net/http"
 )
 
-func uploadAndConvertClaimFile(w http.ResponseWriter, r *http.Request) map[string]interface{} {
-	_ = r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
+func writeResponse(w http.ResponseWriter, response string) {
+	_, err := w.Write([]byte(response))
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(response)
+}
+
+func readClaimFile(w http.ResponseWriter, r *http.Request) []byte {
+	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
+	if err != nil {
+		writeResponse(w, err.Error())
+		return nil
+	}
 
 	claimFile, _, err := r.FormFile(ClaimFileInputName)
 	if err != nil {
-		fmt.Println(err)
+		writeResponse(w, err.Error())
+		return nil
 	}
 	defer claimFile.Close()
 
 	claimFileBytes, err := io.ReadAll(claimFile)
 	if err != nil {
-		fmt.Println(err)
+		writeResponse(w, err.Error())
+		return nil
 	}
+
+	return claimFileBytes
+}
+
+func uploadAndConvertClaimFile(w http.ResponseWriter, r *http.Request) map[string]interface{} {
+	claimFileBytes := readClaimFile(w, r)
+	if claimFileBytes == nil {
+		return nil
+	}
+
 	var claimFileMap map[string]interface{}
-	err = json.Unmarshal(claimFileBytes, &claimFileMap)
+	err := json.Unmarshal(claimFileBytes, &claimFileMap)
 	if err != nil {
-		_, writeErr := w.Write([]byte(MalformedJSONFileErr))
-		if writeErr != nil {
-			fmt.Println(writeErr)
-		}
-		fmt.Println(err)
+		writeResponse(w, err.Error())
 		return nil
 	}
 
 	_, keyExists := claimFileMap[ClaimTag]
 	if !keyExists {
-		_, writeErr := w.Write([]byte(MalformedClaimFileErr))
-		if writeErr != nil {
-			fmt.Println(writeErr)
-		}
+		writeResponse(w, err.Error())
 		return nil
 	}
 	return claimFileMap[ClaimTag].(map[string]interface{})
@@ -56,12 +73,16 @@ func insertToClaimTable(r *http.Request, db *sql.DB, claimFileMap map[string]int
 	createdBy := r.FormValue(CreatedByInputName)
 	partnerName := r.FormValue(PartnerNameInputName)
 
+	// created_by field can't be null
+	if createdBy == "" {
+		return false
+	}
+
 	_, keyExists = versions["ocp"]
 	if !keyExists {
 		return false
 	}
-	_, err := db.Exec(InsertToClaimSQLCmd, versions["ocp"].(string),
-		createdBy, time.Now(), partnerName)
+	_, err := db.Exec(InsertToClaimSQLCmd, versions["ocp"].(string), createdBy, time.Now(), partnerName)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -131,14 +152,8 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	if !parseClaimFile(r, db, claimFileMap) {
-		_, writeErr := w.Write([]byte(MalformedClaimFileErr))
-		if writeErr != nil {
-			fmt.Println(writeErr)
-		}
+		writeResponse(w, MalformedClaimFileErr)
 		return
 	}
-	_, writeErr := w.Write([]byte(SuccessUploadingFileMSG))
-	if writeErr != nil {
-		fmt.Println(writeErr)
-	}
+	writeResponse(w, SuccessUploadingFileMSG)
 }
