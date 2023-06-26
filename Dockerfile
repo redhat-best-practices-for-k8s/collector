@@ -21,7 +21,7 @@ COPY . .
 RUN go build
 
 #### Build small image ####
-FROM ubi8-minimal:8.8-860
+FROM ubi8/ubi-minimal:8.8-860
 
 # Copy the user from the build image
 COPY --from=builder /etc/passwd /etc/passwd
