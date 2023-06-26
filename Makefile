@@ -8,6 +8,13 @@ else
   GOBIN=$(shell go env GOBIN)
 endif
 
+MYSQL_CONTAINER_NAME?=mysql-container
+COLLECTOR_IMAGE_NAME?=testnetworkfunction/collector
+COLLECTOR_IMAGE_TAG?=latest
+COLLECTOR_CONTAINER_NAME?=tnf-collector
+COLLECTOR_VERSION?=0.0.1
+REGISTRY?=quay.io
+
 COMMON_GO_ARGS=-race
 GIT_COMMIT=$(shell script/create-version-files.sh)
 GIT_RELEASE=$(shell script/get-git-release.sh)
@@ -50,28 +57,48 @@ install-mac-brew-tools:
 
 # Builds a local container based on mysql image
 build-mysql-container-local:
-	docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=pa55 \
+	docker run --name ${MYSQL_CONTAINER_NAME} -e MYSQL_ROOT_PASSWORD=pa55 \
 		 -h 127.0.0.1 -p 3306:3306 -d mysql:latest
 		 
 # Builds local schema
 build-schema:
 	curl -sSL -o create_schema.sql ${CREATE_SCHEMA_RAW_URL}
-	docker exec -i mysql-container mysql -u root -ppa55 < create_schema.sql
+	docker exec -i ${MYSQL_CONTAINER_NAME} mysql -u root -ppa55 < create_schema.sql
 	rm -f create_schema.sql
 
 # Builds a local mysql user for the above container
 build-mysql-user-local:
 	curl -sSL -o create_user.sql ${CREATE_MYSQL_USER_RAW_URL}
-	docker exec -i mysql-container mysql -u root -ppa55 < create_user.sql
+	docker exec -i ${MYSQL_CONTAINER_NAME} mysql -u root -ppa55 < create_user.sql
 	rm -f create_user.sql
 
 # Pulls collector image from quay.io
 pull-image-collector:
-	docker pull quay.io/testnetworkfunction/collector:latest
+	docker pull ${COLLECTOR_IMAGE_NAME}
 
 # Runs collector with docker
 run-collector:
-	docker run --network=host -p 8080:8080 quay.io/testnetworkfunction/collector:latest
+	docker run --network=host -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} ${COLLECTOR_IMAGE_NAME}
+
+# Runs collector with docker in headless mode
+run-collector-headless:
+	docker run --network=host --name ${COLLECTOR_CONTAINER_NAME} -p 8080:8080 -d ${COLLECTOR_IMAGE_NAME}
+
+# Stops collector container
+stop-collector:
+	docker stop ${COLLECTOR_CONTAINER_NAME}
+
+# Builds collector image locally
+build-image-local:
+	docker build \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
+		-f Dockerfile .
+
+build-image-collector:
+	docker build \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
+		-f Dockerfile .
 
 remove-all:
 	docker rmi localhost/collector-image quay.io/testnetworkfunction/collector

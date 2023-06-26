@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+env:
+  COLLECTOR_CONTAINER_NAME: tnf-collector
+  REGISTRY: quay.io
+  COLLECTOR_IMAGE_NAME: testnetworkfunction/collector
+  COLLECTOR_IMAGE_TAG: latest
+
 
 jobs:
   lint:
@@ -23,7 +29,7 @@ jobs:
     - name: Set up Go 1.20
       uses: actions/setup-go@v4
       with:
-        go-version: 1.20.4
+        go-version: 1.20.5
 
     - name: Disable default go problem matcher
       run: echo "::remove-matcher owner=go::"
@@ -67,3 +73,29 @@ jobs:
 
     - name: make vet
       run: make vet
+
+  build-and-push-image:
+    name: "Build and Push Image"
+    runs-on: ubuntu-22.04
+    steps:
+
+    - name: Check out the code
+      uses: actions/checkout@v3
+      
+    - name: Build the image
+      run: make build-image-local
+
+    # Push the new unstable TNF image to Quay.io.
+    - name: (if on main and upstream) Authenticate against Quay.io
+      if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        # Use a Robot Account to authenticate against Quay.io
+        # https://docs.quay.io/glossary/robot-accounts.html
+        username: ${{ secrets.QUAY_ROBOT_USERNAME }}
+        password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+
+    - name: (if on main and upstream) Push the newly built image to Quay.io
+      if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
+      run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
