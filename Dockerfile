@@ -1,31 +1,18 @@
-#### Build executable binary ####
-FROM golang:alpine AS builder
+# Start with a base image
+FROM golang:1.20
 
+ENV GOPATH=/root/go
 ENV SRC_DIR=/tnf
+# Copy the source code into the container
+COPY . $SRC_DIR
 
-RUN apk update && apk add --no-cache git=2.40.1-r0
-
+# Change to the workdir
 WORKDIR $SRC_DIR
 
-COPY . .
-
-# Fetch dependencies and Build the Go application
-RUN go get -d -v && go build
-
-#### Build small image ####
-FROM alpine:3.18
-
-ENV COLLECTOR_USER_UID=1000
-
-RUN adduser -D -u "$COLLECTOR_USER_UID" collectoruser
-
-USER $COLLECTOR_USER_UID
-
-WORKDIR $SRC_DIR/collectoruser
-
-COPY --from=builder /tnf/collector ./collector
+# Build the Go application
+RUN go build
 
 EXPOSE 8080
 
 # Set the command to run when the container starts
-ENTRYPOINT ["./collector"]
+CMD ["./collector"]
