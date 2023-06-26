@@ -1,5 +1,7 @@
 package actions
 
+const FailedToConnectDBErr = "Unable to connect database: "
+
 // parser.go constants
 const ClaimTag = "claim"
 const VersionsTag = "versions"
@@ -18,6 +20,10 @@ const InsertToClaimResSQLCmd = `INSERT INTO claim_result
 const ExtractLastClaimID = `SELECT id FROM cnf.claim ORDER BY id DESC LIMIT 1;`
 const ParseLowerBound = 10
 const ParseUpperBound = 20
+
+const SuccessUploadingFileMSG = "File was uploaded successfully!"
+const MalformedClaimFileErr = "Malformed claim file: missing field."
+const MalformedJSONFileErr = "Malformed json file."
 
 // results.go constants
 const SelectAllFromClaim = "SELECT * FROM cnf.claim"

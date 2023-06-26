@@ -1,9 +1,15 @@
 #### Build executable binary ####
 FROM golang:alpine AS builder
 
+# hadolint ignore=DL3041
+RUN apk update && apk add --no-cache git
+
 ENV SRC_DIR=/tnf
 
-RUN apk update && apk add --no-cache git=2.40.1-r0
+ENV COLLECTOR_USER_UID=1000
+ARG COLLECTOR_USER=collectoruser
+
+RUN adduser -D -u "$COLLECTOR_USER_UID" $COLLECTOR_USER
 
 WORKDIR $SRC_DIR
 
@@ -15,9 +21,7 @@ RUN go get -d -v && go build
 #### Build small image ####
 FROM alpine:3.18
 
-ENV COLLECTOR_USER_UID=1000
-
-RUN adduser -D -u "$COLLECTOR_USER_UID" collectoruser
+ENV COLLECTOR_USER_UID=$COLLECTOR_USER_UID
 
 USER $COLLECTOR_USER_UID
 
