@@ -3,7 +3,7 @@ ARG COLLECTOR_USER_UID=1000
 #### Build executable binary ####
 FROM golang:alpine AS builder
 
-#hadolint ignore=DL3041
+#hadolint ignore=DL3018
 RUN apk update && apk add --no-cache git
 
 ENV SRC_DIR=/tnf
