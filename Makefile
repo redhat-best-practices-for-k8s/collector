@@ -100,12 +100,11 @@ build-image-collector:
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
 
-build-and-deploy-image-collector:
-	docker build -f Dockerfile -t collector-image
-	docker tag collector-image quay.io/testnetworkfunction/collector
-	docker push quay.io/testnetworkfunction/collector
-	oc apply -f /home/shmoran/go/src/github.com/test-network-function/collector-deployment/k8s/collector-deployment.yml
+build-and-deploy-image-collector-dev:
+	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	oc apply -f ./k8s/collector-deployment.yml
 
-remove-image-collector-and-deployment:
-	docker rmi localhost/collector-image quay.io/testnetworkfunction/collector
+remove-image-collector-and-deployment-dev:
+	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 	oc delete deployment collector-deployment

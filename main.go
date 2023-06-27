@@ -40,7 +40,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if writeErr != nil {
 			fmt.Println(writeErr)
 		}
-		fmt.Println(actions.FailedToConnectDBErr)
+		fmt.Print(actions.FailedToConnectDBErr)
 		return
 	}
 	defer db.Close()

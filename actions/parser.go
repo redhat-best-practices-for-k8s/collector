@@ -63,7 +63,7 @@ func uploadAndConvertClaimFile(w http.ResponseWriter, r *http.Request) map[strin
 	return claimFileMap[ClaimTag].(map[string]interface{})
 }
 
-func validateClaimKeys(w http.ResponseWriter, claimFileMap map[string]interface{}) map[string]interface{}{
+func validateClaimKeys(claimFileMap map[string]interface{}) map[string]interface{} {
 	versions, keyExists := claimFileMap[VersionsTag].(map[string]interface{})
 	if !keyExists {
 		return nil
@@ -73,12 +73,12 @@ func validateClaimKeys(w http.ResponseWriter, claimFileMap map[string]interface{
 	if !keyExists {
 		return nil
 	}
-	
+
 	return versions
 }
 
 func insertToClaimTable(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFileMap map[string]interface{}) bool {
-	versions := validateClaimKeys(w, claimFileMap)
+	versions := validateClaimKeys(claimFileMap)
 
 	// saving users input referring to who created claim file and partner's name
 	createdBy := r.FormValue(CreatedByInputName)
@@ -92,7 +92,10 @@ func insertToClaimTable(w http.ResponseWriter, r *http.Request, tx *sql.Tx, clai
 
 	_, err := tx.Exec(InsertToClaimSQLCmd, versions["ocp"].(string), createdBy, time.Now(), partnerName)
 	if err != nil {
-		tx.Rollback()
+		txErr := tx.Rollback()
+		if txErr != nil {
+			fmt.Println(txErr)
+		}
 		fmt.Println(err)
 		return false
 	}
@@ -128,7 +131,10 @@ func insertToClaimResultTable(w http.ResponseWriter, tx *sql.Tx, claimFileMap ma
 	var claimID string
 	err := tx.QueryRow(ExtractLastClaimID).Scan(&claimID)
 	if err != nil {
-		tx.Rollback()
+		txErr := tx.Rollback()
+		if txErr != nil {
+			fmt.Println(txErr)
+		}
 		fmt.Println(err)
 		return false
 	}
@@ -142,7 +148,10 @@ func insertToClaimResultTable(w http.ResponseWriter, tx *sql.Tx, claimFileMap ma
 		_, err = tx.Exec(InsertToClaimResSQLCmd, claimID, testID["suite"].(string),
 			testID["id"].(string), testData["state"].(string))
 		if err != nil {
-			tx.Rollback()
+			txErr := tx.Rollback()
+			if txErr != nil {
+				fmt.Println(txErr)
+			}
 			fmt.Println(err)
 			return false
 		}
@@ -153,7 +162,10 @@ func insertToClaimResultTable(w http.ResponseWriter, tx *sql.Tx, claimFileMap ma
 func parseClaimFile(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFileMap map[string]interface{}) bool {
 	_, err := tx.Exec(UseCollectorSQLCmd)
 	if err != nil {
-		tx.Rollback()
+		txErr := tx.Rollback()
+		if txErr != nil {
+			fmt.Println(txErr)
+		}
 		fmt.Println(err)
 		return false
 	}
@@ -179,7 +191,10 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	err = tx.Commit()
 	if err != nil {
-		tx.Rollback()
+		txErr := tx.Rollback()
+		if txErr != nil {
+			fmt.Println(txErr)
+		}
 		return
 	}
 	writeResponse(w, SuccessUploadingFileMSG)
