@@ -1,8 +1,8 @@
 package actions
 
-const FailedToConnectDBErr = "Unable to connect database."
-const InvalidRequest = "Invalid request."
-const InvalidRequestContentType = "request Content-Type isn't multipart/form-data"
+const FailedToConnectDBErr = "Unable to connect database.\n"
+const InvalidRequest = "Invalid request.\n"
+const InvalidRequestContentType = "request Content-Type isn't multipart/form-data.\n"
 
 // parser.go constants
 const ClaimTag = "claim"
@@ -23,9 +23,9 @@ const ExtractLastClaimID = `SELECT id FROM cnf.claim ORDER BY id DESC LIMIT 1;`
 const ParseLowerBound = 10
 const ParseUpperBound = 20
 
-const SuccessUploadingFileMSG = "File was uploaded successfully!"
-const MalformedClaimFileErr = "Malformed claim file: missing field."
-const MalformedJSONFileErr = "Malformed json file."
+const SuccessUploadingFileMSG = "File was uploaded successfully!\n"
+const MalformedClaimFileErr = "Malformed claim file: missing field.\n"
+const MalformedJSONFileErr = "Malformed json file.\n"
 
 // results.go constants
 const SelectAllFromClaim = "SELECT * FROM cnf.claim"

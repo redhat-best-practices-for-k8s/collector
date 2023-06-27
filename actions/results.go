@@ -90,7 +90,7 @@ func printCollectorJSONFile(w http.ResponseWriter, collector []ClaimCollector) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err = w.Write(claimFileJSON)
+	_, err = w.Write(append(claimFileJSON, '\n'))
 	if err != nil {
 		fmt.Println(err)
 	}
