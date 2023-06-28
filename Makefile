@@ -25,6 +25,7 @@ LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
 CREATE_SCHEMA_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/database/create_schema.sql"
 CREATE_MYSQL_USER_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/database/create_user.sql"
+COLLECTOR_DEPLOYMENT_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/k8s/collector-deployment.yml"
 
 .PHONY: all clean test
 
@@ -99,3 +100,14 @@ build-image-collector:
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
+
+build-and-deploy-image-collector-dev:
+	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	curl ${COLLECTOR_DEPLOYMENT_RAW_URL} | sed 's/latest/dev/g' > collector-deployment.yml
+	oc apply -f ./collector-deployment.yml
+	rm collector-deployment.yml
+
+remove-image-collector-and-deployment-dev:
+	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	oc delete deployment collector-deployment

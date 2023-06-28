@@ -14,7 +14,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func connectToDB() *sql.DB {
 	DBUsername := os.Getenv("DB_USER")
 	DBPassword := os.Getenv("DB_PASSWORD")
 	DBURL := os.Getenv("DB_URL")
@@ -22,16 +22,39 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	DBConnStr := DBUsername + ":" + DBPassword + "@tcp(" + DBURL + ":" + DBPort + ")/"
 	db, err := sql.Open("mysql", DBConnStr)
-
 	if err != nil {
-		fmt.Println(err)
+		return nil
 	}
 
-	if r.Method == http.MethodGet {
-		actions.ResultsHandler(w, db)
+	err = db.Ping()
+	if err != nil {
+		return nil
 	}
-	if r.Method == http.MethodPost {
+	return db
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	db := connectToDB()
+	if db == nil {
+		_, writeErr := w.Write([]byte(actions.FailedToConnectDBErr))
+		if writeErr != nil {
+			fmt.Println(writeErr)
+		}
+		fmt.Print(actions.FailedToConnectDBErr)
+		return
+	}
+	defer db.Close()
+
+	switch r.Method {
+	case http.MethodGet:
+		actions.ResultsHandler(w, db)
+	case http.MethodPost:
 		actions.ParserHandler(w, r, db)
+	default:
+		_, err := w.Write([]byte(actions.InvalidRequest))
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
