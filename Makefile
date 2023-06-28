@@ -104,7 +104,8 @@ build-image-collector:
 build-and-deploy-image-collector-dev:
 	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
-	curl -o collector-deployment.yml ${COLLECTOR_DEPLOYMENT_RAW_URL}
+	curl ${COLLECTOR_DEPLOYMENT_RAW_URL} | 
+		sed 's|${REGISTRY}/${COLLECTOR_IMAGE_NAME}:latest|${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev|g' > collector-deployment.yml
 	oc apply -f ./collector-deployment.yml
 	rm collector-deployment.yml
 
