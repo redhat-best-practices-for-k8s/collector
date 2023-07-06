@@ -90,4 +90,4 @@ jobs:
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
 
       - name: Push the newly built image to Quay.io
-        run: docker push --all-tags ${REGISTRY}/${TNF_IMAGE_NAME}
+        run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
