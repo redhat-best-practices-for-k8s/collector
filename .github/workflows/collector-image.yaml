@@ -58,8 +58,8 @@ jobs:
         run: |
           echo "COLLECTOR_VERSION=${{ steps.set_COLLECTOR_VERSION.outputs.version_number }}" >> $GITHUB_ENV
 
-      - name: Ensure $COLLECTOR_VERSION and $IMAGE_TAG are set
-        run: '[[ -n "$COLLECTOR_VERSION" ]] && [[ -n "$IMAGE_TAG" ]]'
+      - name: Ensure $COLLECTOR_VERSION and $COLLECTOR_IMAGE_TAG are set
+        run: '[[ -n "$COLLECTOR_VERSION" ]] && [[ -n "$COLLECTOR_IMAGE_TAG" ]]'
 
       - name: Check whether the version tag exists on remote
         run: git ls-remote --exit-code $COLLECTOR_SRC_URL refs/tags/$COLLECTOR_VERSION
@@ -90,4 +90,4 @@ jobs:
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
 
       - name: Push the newly built image to Quay.io
-        run: docker push --all-tags ${REGISTRY}/${TNF_IMAGE_NAME}
+        run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}

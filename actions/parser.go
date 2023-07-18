@@ -11,74 +11,191 @@ import (
 	"net/http"
 )
 
-func uploadAndConvertClaimFile(r *http.Request) map[string]interface{} {
-	_ = r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
+func writeResponse(w http.ResponseWriter, response string) {
+	_, err := w.Write([]byte(response))
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(response)
+}
+
+func readClaimFile(w http.ResponseWriter, r *http.Request) []byte {
+	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
+	if err != nil {
+		writeResponse(w, err.Error())
+		return nil
+	}
 
 	claimFile, _, err := r.FormFile(ClaimFileInputName)
 	if err != nil {
-		fmt.Println(err)
+		writeResponse(w, err.Error())
+		return nil
 	}
 	defer claimFile.Close()
 
 	claimFileBytes, err := io.ReadAll(claimFile)
 	if err != nil {
-		fmt.Println(err)
+		writeResponse(w, err.Error())
+		return nil
 	}
+
+	return claimFileBytes
+}
+
+func uploadAndConvertClaimFile(w http.ResponseWriter, r *http.Request) map[string]interface{} {
+	claimFileBytes := readClaimFile(w, r)
+	if claimFileBytes == nil {
+		return nil
+	}
+
 	var claimFileMap map[string]interface{}
-	err = json.Unmarshal(claimFileBytes, &claimFileMap)
+	err := json.Unmarshal(claimFileBytes, &claimFileMap)
 	if err != nil {
-		fmt.Println(err)
+		writeResponse(w, err.Error())
+		return nil
+	}
+
+	_, keyExists := claimFileMap[ClaimTag]
+	if !keyExists {
+		writeResponse(w, err.Error())
+		return nil
 	}
 	return claimFileMap[ClaimTag].(map[string]interface{})
 }
 
-func insertToClaimTable(r *http.Request, db *sql.DB, claimFileMap map[string]interface{}) {
-	versions := claimFileMap[VersionsTag].(map[string]interface{})
+func validateClaimKeys(claimFileMap map[string]interface{}) map[string]interface{} {
+	versions, keyExists := claimFileMap[VersionsTag].(map[string]interface{})
+	if !keyExists {
+		return nil
+	}
+
+	_, keyExists = versions["ocp"]
+	if !keyExists {
+		return nil
+	}
+
+	return versions
+}
+
+func insertToClaimTable(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFileMap map[string]interface{}) bool {
+	versions := validateClaimKeys(claimFileMap)
 
 	// saving users input referring to who created claim file and partner's name
 	createdBy := r.FormValue(CreatedByInputName)
 	partnerName := r.FormValue(PartnerNameInputName)
 
-	_, err := db.Exec(InsertToClaimSQLCmd, versions["ocp"].(string),
-		createdBy, time.Now(), partnerName)
-	if err != nil {
-		fmt.Println(err)
+	// missing fields in claim file or created_by field is null
+	if versions == nil || createdBy == "" {
+		writeResponse(w, MalformedClaimFileErr)
+		return false
 	}
+
+	_, err := tx.Exec(InsertToClaimSQLCmd, versions["ocp"].(string), createdBy, time.Now(), partnerName)
+	if err != nil {
+		txErr := tx.Rollback()
+		if txErr != nil {
+			fmt.Println(txErr)
+		}
+		fmt.Println(err)
+		return false
+	}
+	return true
 }
 
-func insertToClaimResultTable(db *sql.DB, claimFileMap map[string]interface{}) {
-	results := claimFileMap[ResultsTag].(map[string]interface{})
+func validateInnerResultsKeys(results map[string]interface{}, testName string) (
+	keysExists bool, testData map[string]interface{}, testID map[string]interface{}) {
+	testData, keyExists := results[testName].([]interface{})[0].(map[string]interface{})
+	if !keyExists {
+		return false, nil, nil
+	}
+	testID, keyExists = testData["testID"].(map[string]interface{})
+	if !keyExists {
+		return false, nil, nil
+	}
+	_, stateKeyExists := testData["state"]
+	_, suiteKeyExists := testID["suite"]
+	_, idKeyExists := testID["id"]
+	if !stateKeyExists || !suiteKeyExists || !idKeyExists {
+		return false, nil, nil
+	}
+	return true, testData, testID
+}
+
+func insertToClaimResultTable(w http.ResponseWriter, tx *sql.Tx, claimFileMap map[string]interface{}) bool {
+	results, keyExists := claimFileMap[ResultsTag].(map[string]interface{})
+	if !keyExists {
+		writeResponse(w, MalformedClaimFileErr)
+		return false
+	}
 
 	var claimID string
-	err := db.QueryRow(ExtractLastClaimID).Scan(&claimID)
+	err := tx.QueryRow(ExtractLastClaimID).Scan(&claimID)
 	if err != nil {
+		txErr := tx.Rollback()
+		if txErr != nil {
+			fmt.Println(txErr)
+		}
 		fmt.Println(err)
+		return false
 	}
 
 	for testName := range results {
-		testData := results[testName].([]interface{})[0].(map[string]interface{})
-		testID := testData["testID"].(map[string]interface{})
-		_, err = db.Exec(InsertToClaimResSQLCmd, claimID, testID["suite"].(string),
+		keysExists, testData, testID := validateInnerResultsKeys(results, testName)
+		if !keysExists {
+			writeResponse(w, MalformedClaimFileErr)
+			return false
+		}
+		_, err = tx.Exec(InsertToClaimResSQLCmd, claimID, testID["suite"].(string),
 			testID["id"].(string), testData["state"].(string))
 		if err != nil {
+			txErr := tx.Rollback()
+			if txErr != nil {
+				fmt.Println(txErr)
+			}
 			fmt.Println(err)
+			return false
 		}
 	}
+	return true
 }
 
-func parseClaimFile(r *http.Request, db *sql.DB, claimFileMap map[string]interface{}) {
-	_, err := db.Exec(UseCollectorSQLCmd)
+func parseClaimFile(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFileMap map[string]interface{}) bool {
+	_, err := tx.Exec(UseCollectorSQLCmd)
 	if err != nil {
+		txErr := tx.Rollback()
+		if txErr != nil {
+			fmt.Println(txErr)
+		}
 		fmt.Println(err)
+		return false
 	}
 
-	insertToClaimTable(r, db, claimFileMap)
-	insertToClaimResultTable(db, claimFileMap)
+	if insertToClaimTable(w, r, tx, claimFileMap) && insertToClaimResultTable(w, tx, claimFileMap) {
+		return true
+	}
+	return false
 }
 
 func ParserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	claimFileMap := uploadAndConvertClaimFile(r)
-	parseClaimFile(r, db, claimFileMap)
-
-	fmt.Fprintf(w, "File was uploaded successfully!")
+	claimFileMap := uploadAndConvertClaimFile(w, r)
+	if claimFileMap == nil {
+		return
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if !parseClaimFile(w, r, tx, claimFileMap) {
+		return
+	}
+	err = tx.Commit()
+	if err != nil {
+		txErr := tx.Rollback()
+		if txErr != nil {
+			fmt.Println(txErr)
+		}
+		return
+	}
+	writeResponse(w, SuccessUploadingFileMSG)
 }
