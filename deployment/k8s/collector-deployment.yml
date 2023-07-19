@@ -6,8 +6,8 @@ metadata:
   namespace: default
 type: Opaque
 data:
-  mysql-username: Y29sbGVjdG9ydXNlcg==
-  mysql-password: cGFzc3dvcmQ=
+  mysql-username: ${{ secrets.MYSQL_USERNAME }}
+  mysql-password: ${{ secrets.MYSQL_PASSWORD }}
 ---
 apiVersion: apps/v1
 kind: Deployment

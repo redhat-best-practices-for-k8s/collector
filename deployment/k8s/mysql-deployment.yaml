@@ -51,7 +51,7 @@ metadata:
   name: collectorapi-secrets
 type: Opaque
 data:
-  db_root_password: YWRtaW4=
+  db_root_password: ${{ secrets.DB_ROOT_PASSWORD }}
 
 ---
 apiVersion: v1
