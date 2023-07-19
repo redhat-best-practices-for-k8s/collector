@@ -6,17 +6,17 @@ import (
 	"io"
 	"time"
 
-	"fmt"
-
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 )
 
 func writeResponse(w http.ResponseWriter, response string) {
 	_, err := w.Write([]byte(response))
 	if err != nil {
-		fmt.Println(err)
+		logrus.Errorln(err)
 	}
-	fmt.Println(response)
+	logrus.Errorln(response)
 }
 
 func readClaimFile(w http.ResponseWriter, r *http.Request) []byte {
@@ -94,9 +94,9 @@ func insertToClaimTable(w http.ResponseWriter, r *http.Request, tx *sql.Tx, clai
 	if err != nil {
 		txErr := tx.Rollback()
 		if txErr != nil {
-			fmt.Println(txErr)
+			logrus.Errorln(txErr)
 		}
-		fmt.Println(err)
+		logrus.Errorln(err)
 		return false
 	}
 	return true
@@ -133,9 +133,9 @@ func insertToClaimResultTable(w http.ResponseWriter, tx *sql.Tx, claimFileMap ma
 	if err != nil {
 		txErr := tx.Rollback()
 		if txErr != nil {
-			fmt.Println(txErr)
+			logrus.Errorln(txErr)
 		}
-		fmt.Println(err)
+		logrus.Errorln(err)
 		return false
 	}
 
@@ -150,9 +150,9 @@ func insertToClaimResultTable(w http.ResponseWriter, tx *sql.Tx, claimFileMap ma
 		if err != nil {
 			txErr := tx.Rollback()
 			if txErr != nil {
-				fmt.Println(txErr)
+				logrus.Errorln(txErr)
 			}
-			fmt.Println(err)
+			logrus.Errorln(err)
 			return false
 		}
 	}
@@ -164,9 +164,9 @@ func parseClaimFile(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFil
 	if err != nil {
 		txErr := tx.Rollback()
 		if txErr != nil {
-			fmt.Println(txErr)
+			logrus.Errorln(txErr)
 		}
-		fmt.Println(err)
+		logrus.Errorln(err)
 		return false
 	}
 
@@ -181,19 +181,24 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if claimFileMap == nil {
 		return
 	}
+	// Beginning the transaction.
 	tx, err := db.Begin()
 	if err != nil {
-		fmt.Println(err)
+		logrus.Errorln(err)
 		return
 	}
+
+	// Check if an error occurred while parsing (which caused a Rollback).
 	if !parseClaimFile(w, r, tx, claimFileMap) {
 		return
 	}
+
+	// If no error occurred, commit the transaction to make database changes.
 	err = tx.Commit()
 	if err != nil {
 		txErr := tx.Rollback()
 		if txErr != nil {
-			fmt.Println(txErr)
+			logrus.Errorln(txErr)
 		}
 		return
 	}

@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/test-network-function/collector/actions"
 
-	"fmt"
 	"log"
 	"net/http"
 
@@ -38,9 +38,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if db == nil {
 		_, writeErr := w.Write([]byte(actions.FailedToConnectDBErr))
 		if writeErr != nil {
-			fmt.Println(writeErr)
+			logrus.Errorln(writeErr)
 		}
-		fmt.Print(actions.FailedToConnectDBErr)
+		logrus.Error(actions.FailedToConnectDBErr)
 		return
 	}
 	defer db.Close()
@@ -53,7 +53,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	default:
 		_, err := w.Write([]byte(actions.InvalidRequest))
 		if err != nil {
-			fmt.Println(err)
+			logrus.Errorln(err)
 		}
 	}
 }
