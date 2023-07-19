@@ -27,6 +27,7 @@ Cleanup after:
 # Instructions for running send-to-collector.sh
 
 From collector's repo root directory, use the following command:
+
 `./send-to-collector.sh "path/to/claim.json" "enter_created_by" "enter_partner_name"`
 
 
