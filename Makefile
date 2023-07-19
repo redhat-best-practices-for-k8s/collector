@@ -26,6 +26,9 @@ LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification
 CREATE_SCHEMA_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/database/create_schema.sql"
 CREATE_MYSQL_USER_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/database/create_user.sql"
 COLLECTOR_DEPLOYMENT_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/k8s/collector-deployment.yml"
+MYSQL_PV_PATH = ./k8s/mysql-pv.yaml
+MYSQL_DEPLOYMENT_PATH = ./k8s/mysql-deployment.yaml
+COLLECTOR_DEPLOYMENT_PATH = ./k8s/collector-deployment.yml
 
 .PHONY: all clean test
 
@@ -111,3 +114,17 @@ build-and-deploy-image-collector-dev:
 remove-image-collector-and-deployment-dev:
 	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 	oc delete deployment collector-deployment
+
+deploy-mysql:
+	oc apply -f ${MYSQL_PV_PATH}
+	oc apply -f ${MYSQL_DEPLOYMENT_PATH}
+
+delete-mysql:
+	oc delete -f ${MYSQL_DEPLOYMENT_PATH}
+	oc delete -f ${MYSQL_PV_PATH}
+
+deploy-collector:
+	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH}
+
+delete-collector:
+	oc delete -f ${COLLECTOR_DEPLOYMENT_PATH}
