@@ -68,6 +68,21 @@ jobs:
         brew install hadolint
       if: runner.os == 'macOS'
 
+    - name: Run yamllint
+      uses: ibiqlik/action-yamllint@v3
+      with:
+        config_data: |
+          extends: default
+          rules:
+            line-length:
+              level: warning
+            trailing-spaces:
+              level: warning
+            brackets:
+              level: warning
+            empty-lines:
+              level: warning
+
     - name: make lint
       run: make lint
 
