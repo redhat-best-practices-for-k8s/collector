@@ -1,12 +1,13 @@
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   namespace: default
   name: mysql-r
-rules:
-- apiGroups: [""]
-  resources: ["*"]
-  verbs: ["*"]
+  rules:
+    - apiGroups: [""]
+      resources: ["*"]
+      verbs: ["*"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -15,8 +16,8 @@ metadata:
   name: mysql-rb
   namespace: default
 subjects:
-- kind: ServiceAccount
-  name: mysql-sa
+  - kind: ServiceAccount
+    name: mysql-sa
 roleRef:
   kind: Role
   name: mysql-r
@@ -36,9 +37,9 @@ metadata:
   name: mysql
 spec:
   ports:
-  - port: 3306
-    protocol: TCP
-    name: mysql
+    - port: 3306
+      protocol: TCP
+      name: mysql
   selector:
     app: mysql
   clusterIP: None
@@ -87,9 +88,9 @@ data:
       where table_name = 'claim'
       and index_name = 'claim_upload_datetime'
       and table_schema = database());
-    set @sql := if( 
-      @x > 0, 
-      'select ''Index exists.''', 
+    set @sql := if(
+      @x > 0,
+      'select ''Index exists.''',
       'create index claim_upload_datetime on claim (upload_time);');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
@@ -120,50 +121,50 @@ spec:
       hostname: banashri
       subdomain: mandal
       containers:
-      - image: mysql:8.0.33
-        name: mysql-container
-        securityContext:
-          privileged: true
-          allowPrivilegeEscalation: true
-        resources:
-          requests:
-            cpu: 100m
-            memory: 250Mi
-          limits:
-            cpu: 500m
-            memory: 500Mi
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: collectorapi-secrets
-              key: db_root_password
-        ports:
-        - containerPort: 3306
-          name: mysql
-        volumeMounts:
-        - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
-        - name: initdb-volume
-          mountPath: /scripts
-        lifecycle:
-          postStart:
-            exec:
-              command: 
-                - "/bin/sh"
-                - "-c"
-                - |
-                  while ! mysqladmin ping -uroot -p$MYSQL_ROOT_PASSWORD; do
-                    sleep 10;
-                  done
-                  mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_schema.sql
-                  mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_user.sql
-        imagePullPolicy: IfNotPresent
+        - image: mysql:8.0.33
+          name: mysql-container
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 250Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: collectorapi-secrets
+                  key: db_root_password
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: initdb-volume
+              mountPath: /scripts
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - |
+                    while ! mysqladmin ping -uroot -p$MYSQL_ROOT_PASSWORD; do
+                      sleep 10;
+                    done
+                    mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_schema.sql
+                    mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_user.sql
+          imagePullPolicy: IfNotPresent
       volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
-      - name: initdb-volume
-        configMap:
-          name: initdb-scripts
-          defaultMode: 0755
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+        - name: initdb-volume
+          configMap:
+            name: initdb-scripts
+            defaultMode: 0755
