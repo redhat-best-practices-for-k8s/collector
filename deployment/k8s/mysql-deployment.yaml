@@ -1,0 +1,170 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: mysql-r
+  rules:
+    - apiGroups: [""]
+      resources: ["*"]
+      verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mysql-rb
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: mysql-sa
+roleRef:
+  kind: Role
+  name: mysql-r
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mysql-sa
+  namespace: default
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  ports:
+    - port: 3306
+      protocol: TCP
+      name: mysql
+  selector:
+    app: mysql
+  clusterIP: None
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: collectorapi-secrets
+type: Opaque
+data:
+  db_root_password: YWRtaW4=
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: initdb-scripts
+data:
+  create_schema.sql: |
+    create database if not exists cnf;
+    use cnf;
+
+    create table if not exists claim (
+      id int not null AUTO_INCREMENT,
+      cnf_version varchar(50) not null,
+      created_by  varchar(50) not null,
+      upload_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      partner_name varchar(50),
+      mark_for_delete boolean DEFAULT false,
+      primary key (id)
+    );
+
+    create table if not exists claim_result (
+      id int not null AUTO_INCREMENT,
+      claim_id int not null,
+      suite_name varchar(255),
+      test_id varchar(255),
+      test_status varchar(10) not null,
+      primary key (id),
+      foreign key (claim_id) references claim(id)
+    );
+
+    set @x := (
+      select count(*) from information_schema.statistics
+      where table_name = 'claim'
+      and index_name = 'claim_upload_datetime'
+      and table_schema = database());
+    set @sql := if(
+      @x > 0,
+      'select ''Index exists.''',
+      'create index claim_upload_datetime on claim (upload_time);');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+
+  create_user.sql: |
+    CREATE USER if not exists 'collectoruser'@'%' IDENTIFIED BY 'password';
+    GRANT ALL PRIVILEGES ON cnf.claim TO 'collectoruser'@'%';
+    GRANT ALL PRIVILEGES ON cnf.claim_result TO 'collectoruser'@'%';
+    FLUSH PRIVILEGES;
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      serviceAccountName: "mysql-sa"
+      hostname: banashri
+      subdomain: mandal
+      containers:
+        - image: mysql:8.0.33
+          name: mysql-container
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 250Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: collectorapi-secrets
+                  key: db_root_password
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: initdb-volume
+              mountPath: /scripts
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - |
+                    while ! mysqladmin ping -uroot -p$MYSQL_ROOT_PASSWORD; do
+                      sleep 10;
+                    done
+                    mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_schema.sql
+                    mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_user.sql
+          imagePullPolicy: IfNotPresent
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+        - name: initdb-volume
+          configMap:
+            name: initdb-scripts
+            defaultMode: 0755
