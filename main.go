@@ -14,7 +14,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func connectToDB() *sql.DB {
+func connectToDB() (*sql.DB, error) {
 	DBUsername := os.Getenv("DB_USER")
 	DBPassword := os.Getenv("DB_PASSWORD")
 	DBURL := os.Getenv("DB_URL")
@@ -23,24 +23,24 @@ func connectToDB() *sql.DB {
 	DBConnStr := DBUsername + ":" + DBPassword + "@tcp(" + DBURL + ":" + DBPort + ")/"
 	db, err := sql.Open("mysql", DBConnStr)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	err = db.Ping()
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return db
+	return db, nil
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	db := connectToDB()
-	if db == nil {
-		_, writeErr := w.Write([]byte(actions.FailedToConnectDBErr))
+	db, err := connectToDB()
+	if err != nil {
+		_, writeErr := w.Write([]byte(err.Error() + "\n"))
 		if writeErr != nil {
-			logrus.Errorln(writeErr)
+			logrus.Errorf(actions.WritingResponseErr, writeErr)
 		}
-		logrus.Error(actions.FailedToConnectDBErr)
+		logrus.Errorf(actions.FailedToConnectDBErr, err)
 		return
 	}
 	defer db.Close()
@@ -51,10 +51,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		actions.ParserHandler(w, r, db)
 	default:
-		_, err := w.Write([]byte(actions.InvalidRequest))
-		if err != nil {
-			logrus.Errorln(err)
+		_, writeErr := w.Write([]byte(actions.InvalidRequestErr + "\n"))
+		if writeErr != nil {
+			logrus.Errorf(actions.WritingResponseErr, writeErr)
 		}
+		logrus.Errorf(actions.InvalidRequestErr)
 	}
 }
 

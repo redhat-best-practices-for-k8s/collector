@@ -34,12 +34,12 @@ type ClaimCollector struct {
 func getCollectorTables(db *sql.DB) (claimRows, claimResultsRows *sql.Rows) {
 	claimRows, err := db.Query(SelectAllFromClaim)
 	if err != nil {
-		logrus.Errorln(err)
+		logrus.Errorf(ExecQueryErr, err)
 	}
 
 	claimResultsRows, err = db.Query(SelectAllFromClaimResult)
 	if err != nil {
-		logrus.Errorln(err)
+		logrus.Errorf(ExecQueryErr, err)
 	}
 
 	return claimRows, claimResultsRows
@@ -51,7 +51,7 @@ func mapClaimsToStruct(claimRows *sql.Rows) []Claim {
 		var row Claim
 		err := claimRows.Scan(&row.ID, &row.CnfVersion, &row.CreatedBy, &row.UploadTime, &row.PartnerName, &row.MarkForDelete)
 		if err != nil {
-			logrus.Errorln(err)
+			logrus.Errorf(ScanDBFieldErr, err)
 		}
 		claims = append(claims, row)
 	}
@@ -64,7 +64,7 @@ func mapClaimResultsToStruct(claimResultsRows *sql.Rows) []ClaimResults {
 		var row ClaimResults
 		err := claimResultsRows.Scan(&row.ID, &row.ClaimID, &row.SuiteName, &row.TestID, &row.TesStatus)
 		if err != nil {
-			logrus.Errorln(err)
+			logrus.Errorf(ScanDBFieldErr, err)
 		}
 		claimResults = append(claimResults, row)
 	}
@@ -89,11 +89,11 @@ func combineClaimAndResultsToStruct(claims []Claim, claimResults []ClaimResults)
 func printCollectorJSONFile(w http.ResponseWriter, collector []ClaimCollector) {
 	claimFileJSON, err := json.MarshalIndent(collector, "", "	")
 	if err != nil {
-		logrus.Errorln(err)
+		logrus.Errorf(MarshalErr, err)
 	}
 	_, err = w.Write(append(claimFileJSON, '\n'))
 	if err != nil {
-		logrus.Errorln(err)
+		logrus.Errorf(WritingResponseErr, err)
 	}
 }
 
