@@ -53,7 +53,8 @@ func readClaimFile(w http.ResponseWriter, r *http.Request) []byte {
 
 func uploadAndConvertClaimFile(w http.ResponseWriter, r *http.Request) map[string]interface{} {
 	claimFileBytes := readClaimFile(w, r)
-	if claimFileBytes == nil {	// error occurred while reading claim file 
+	if claimFileBytes == nil {
+		// error occurred while reading claim file
 		return nil
 	}
 
@@ -182,7 +183,8 @@ func parseClaimFile(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFil
 
 func ParserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	claimFileMap := uploadAndConvertClaimFile(w, r)
-	if claimFileMap == nil {	// error occurred while uploading\converting claim file.
+	if claimFileMap == nil {
+		// error occurred while uploading\converting claim file.
 		return
 	}
 	// Beginning the transaction.
