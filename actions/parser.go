@@ -3,39 +3,48 @@ package actions
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"time"
 
-	"fmt"
-
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 )
 
-func writeResponse(w http.ResponseWriter, response string) {
-	_, err := w.Write([]byte(response))
-	if err != nil {
-		fmt.Println(err)
+func handleTransactionRollback(tx *sql.Tx, err error, context string) {
+	txErr := tx.Rollback()
+	if txErr != nil {
+		logrus.Errorf(RollbackErr, txErr)
 	}
-	fmt.Println(response)
+	logrus.Errorf(context, err)
+}
+
+func writeResponse(w http.ResponseWriter, context, response string) {
+	_, writeErr := w.Write([]byte(response + "\n"))
+	if writeErr != nil {
+		logrus.Errorf(WritingResponseErr, writeErr)
+	}
+	logrus.Errorf(context, response)
 }
 
 func readClaimFile(w http.ResponseWriter, r *http.Request) []byte {
 	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
 	if err != nil {
-		writeResponse(w, err.Error())
+		writeResponse(w, RequestContentTypeErr, err.Error())
 		return nil
 	}
 
 	claimFile, _, err := r.FormFile(ClaimFileInputName)
 	if err != nil {
-		writeResponse(w, err.Error())
+		writeResponse(w, FormFileErr, err.Error())
 		return nil
 	}
 	defer claimFile.Close()
 
 	claimFileBytes, err := io.ReadAll(claimFile)
 	if err != nil {
-		writeResponse(w, err.Error())
+		writeResponse(w, ReadingFileErr, err.Error())
 		return nil
 	}
 
@@ -45,32 +54,35 @@ func readClaimFile(w http.ResponseWriter, r *http.Request) []byte {
 func uploadAndConvertClaimFile(w http.ResponseWriter, r *http.Request) map[string]interface{} {
 	claimFileBytes := readClaimFile(w, r)
 	if claimFileBytes == nil {
+		// error occurred while reading claim file
 		return nil
 	}
 
 	var claimFileMap map[string]interface{}
 	err := json.Unmarshal(claimFileBytes, &claimFileMap)
 	if err != nil {
-		writeResponse(w, err.Error())
+		writeResponse(w, UnmarshalErr, err.Error())
 		return nil
 	}
 
 	_, keyExists := claimFileMap[ClaimTag]
 	if !keyExists {
-		writeResponse(w, err.Error())
+		writeResponse(w, "%s", ClaimFieldMissingErr)
 		return nil
 	}
 	return claimFileMap[ClaimTag].(map[string]interface{})
 }
 
-func validateClaimKeys(claimFileMap map[string]interface{}) map[string]interface{} {
+func validateClaimKeys(w http.ResponseWriter, claimFileMap map[string]interface{}) map[string]interface{} {
 	versions, keyExists := claimFileMap[VersionsTag].(map[string]interface{})
 	if !keyExists {
+		writeResponse(w, "%s", VersionsFieldMissingErr)
 		return nil
 	}
 
 	_, keyExists = versions["ocp"]
 	if !keyExists {
+		writeResponse(w, "%s", OcpFieldMissingErr)
 		return nil
 	}
 
@@ -78,81 +90,78 @@ func validateClaimKeys(claimFileMap map[string]interface{}) map[string]interface
 }
 
 func insertToClaimTable(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFileMap map[string]interface{}) bool {
-	versions := validateClaimKeys(claimFileMap)
+	versions := validateClaimKeys(w, claimFileMap)
+	if versions == nil {
+		return false
+	}
 
 	// saving users input referring to who created claim file and partner's name
 	createdBy := r.FormValue(CreatedByInputName)
 	partnerName := r.FormValue(PartnerNameInputName)
 
-	// missing fields in claim file or created_by field is null
-	if versions == nil || createdBy == "" {
-		writeResponse(w, MalformedClaimFileErr)
+	if createdBy == "" {
+		writeResponse(w, "%s", CreatedByMissingErr)
 		return false
 	}
 
 	_, err := tx.Exec(InsertToClaimSQLCmd, versions["ocp"].(string), createdBy, time.Now(), partnerName)
 	if err != nil {
-		txErr := tx.Rollback()
-		if txErr != nil {
-			fmt.Println(txErr)
-		}
-		fmt.Println(err)
+		handleTransactionRollback(tx, err, ExecQueryErr)
 		return false
 	}
 	return true
 }
 
 func validateInnerResultsKeys(results map[string]interface{}, testName string) (
-	keysExists bool, testData map[string]interface{}, testID map[string]interface{}) {
-	testData, keyExists := results[testName].([]interface{})[0].(map[string]interface{})
+	testData map[string]interface{}, testID map[string]interface{}, err string) {
+	testData, _ = results[testName].([]interface{})[0].(map[string]interface{})
+
+	testID, keyExists := testData["testID"].(map[string]interface{})
 	if !keyExists {
-		return false, nil, nil
+		return nil, nil, fmt.Sprintf(TestTestIDMissingErr, testName)
 	}
-	testID, keyExists = testData["testID"].(map[string]interface{})
-	if !keyExists {
-		return false, nil, nil
-	}
+
 	_, stateKeyExists := testData["state"]
-	_, suiteKeyExists := testID["suite"]
-	_, idKeyExists := testID["id"]
-	if !stateKeyExists || !suiteKeyExists || !idKeyExists {
-		return false, nil, nil
+	if !stateKeyExists {
+		return nil, nil, fmt.Sprintf(TestStateMissingErr, testName)
 	}
-	return true, testData, testID
+
+	_, suiteKeyExists := testID["suite"]
+	if !suiteKeyExists {
+		return nil, nil, fmt.Sprintf(TestIDSuiteMissingErr, testName)
+	}
+
+	_, idKeyExists := testID["id"]
+	if !idKeyExists {
+		return nil, nil, fmt.Sprintf(TestIDIDMissingErr, testName)
+	}
+	return testData, testID, ""
 }
 
 func insertToClaimResultTable(w http.ResponseWriter, tx *sql.Tx, claimFileMap map[string]interface{}) bool {
 	results, keyExists := claimFileMap[ResultsTag].(map[string]interface{})
 	if !keyExists {
-		writeResponse(w, MalformedClaimFileErr)
+		writeResponse(w, "%s", ResultsFieldMissingErr)
 		return false
 	}
 
 	var claimID string
 	err := tx.QueryRow(ExtractLastClaimID).Scan(&claimID)
 	if err != nil {
-		txErr := tx.Rollback()
-		if txErr != nil {
-			fmt.Println(txErr)
-		}
-		fmt.Println(err)
+		handleTransactionRollback(tx, err, ScanDBFieldErr)
 		return false
 	}
 
 	for testName := range results {
-		keysExists, testData, testID := validateInnerResultsKeys(results, testName)
-		if !keysExists {
-			writeResponse(w, MalformedClaimFileErr)
+		testData, testID, keyErr := validateInnerResultsKeys(results, testName)
+		if keyErr != "" {
+			writeResponse(w, "%s", keyErr)
 			return false
 		}
 		_, err = tx.Exec(InsertToClaimResSQLCmd, claimID, testID["suite"].(string),
 			testID["id"].(string), testData["state"].(string))
 		if err != nil {
-			txErr := tx.Rollback()
-			if txErr != nil {
-				fmt.Println(txErr)
-			}
-			fmt.Println(err)
+			handleTransactionRollback(tx, err, ExecQueryErr)
 			return false
 		}
 	}
@@ -162,11 +171,7 @@ func insertToClaimResultTable(w http.ResponseWriter, tx *sql.Tx, claimFileMap ma
 func parseClaimFile(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFileMap map[string]interface{}) bool {
 	_, err := tx.Exec(UseCollectorSQLCmd)
 	if err != nil {
-		txErr := tx.Rollback()
-		if txErr != nil {
-			fmt.Println(txErr)
-		}
-		fmt.Println(err)
+		handleTransactionRollback(tx, err, ExecQueryErr)
 		return false
 	}
 
@@ -179,23 +184,26 @@ func parseClaimFile(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFil
 func ParserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	claimFileMap := uploadAndConvertClaimFile(w, r)
 	if claimFileMap == nil {
+		// error occurred while uploading\converting claim file.
 		return
 	}
+	// Beginning the transaction.
 	tx, err := db.Begin()
 	if err != nil {
-		fmt.Println(err)
+		logrus.Errorf(BeginTxErr, err)
 		return
 	}
+
+	// Check if an error occurred while parsing (which caused a Rollback).
 	if !parseClaimFile(w, r, tx, claimFileMap) {
 		return
 	}
+
+	// If no error occurred, commit the transaction to make database changes.
 	err = tx.Commit()
 	if err != nil {
-		txErr := tx.Rollback()
-		if txErr != nil {
-			fmt.Println(txErr)
-		}
+		handleTransactionRollback(tx, err, CommitTxErr)
 		return
 	}
-	writeResponse(w, SuccessUploadingFileMSG)
+	writeResponse(w, "%s", SuccessUploadingFileMSG)
 }

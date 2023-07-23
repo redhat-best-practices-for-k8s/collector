@@ -23,12 +23,11 @@ GOLANGCI_VERSION=v1.53.3
 LINKER_TNF_RELEASE_FLAGS=-X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitCommit=${GIT_COMMIT}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitRelease=${GIT_RELEASE}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
-CREATE_SCHEMA_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/database/create_schema.sql"
-CREATE_MYSQL_USER_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/database/create_user.sql"
-COLLECTOR_DEPLOYMENT_RAW_URL = "https://raw.githubusercontent.com/test-network-function/collector-deployment/main/k8s/collector-deployment.yml"
-MYSQL_PV_PATH = ./k8s/mysql-pv.yaml
-MYSQL_DEPLOYMENT_PATH = ./k8s/mysql-deployment.yaml
-COLLECTOR_DEPLOYMENT_PATH = ./k8s/collector-deployment.yml
+MYSQL_PV_PATH = ./deployment/k8s/mysql-pv.yaml
+MYSQL_DEPLOYMENT_PATH = ./deployment/k8s/mysql-deployment.yaml
+COLLECTOR_DEPLOYMENT_PATH = ./deployment/k8s/collector-deployment.yml
+CREATE_SCHEMA_PATH = ./deployment/database/create_schema.sql
+CREATE_USER_PATH = ./deployment/database/create_user.sql
 
 .PHONY: all clean test
 
@@ -66,15 +65,11 @@ build-mysql-container-local:
 		 
 # Builds local schema
 build-schema:
-	curl -sSL -o create_schema.sql ${CREATE_SCHEMA_RAW_URL}
-	docker exec -i ${MYSQL_CONTAINER_NAME} mysql -u root -ppa55 < create_schema.sql
-	rm -f create_schema.sql
+	docker exec -i ${MYSQL_CONTAINER_NAME} mysql -u root -ppa55 < ${CREATE_SCHEMA_PATH}
 
 # Builds a local mysql user for the above container
 build-mysql-user-local:
-	curl -sSL -o create_user.sql ${CREATE_MYSQL_USER_RAW_URL}
-	docker exec -i ${MYSQL_CONTAINER_NAME} mysql -u root -ppa55 < create_user.sql
-	rm -f create_user.sql
+	docker exec -i ${MYSQL_CONTAINER_NAME} mysql -u root -ppa55 < ${CREATE_USER_PATH}
 
 # Pulls collector image from quay.io
 pull-image-collector:
@@ -107,9 +102,9 @@ build-image-collector:
 build-and-deploy-image-collector-dev:
 	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
-	curl ${COLLECTOR_DEPLOYMENT_RAW_URL} | sed 's/latest/dev/g' > collector-deployment.yml
-	oc apply -f ./collector-deployment.yml
-	rm collector-deployment.yml
+	sed 's/latest/dev/g' ${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
+	oc apply -f ./collector-deployment-dev.yml
+	rm collector-deployment-dev.yml
 
 remove-image-collector-and-deployment-dev:
 	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
