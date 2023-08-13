@@ -12,7 +12,7 @@ import (
 type Claim struct {
 	ID            int    `json:"id"`
 	CnfVersion    string `json:"cnf_version"`
-	ExecutedBy     string `json:"executed_by"`
+	ExecutedBy    string `json:"executed_by"`
 	UploadTime    string `json:"upload_time"`
 	PartnerName   string `json:"partner_name"`
 	MarkForDelete bool   `json:"mark_for_delete"`

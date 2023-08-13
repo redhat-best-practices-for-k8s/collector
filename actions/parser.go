@@ -100,7 +100,7 @@ func insertToClaimTable(w http.ResponseWriter, r *http.Request, tx *sql.Tx, clai
 	partnerName := r.FormValue(PartnerNameInputName)
 
 	if executedBy == "" {
-	writeResponse(w, "%s", ExecutedByMissingErr)
+		writeResponse(w, "%s", ExecutedByMissingErr)
 		return false
 	}
 
