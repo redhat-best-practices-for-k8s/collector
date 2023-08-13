@@ -12,7 +12,7 @@ import (
 type Claim struct {
 	ID            int    `json:"id"`
 	CnfVersion    string `json:"cnf_version"`
-	CreatedBy     string `json:"created_by"`
+	ExecutedBy     string `json:"executed_by"`
 	UploadTime    string `json:"upload_time"`
 	PartnerName   string `json:"partner_name"`
 	MarkForDelete bool   `json:"mark_for_delete"`
@@ -49,7 +49,7 @@ func mapClaimsToStruct(claimRows *sql.Rows) []Claim {
 	var claims []Claim
 	for claimRows.Next() {
 		var row Claim
-		err := claimRows.Scan(&row.ID, &row.CnfVersion, &row.CreatedBy, &row.UploadTime, &row.PartnerName, &row.MarkForDelete)
+		err := claimRows.Scan(&row.ID, &row.CnfVersion, &row.ExecutedBy, &row.UploadTime, &row.PartnerName, &row.MarkForDelete)
 		if err != nil {
 			logrus.Errorf(ScanDBFieldErr, err)
 		}

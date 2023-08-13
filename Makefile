@@ -102,7 +102,12 @@ build-image-collector:
 build-and-deploy-image-collector-dev:
 	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
-	sed 's/latest/dev/g' ${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
+# temporary replacement for secret to able local testing
+	sed \
+		-e 's/latest/dev/g' \
+		-e 's/\$${{ secrets.MYSQL_USERNAME }}/Y29sbGVjdG9ydXNlcg==/g' \
+		-e 's/\$${{ secrets.MYSQL_PASSWORD }}/cGFzc3dvcmQ='/g \
+		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
 	oc apply -f ./collector-deployment-dev.yml
 	rm collector-deployment-dev.yml
 
@@ -111,12 +116,13 @@ remove-image-collector-and-deployment-dev:
 	oc delete deployment collector-deployment
 
 deploy-mysql:
-	oc apply -f ${MYSQL_PV_PATH}
-	oc apply -f ${MYSQL_DEPLOYMENT_PATH}
+# temporary replacement for secret to able local testing
+	sed -e 's/\$${{ secrets.DB_ROOT_PASSWORD }}/YWRtaW4=/g' ${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-dev.yaml
+	oc apply -f mysql-deployment-dev.yaml
+	rm mysql-deployment-dev.yaml
 
 delete-mysql:
 	oc delete -f ${MYSQL_DEPLOYMENT_PATH}
-	oc delete -f ${MYSQL_PV_PATH}
 
 deploy-collector:
 	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH}

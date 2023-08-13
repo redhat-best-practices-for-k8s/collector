@@ -95,16 +95,16 @@ func insertToClaimTable(w http.ResponseWriter, r *http.Request, tx *sql.Tx, clai
 		return false
 	}
 
-	// saving users input referring to who created claim file and partner's name
-	createdBy := r.FormValue(CreatedByInputName)
+	// saving users input referring to who executed claim file and partner's name
+	executedBy := r.FormValue(ExecutedByInputName)
 	partnerName := r.FormValue(PartnerNameInputName)
 
-	if createdBy == "" {
-		writeResponse(w, "%s", CreatedByMissingErr)
+	if executedBy == "" {
+	writeResponse(w, "%s", ExecutedByMissingErr)
 		return false
 	}
 
-	_, err := tx.Exec(InsertToClaimSQLCmd, versions["ocp"].(string), createdBy, time.Now(), partnerName)
+	_, err := tx.Exec(InsertToClaimSQLCmd, versions["ocp"].(string), executedBy, time.Now(), partnerName)
 	if err != nil {
 		handleTransactionRollback(tx, err, ExecQueryErr)
 		return false
