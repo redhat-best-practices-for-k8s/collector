@@ -57,5 +57,5 @@ const SelectAllFromClaim = "SELECT * FROM cnf.claim"
 const SelectAllClaimIDsByPartner = "SELECT id FROM cnf.claim WHERE partner_name = ?"
 const SelectAllFromClaimResultByClaimIDs = "SELECT * FROM cnf.claim_result WHERE claim_id IN (%s)"
 const SelectAllFromClaimResult = "SELECT * FROM cnf.claim_result"
-const InvalidUserOrPasswordErr = "Invalid user name or password."
+const InvalidUserOrPasswordErr = "Invalid user name or password." // #nosec
 const AdminUserName = "admin"

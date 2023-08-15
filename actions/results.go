@@ -63,9 +63,9 @@ func getCollectorTablesByPartner(db *sql.DB, partnerName string) (claimRows, cla
 	var claimIDsList []string
 	for claimIDsRows.Next() {
 		var claimID string
-		err := claimIDsRows.Scan(&claimID)
+		claimIDErr := claimIDsRows.Scan(&claimID)
 		if err != nil {
-			logrus.Errorf(ScanDBFieldErr, err)
+			logrus.Errorf(ScanDBFieldErr, claimIDErr)
 		}
 		claimIDsList = append(claimIDsList, claimID)
 	}
