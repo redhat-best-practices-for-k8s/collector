@@ -47,7 +47,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		actions.ResultsHandler(w, db)
+		actions.ResultsHandler(w, r, db)
 	case http.MethodPost:
 		actions.ParserHandler(w, r, db)
 	default:

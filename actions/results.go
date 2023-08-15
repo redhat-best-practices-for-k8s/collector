@@ -3,6 +3,8 @@ package actions
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"strings"
 
 	"net/http"
 
@@ -31,13 +33,46 @@ type ClaimCollector struct {
 	ClaimResults []ClaimResults
 }
 
-func getCollectorTables(db *sql.DB) (claimRows, claimResultsRows *sql.Rows) {
+func getEntireCollectorTable(db *sql.DB) (claimRows, claimResultsRows *sql.Rows) {
 	claimRows, err := db.Query(SelectAllFromClaim)
 	if err != nil {
 		logrus.Errorf(ExecQueryErr, err)
 	}
 
 	claimResultsRows, err = db.Query(SelectAllFromClaimResult)
+	if err != nil {
+		logrus.Errorf(ExecQueryErr, err)
+	}
+
+	return claimRows, claimResultsRows
+}
+
+func getCollectorTablesByPartner(db *sql.DB, partnerName string) (claimRows, claimResultsRows *sql.Rows) {
+	claimRows, err := db.Query(SelectAllFromClaimByPartner, partnerName)
+	if err != nil {
+		logrus.Errorf(ExecQueryErr, err)
+	}
+
+	// Extract claim IDs of given partner
+	claimIDsRows, err := db.Query(SelectAllClaimIDsByPartner, partnerName)
+	if err != nil {
+		logrus.Errorf(ExecQueryErr, err)
+	}
+	defer claimIDsRows.Close()
+
+	var claimIDsList []string
+	for claimIDsRows.Next() {
+		var claimID string
+		err := claimIDsRows.Scan(&claimID)
+		if err != nil {
+			logrus.Errorf(ScanDBFieldErr, err)
+		}
+		claimIDsList = append(claimIDsList, claimID)
+	}
+
+	// Extract claim results of found claim IDs
+	claimResultsQuery := fmt.Sprintf(SelectAllFromClaimResultByClaimIDs, strings.Join(claimIDsList, ","))
+	claimResultsRows, err = db.Query(claimResultsQuery)
 	if err != nil {
 		logrus.Errorf(ExecQueryErr, err)
 	}
@@ -97,8 +132,23 @@ func printCollectorJSONFile(w http.ResponseWriter, collector []ClaimCollector) {
 	}
 }
 
-func ResultsHandler(w http.ResponseWriter, db *sql.DB) {
-	claimRows, claimResultsRows := getCollectorTables(db)
+func ResultsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	partnerName, err := authenticateGetRequest(r, db)
+	if err != nil {
+		// authentication failed
+		_, err = w.Write([]byte(InvalidUserOrPasswordErr))
+		if err != nil {
+			logrus.Errorf(WritingResponseErr, err)
+		}
+		return
+	}
+
+	var claimRows, claimResultsRows *sql.Rows
+	if partnerName == AdminUserName {
+		claimRows, claimResultsRows = getEntireCollectorTable(db)
+	} else {
+		claimRows, claimResultsRows = getCollectorTablesByPartner(db, partnerName)
+	}
 	defer claimRows.Close()
 	defer claimResultsRows.Close()
 

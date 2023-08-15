@@ -32,3 +32,14 @@ set @sql := if(
   'create index claim_upload_datetime on claim (upload_time);');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
+
+create table if not exists authenticator (
+  partner_name varchar(255) not null,
+  encoded_password varchar(255) not null
+);
+
+insert into authenticator (partner_name, encoded_password)
+# temporary encoded password - will be changed with git secret
+select 'admin', 'YWRtaW5wYTU1'
+from dual
+where not exists (select 1 from authenticator limit 1);

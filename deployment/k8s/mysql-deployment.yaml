@@ -124,10 +124,22 @@ data:
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
 
+    create table if not exists authenticator (
+      partner_name varchar(255) not null,
+      encoded_password varchar(255) not null
+    );
+
+    insert into authenticator (partner_name, encoded_password)
+    # temporary encoded password - will be changed with git secret
+    select 'admin', 'YWRtaW5wYTU1'
+    from dual
+    where not exists (select 1 from authenticator limit 1);
+
   create_user.sql: |
     CREATE USER if not exists 'collectoruser'@'%' IDENTIFIED BY 'password';
     GRANT ALL PRIVILEGES ON cnf.claim TO 'collectoruser'@'%';
     GRANT ALL PRIVILEGES ON cnf.claim_result TO 'collectoruser'@'%';
+    GRANT ALL PRIVILEGES ON cnf.authenticator TO 'collectoruser'@'%';
     FLUSH PRIVILEGES;
 
 ---
