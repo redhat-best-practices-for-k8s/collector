@@ -26,7 +26,7 @@ const ScanDBFieldErr = "Error found while scanning db field: %s"
 const BeginTxErr = "Error found while beginning transaction: %s"
 const CommitTxErr = "Error found while committing transaction: %s"
 const AuthError = "Error found while authenticating partner's password: %s"
-const EncodingPasswordError = "Failed encoding password."
+const EncodingPasswordError = "Failed encoding password." // #nosec
 
 // parser.go constants
 const ClaimTag = "claim"
