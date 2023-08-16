@@ -28,6 +28,6 @@ Cleanup after:
 
 From collector's repo root directory, use the following command:
 
-`./send-to-collector.sh "path/to/claim.json" "enter_created_by" "enter_partner_name"`
+`./send-to-collector.sh "path/to/claim.json" "enter_executed_by" "enter_partner_name"`
 
 

@@ -4,7 +4,7 @@ use cnf;
 create table if not exists claim (
   id int not null AUTO_INCREMENT,
   cnf_version varchar(50) not null,
-  created_by  varchar(50) not null,
+  executed_by  varchar(50) not null,
   upload_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   partner_name varchar(50),
   mark_for_delete boolean DEFAULT false,
