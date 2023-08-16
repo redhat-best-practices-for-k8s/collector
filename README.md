@@ -28,7 +28,7 @@ Cleanup after:
 
 From collector's repo root directory, use the following command:
 
-`./send-to-collector.sh "path/to/claim.json" "enter_executed_by" "enter_partner_name(optional)" "enter_password(optinal)`
+`./send-to-collector.sh "path/to/claim.json" "enter_executed_by" "enter_partner_name(optional)" "enter_password(optinal)"`
 
 # Instructions for running get-from-collector.sh
 
