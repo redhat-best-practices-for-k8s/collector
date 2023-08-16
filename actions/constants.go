@@ -26,6 +26,7 @@ const ScanDBFieldErr = "Error found while scanning db field: %s"
 const BeginTxErr = "Error found while beginning transaction: %s"
 const CommitTxErr = "Error found while committing transaction: %s"
 const AuthError = "Error found while authenticating partner's password: %s"
+const EncodingPasswordError = "Failed encoding password."
 
 // parser.go constants
 const ClaimTag = "claim"
@@ -34,7 +35,7 @@ const ResultsTag = "results"
 const ClaimFileInputName = "claimFile"
 const ExecutedByInputName = "executed_by"
 const PartnerNameInputName = "partner_name"
-const EncodedPasswordInputName = "encoded_password"
+const DedcodedPasswordInputName = "decoded_password"
 
 const UseCollectorSQLCmd = `USE cnf; `
 const InsertToClaimSQLCmd = `INSERT INTO claim 

@@ -2,14 +2,15 @@ package actions
 
 import (
 	"database/sql"
-	"encoding/base64"
 	"fmt"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func authenticatePostRequest(r *http.Request, tx *sql.Tx) (string, error) {
 	partnerName := r.FormValue(PartnerNameInputName)
-	decodedPassword := r.FormValue(EncodedPasswordInputName)
+	decodedPassword := r.FormValue(DedcodedPasswordInputName)
 
 	// If partner name or password are empty, make partner anonymous
 	if partnerName == "" || decodedPassword == "" {
@@ -18,12 +19,12 @@ func authenticatePostRequest(r *http.Request, tx *sql.Tx) (string, error) {
 
 	// Search for partner in authenticator talbe
 	var encodedPassword string
-	err := tx.QueryRow(ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
+	searchPartnerErr := tx.QueryRow(ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
 	// Encode given decoded password
-	encodedDecodedPassword := base64.StdEncoding.EncodeToString([]byte(decodedPassword))
+	encodedDecodedPassword, err := bcrypt.GenerateFromPassword([]byte(decodedPassword), bcrypt.MinCost)
 
 	// If partner name is not recorded, add partner with encoded password
-	if err == sql.ErrNoRows {
+	if searchPartnerErr == sql.ErrNoRows {
 		_, txErr := tx.Exec(InsertPartnerToAuthSQLCmd, partnerName, encodedDecodedPassword)
 		if txErr != nil {
 			handleTransactionRollback(tx, AuthError, err)
@@ -37,7 +38,8 @@ func authenticatePostRequest(r *http.Request, tx *sql.Tx) (string, error) {
 	}
 
 	// If partner is recorded and password is wrong throw data
-	if encodedPassword != encodedDecodedPassword {
+	err = bcrypt.CompareHashAndPassword([]byte(encodedPassword), []byte(decodedPassword))
+	if err != nil {
 		return "", fmt.Errorf(InvalidPasswordErr)
 	}
 	return partnerName, nil
@@ -45,7 +47,7 @@ func authenticatePostRequest(r *http.Request, tx *sql.Tx) (string, error) {
 
 func authenticateGetRequest(r *http.Request, db *sql.DB) (string, error) {
 	partnerName := r.FormValue(PartnerNameInputName)
-	decodedPassword := r.FormValue(EncodedPasswordInputName)
+	decodedPassword := r.FormValue(DedcodedPasswordInputName)
 
 	// Search for partner in authenticator talbe
 	var encodedPassword string
@@ -54,9 +56,9 @@ func authenticateGetRequest(r *http.Request, db *sql.DB) (string, error) {
 		return "", err
 	}
 
-	// Encode given decoded password
-	encodedDecodedPassword := base64.StdEncoding.EncodeToString([]byte(decodedPassword))
-	if encodedPassword != encodedDecodedPassword {
+	// Compare encoded and given passwords
+	err = bcrypt.CompareHashAndPassword([]byte(encodedPassword), []byte(decodedPassword))
+	if err != nil {
 		return "", fmt.Errorf(InvalidPasswordErr)
 	}
 
