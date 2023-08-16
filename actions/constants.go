@@ -18,7 +18,7 @@ const TestStateMissingErr = MalformedClaimFileErr + "state subfield of %s test i
 const TestIDSuiteMissingErr = MalformedClaimFileErr + "suite subfield of %s's testID field is missing."
 const TestIDIDMissingErr = MalformedClaimFileErr + "id subfield of %s's testID field is missing."
 const ResultsFieldMissingErr = MalformedClaimFileErr + "results field is missing."
-const CreatedByMissingErr = MalformedClaimFileErr + "created by value is missing."
+const ExecutedByMissingErr = MalformedClaimFileErr + "executed by value is missing."
 const MalformedJSONFileErr = "Malformed json file."
 const RollbackErr = "Error found while Rollbacking transaction: %s"
 const ExecQueryErr = "Error found while executing a mysql query: %s"
@@ -31,12 +31,12 @@ const ClaimTag = "claim"
 const VersionsTag = "versions"
 const ResultsTag = "results"
 const ClaimFileInputName = "claimFile"
-const CreatedByInputName = "created_by"
+const ExecutedByInputName = "executed_by"
 const PartnerNameInputName = "partner_name"
 
 const UseCollectorSQLCmd = `USE cnf; `
 const InsertToClaimSQLCmd = `INSERT INTO claim 
-								(cnf_version, created_by, upload_time, partner_name)
+								(cnf_version, executed_by, upload_time, partner_name)
 								VALUES (?, ?, ?, ?);`
 const InsertToClaimResSQLCmd = `INSERT INTO claim_result
 							(claim_id, suite_name, test_id, test_status)
