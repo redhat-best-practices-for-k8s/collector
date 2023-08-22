@@ -3,7 +3,7 @@
 claimFile="$1"
 executedBy="$2"
 partnerName="$3"
-encoded_password="$4"
+decoded_password="$4"
 endpoint="http://localhost:8080"
 
 curl -X POST $endpoint \
