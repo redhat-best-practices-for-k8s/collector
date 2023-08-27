@@ -58,19 +58,6 @@ install-mac-brew-tools:
 		golangci-lint \
 		hadolint
 
-# Builds a local container based on mysql image
-build-mysql-container-local:
-	docker run --name ${MYSQL_CONTAINER_NAME} -e MYSQL_ROOT_PASSWORD=pa55 \
-		 -h 127.0.0.1 -p 3306:3306 -d mysql:latest
-		 
-# Builds local schema
-build-schema:
-	docker exec -i ${MYSQL_CONTAINER_NAME} mysql -u root -ppa55 < ${CREATE_SCHEMA_PATH}
-
-# Builds a local mysql user for the above container
-build-mysql-user-local:
-	docker exec -i ${MYSQL_CONTAINER_NAME} mysql -u root -ppa55 < ${CREATE_USER_PATH}
-
 # Pulls collector image from quay.io
 pull-image-collector:
 	docker pull ${COLLECTOR_IMAGE_NAME}
@@ -87,22 +74,32 @@ run-collector-headless:
 stop-collector:
 	docker stop ${COLLECTOR_CONTAINER_NAME}
 
-# Builds collector image locally
-build-image-local:
-	docker build \
-		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
-		-f Dockerfile .
-
-build-image-collector:
+# Builds collector image with latest and version tags
+build-image-collector-latest:
 	docker build \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
 
-build-and-deploy-image-collector-dev:
+# Deploy collector based on latest tag
+deploy-collector-latest:
+	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH}
+
+# Delete collector based on latest tag
+delete-collector-latest:
+	oc delete -f ${COLLECTOR_DEPLOYMENT_PATH}
+
+# Builds collector image with dev tag
+build-image-collector:
 	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+
+# Pushes collector image with dev tag
+push-image-collector:
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
-# temporary replacement for secret to able local testing
+
+# Deploys collector based on dev tag
+deploy-collector: build-image-collector push-image-collector
+	# temporary replacement for secret to able local testing
 	sed \
 		-e 's/latest/dev/g' \
 		-e 's/\$${{ secrets.MYSQL_USERNAME }}/Y29sbGVjdG9ydXNlcg==/g' \
@@ -111,21 +108,16 @@ build-and-deploy-image-collector-dev:
 	oc apply -f ./collector-deployment-dev.yml
 	rm collector-deployment-dev.yml
 
-remove-image-collector-and-deployment-dev:
+# Removes collector image and deployment
+delete-collector:
 	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 	oc delete deployment collector-deployment
 
 deploy-mysql:
-# temporary replacement for secret to able local testing
+	# temporary replacement for secret to able local testing
 	sed -e 's/\$${{ secrets.DB_ROOT_PASSWORD }}/YWRtaW4=/g' ${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-dev.yaml
 	oc apply -f mysql-deployment-dev.yaml
 	rm mysql-deployment-dev.yaml
 
 delete-mysql:
 	oc delete -f ${MYSQL_DEPLOYMENT_PATH}
-
-deploy-collector:
-	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH}
-
-delete-collector:
-	oc delete -f ${COLLECTOR_DEPLOYMENT_PATH}
