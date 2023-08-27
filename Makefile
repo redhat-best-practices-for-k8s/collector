@@ -74,6 +74,12 @@ run-collector-headless:
 stop-collector:
 	docker stop ${COLLECTOR_CONTAINER_NAME}
 
+# Builds collector image locally
+build-image-local:
+	docker build \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
+		-f Dockerfile 
+
 # Builds collector image with latest and version tags
 build-image-collector-latest:
 	docker build \
