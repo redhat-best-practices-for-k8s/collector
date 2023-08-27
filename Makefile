@@ -78,7 +78,7 @@ stop-collector:
 build-image-local:
 	docker build \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
-		-f Dockerfile 
+		-f Dockerfile .
 
 # Builds collector image with latest and version tags
 build-image-collector-latest:
