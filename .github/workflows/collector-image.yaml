@@ -75,7 +75,7 @@ jobs:
 
       - name: Build the `cnf-certification-test` image
         run: |
-          make build-image-collector
+          make build-image-collector-latest
         env:
           COLLECTOR_VERSION: ${{ env.COLLECTOR_VERSION }}
 
