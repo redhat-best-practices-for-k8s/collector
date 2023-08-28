@@ -17,3 +17,4 @@ runs:
     - name: Run sanity check on the collector
       run: ./script/sanity-check.sh
       shell: bash
+      
