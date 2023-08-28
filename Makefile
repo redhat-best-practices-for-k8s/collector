@@ -94,7 +94,7 @@ delete-collector-latest:
 
 # Builds collector image with dev tag
 build-image-collector:
-	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev .
 
 # Pushes collector image with dev tag
 push-image-collector:
