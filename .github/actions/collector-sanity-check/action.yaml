@@ -1,15 +1,18 @@
 name: collector-sanity-check
 description: Sanity checks for collector
 inputs:
-  working-directory:
+  working_directory:
     description: Default directory
     default: .
+  oc_kcm_timeout:
+    description: Default timeout
+    default: 5m
 
 runs:
   using: 'composite'
   steps:
     - name: Deploy collector into the test Kind cluster
-      run: make deploy-collector
+      run: make deploy-collector-latest
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
