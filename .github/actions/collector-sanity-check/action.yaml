@@ -11,8 +11,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Deploy mysql
+      run: make deploy-mysql
+      working-directory: ${{ inputs.working_directory }}
+      shell: bash
+
     - name: Deploy collector into the test Kind cluster
-      run: make deploy-collector-latest
+      run: make deploy-collector
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
@@ -22,6 +27,12 @@ runs:
         oc wait -n kube-system --for=condition=ready pod --all=true --timeout=${{ inputs.oc_kcm_timeout }}
       shell: bash
 
+    - name: Dispaly collector content
+      run: ls -R
+      working-directory: ${{ inputs.working_directory }}
+      shell: bash
+
     - name: Run sanity check on the collector
       run: ./script/sanity-check.sh
+      working-directory: ${{ inputs.working_directory }}
       shell: bash

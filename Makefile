@@ -101,7 +101,7 @@ push-image-collector:
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 
 # Deploys collector based on dev tag
-deploy-collector: build-image-collector push-image-collector
+deploy-collector:
 	# temporary replacement for secret to able local testing
 	sed \
 		-e 's/latest/dev/g' \
