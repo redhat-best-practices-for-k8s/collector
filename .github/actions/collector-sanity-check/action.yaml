@@ -4,7 +4,7 @@ inputs:
   working_directory:
     description: Default directory
     default: .
-  oc_kcm_timeout:
+  oc_collector_timeout:
     description: Default timeout
     default: 5m
 
@@ -23,12 +23,12 @@ runs:
 
     - name: Wait for all pods to be ready
       run: |
-        echo "Waiting for kube-controller-manager... (timeout: ${{ inputs.oc_kcm_timeout }})" && \
-        oc wait -n kube-system --for=condition=ready pod --all=true --timeout=${{ inputs.oc_kcm_timeout }}
+        echo "Waiting for collector... (timeout: ${{ inputs.oc_collector_timeout }})" && \
+        oc wait --for=condition=ready pod --all=true --timeout=${{ inputs.oc_collector_timeout }}
       shell: bash
 
-    - name: Dispaly collector content
-      run: ls -R
+    - name: Port forward collector (temporarly)
+      run: oc get pods --all-namespaces
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
