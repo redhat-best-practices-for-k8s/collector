@@ -35,7 +35,7 @@ jobs:
         run: echo "::remove-matcher owner=go::"
 
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
 
@@ -95,7 +95,7 @@ jobs:
     steps:
 
       - name: Check out the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       - name: Build the image
         run: make build-image-local
