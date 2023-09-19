@@ -8,7 +8,9 @@ fi
 
 # Get results from collector
 results=$(./get-from-collector.sh "admin" "adminpa55")
+echo "\n results: \n $results \n" 
 results_test_ids=($(echo $results | jq -r '.[-1].ClaimResults[].test_id'))
+echo "\n results test ids: \n $results_test_ids \n" 
 
 # Get generated policy requiredPassingTests ids
 GENERATED_POLICY_RAW_URL="https://raw.githubusercontent.com/test-network-function/cnf-certification-test/main/generated_policy.json"
@@ -21,6 +23,9 @@ for test_id in "${required_test_ids[@]}"; do
         echo "test $test_id exists in the collector"
     else
         echo "test $test_id does not exist in the collector"
+        echo "Collector's sanity check has failed."
         exit 1
     fi
 done
+
+echo "Collector's sanity check has passed."

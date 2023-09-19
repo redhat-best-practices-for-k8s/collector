@@ -11,11 +11,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Deploy mysql
-      run: make deploy-mysql
-      working-directory: ${{ inputs.working_directory }}
-      shell: bash
-
     - name: Deploy collector into the test Kind cluster
       run: make deploy-collector
       working-directory: ${{ inputs.working_directory }}
@@ -28,7 +23,7 @@ runs:
       shell: bash
 
     - name: Port forward collector (temporarly)
-      run: oc get pods --all-namespaces
+      run: oc port-forward $(oc get pods -n default -o name | grep collector) 8080:8080 -n default &
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
