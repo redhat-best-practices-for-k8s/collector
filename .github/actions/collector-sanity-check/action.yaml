@@ -24,7 +24,7 @@ runs:
     - name: Wait for all pods to be ready
       run: |
         echo "Waiting for collector... (timeout: ${{ inputs.oc_collector_timeout }})" && \
-        oc wait --for=condition=ready pod --all=true --timeout=${{ inputs.oc_collector_timeout }}
+        oc wait --for=condition=ready pod --all=true -n default --timeout=${{ inputs.oc_collector_timeout }}
       shell: bash
 
     - name: Port forward collector (temporarly)
