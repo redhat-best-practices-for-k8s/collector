@@ -28,6 +28,6 @@ runs:
       shell: bash
 
     - name: Run sanity check on the collector
-      run: ./script/sanity-check.sh
+      run: ./scripts/sanity-check.sh
       working-directory: ${{ inputs.working_directory }}
       shell: bash
