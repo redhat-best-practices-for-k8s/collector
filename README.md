@@ -12,11 +12,11 @@ A Go-based endpoint for collecting TNF logs
 Use the following `Make` commands to build the collector container locally:
 
 ### Prerequisites
-- Docker or Podman 
+- Docker or Podman
 
 ### Commands
 Build the image:
-- `make build-image-local` 
+- `make build-image-local`
 
 Run the application via container:
 - `make run-collector` or `make run-collector-headless`
@@ -28,12 +28,12 @@ Cleanup after:
 
 From collector's repo root directory, use the following command:
 
-`./send-to-collector.sh "path/to/claim.json" "enter_executed_by" "enter_partner_name(optional)" "enter_password(optinal)"`
+`./scripts/send-to-collector.sh "path/to/claim.json" "enter_executed_by" "enter_partner_name(optional)" "enter_password(optinal)"`
 
 # Instructions for running get-from-collector.sh
 
 From collector's repo root directory, use the following command:
 
-`./get-from-collector.sh "enter_partner_name" "enter_password"`
+`./scripts/get-from-collector.sh "enter_partner_name" "enter_password"`
 
 
