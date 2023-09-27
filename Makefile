@@ -16,18 +16,15 @@ COLLECTOR_VERSION?=0.0.1
 REGISTRY?=quay.io
 
 COMMON_GO_ARGS=-race
-GIT_COMMIT=$(shell script/create-version-files.sh)
-GIT_RELEASE=$(shell script/get-git-release.sh)
-GIT_PREVIOUS_RELEASE=$(shell script/get-git-previous-release.sh)
+GIT_COMMIT=$(shell scripts/create-version-files.sh)
+GIT_RELEASE=$(shell scripts/get-git-release.sh)
+GIT_PREVIOUS_RELEASE=$(shell scripts/get-git-previous-release.sh)
 GOLANGCI_VERSION=v1.53.3
 LINKER_TNF_RELEASE_FLAGS=-X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitCommit=${GIT_COMMIT}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitRelease=${GIT_RELEASE}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
-MYSQL_PV_PATH = ./deployment/k8s/mysql-pv.yaml
-MYSQL_DEPLOYMENT_PATH = ./deployment/k8s/mysql-deployment.yaml
-COLLECTOR_DEPLOYMENT_PATH = ./deployment/k8s/collector-deployment.yml
-CREATE_SCHEMA_PATH = ./deployment/database/create_schema.sql
-CREATE_USER_PATH = ./deployment/database/create_user.sql
+MYSQL_DEPLOYMENT_PATH = ./k8s/deployment/database.yaml
+COLLECTOR_DEPLOYMENT_PATH = ./k8s/deployment/app.yml
 
 .PHONY: all clean test
 
