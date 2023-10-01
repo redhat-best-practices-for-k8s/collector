@@ -7,10 +7,10 @@ if ! command -v jq &>/dev/null; then
 fi
 
 # Get results from collector
-results=$(./get-from-collector.sh "admin" "adminpa55")
-echo "\n results: \n $results \n" 
+results=$(./scripts/get-from-collector.sh "admin" "adminpa55")
+echo `\n results: \n $results`
 results_test_ids=($(echo $results | jq -r '.[-1].ClaimResults[].test_id'))
-echo "\n results test ids: \n $results_test_ids \n" 
+echo `\n results test ids: \n $results_test_ids\n` 
 
 # Get generated policy requiredPassingTests ids
 GENERATED_POLICY_RAW_URL="https://raw.githubusercontent.com/test-network-function/cnf-certification-test/main/generated_policy.json"
