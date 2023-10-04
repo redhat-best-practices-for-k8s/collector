@@ -6,11 +6,16 @@ if ! command -v jq &>/dev/null; then
     exit 1
 fi
 
+oc get pods --all-namespaces
+oc get deployments --all-namespaces
+
 # Get results from collector
 results=$(./scripts/get-from-collector.sh "admin" "adminpa55")
-echo `\n results: \n $results`
+echo "results: $results"
+echo
 results_test_ids=($(echo $results | jq -r '.[-1].ClaimResults[].test_id'))
-echo `\n results test ids: \n $results_test_ids\n` 
+echo "results test ids: $results_test_ids"
+echo
 
 # Get generated policy requiredPassingTests ids
 GENERATED_POLICY_RAW_URL="https://raw.githubusercontent.com/test-network-function/cnf-certification-test/main/generated_policy.json"

@@ -3,6 +3,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mysql-pv-volume
+  namespace: default
   labels:
     type: local
 spec:
@@ -19,6 +20,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pv-claim
+  namespace: default
 spec:
   storageClassName: manual
   accessModes:
@@ -64,6 +66,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql
+  namespace: default
 spec:
   ports:
     - port: 3306
@@ -78,6 +81,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: collectorapi-secrets
+  namespace: default
 type: Opaque
 data:
   db_root_password: ${{ secrets.DB_ROOT_PASSWORD }}
@@ -87,6 +91,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: initdb-scripts
+  namespace: default
 data:
   create_schema.sql: |
     create database if not exists cnf;
@@ -147,6 +152,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
+  namespace: default
 spec:
   selector:
     matchLabels:
