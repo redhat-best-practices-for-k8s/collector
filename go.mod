@@ -1,6 +1,6 @@
 module github.com/test-network-function/collector
 
-go 1.21.1
+go 1.21.2
 
 require (
 	github.com/go-sql-driver/mysql v1.7.1
