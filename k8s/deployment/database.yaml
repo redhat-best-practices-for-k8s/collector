@@ -7,9 +7,8 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: manual
   capacity:
-    storage: 20Gi
+    storage: 300Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
@@ -22,12 +21,11 @@ metadata:
   name: mysql-pv-claim
   namespace: default
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 300Mi
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -192,18 +190,18 @@ spec:
               mountPath: /var/lib/mysql
             - name: initdb-volume
               mountPath: /scripts
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - "/bin/sh"
-                  - "-c"
-                  - |
-                    while ! mysqladmin ping -uroot -p$MYSQL_ROOT_PASSWORD; do
-                      sleep 10;
-                    done
-                    mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_schema.sql
-                    mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_user.sql
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command:
+          #         - "/bin/sh"
+          #         - "-c"
+          #         - |
+          #           while ! mysqladmin ping -uroot -p$MYSQL_ROOT_PASSWORD; do
+          #             sleep 10;
+          #           done
+          #           mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_schema.sql
+          #           mysql -uroot -p$MYSQL_ROOT_PASSWORD < /scripts/create_user.sql
           imagePullPolicy: IfNotPresent
       volumes:
         - name: mysql-persistent-storage

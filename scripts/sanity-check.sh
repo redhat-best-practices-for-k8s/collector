@@ -6,9 +6,6 @@ if ! command -v jq &>/dev/null; then
     exit 1
 fi
 
-oc get pods --all-namespaces
-oc get deployments --all-namespaces
-
 # Get results from collector
 results=$(./scripts/get-from-collector.sh "admin" "adminpa55")
 echo "results: $results"

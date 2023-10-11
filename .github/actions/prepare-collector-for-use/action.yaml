@@ -11,23 +11,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Deploy mysql into the test kind cluster
-      run: make deploy-mysql
-      working-directory: ${{ inputs.working_directory }}
-      shell: bash
+    # - name: Deploy mysql into the test kind cluster
+    #   run: make deploy-mysql
+    #   working-directory: ${{ inputs.working_directory }}
+    #   shell: bash
 
     - name: Deploy collector into the test Kind cluster
       run: make deploy-collector
-      working-directory: ${{ inputs.working_directory }}
-      shell: bash
-
-    - name: Get all pods
-      run: sleep 60 && oc get pods -A
-      working-directory: ${{ inputs.working_directory }}
-      shell: bash
-
-    - name: Describe mysql pod
-      run: oc describe $(oc get pods -n default -o name | grep mysql)
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
