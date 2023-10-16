@@ -1,9 +1,8 @@
----
 apiVersion: v1
 kind: Secret
 metadata:
   name: collector-db-creds
-  namespace: default
+  namespace: tnf-collector
 type: Opaque
 data:
   mysql-username: ${{ secrets.MYSQL_USERNAME }}
@@ -13,7 +12,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: collector-deployment
-  namespace: default
+  namespace: tnf-collector
 spec:
   replicas: 1
   selector:
@@ -29,7 +28,7 @@ spec:
           image: quay.io/testnetworkfunction/collector:latest
           env:
             - name: DB_URL
-              value: "mysql.default.svc.cluster.local"
+              value: "mysql.tnf-collector.svc.cluster.local"
             - name: DB_PORT
               value: "3306"
             - name: DB_USER
