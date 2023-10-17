@@ -11,11 +11,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Create tnf-collector namespace
-      run: oc create namespace tnf-collector
-      working-directory: ${{ inputs.working_directory }}
-      shell: bash
-
     - name: Enable deploying mysql
       run: |
         sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/

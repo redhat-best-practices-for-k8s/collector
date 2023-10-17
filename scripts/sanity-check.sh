@@ -8,11 +8,7 @@ fi
 
 # Get results from collector
 results=$(./scripts/get-from-collector.sh "admin" "adminpa55")
-echo "results: $results"
-echo
 results_test_ids=($(echo $results | jq -r '.[-1].ClaimResults[].test_id'))
-echo "results test ids: $results_test_ids"
-echo
 
 # Get generated policy requiredPassingTests ids
 GENERATED_POLICY_RAW_URL="https://raw.githubusercontent.com/test-network-function/cnf-certification-test/main/generated_policy.json"
