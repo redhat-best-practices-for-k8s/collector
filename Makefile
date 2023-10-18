@@ -101,26 +101,32 @@ push-image-collector:
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 
 # Deploys collector based on dev tag
-deploy-collector:
-	# temporary replacement for secret to able local testing
+deploy-collector: clone-tnf-secrets
 	sed \
 		-e 's/latest/dev/g' \
-		-e 's/\$${{ secrets.MYSQL_USERNAME }}/Y29sbGVjdG9ydXNlcg==/g' \
-		-e 's/\$${{ secrets.MYSQL_PASSWORD }}/cGFzc3dvcmQ='/g \
+		-e 's/MysqlUsername/$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json")/g' \
+		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json")/g' \
 		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
 	oc apply -f ./collector-deployment-dev.yml -n tnf-collector
 	rm collector-deployment-dev.yml
+	rm -rf ./tnf-secrets
 
 # Removes collector image and deployment
 delete-collector:
 	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
-	oc delete deployment collector-deployment
+	oc delete -f ${COLLECTOR_DEPLOYMENT_PATH}
 
-deploy-mysql:
-	# temporary replacement for secret to able local testing
-	sed -e 's/\$${{ secrets.DB_ROOT_PASSWORD }}/YWRtaW4=/g' ${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-dev.yaml
+deploy-mysql: clone-tnf-secrets
+	sed \
+		-e "s/DBRootPassword/$(shell jq -r ".DBRootPassword" "./tnf-secrets/collector-secrets.json")/" \
+		${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-dev.yaml
 	oc apply -f mysql-deployment-dev.yaml -n tnf-collector
 	rm mysql-deployment-dev.yaml
+	rm -rf ./tnf-secrets
 
 delete-mysql:
 	oc delete -f ${MYSQL_DEPLOYMENT_PATH}
+
+clone-tnf-secrets:
+	# temporarly using my fork's branch
+	git clone -b collector-secrets git@github.com:shirmoran/tnf-secrets.git

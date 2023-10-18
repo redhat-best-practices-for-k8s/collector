@@ -14,8 +14,8 @@ metadata:
   namespace: tnf-collector
 type: Opaque
 data:
-  mysql-username: ${{ secrets.MYSQL_USERNAME }}
-  mysql-password: ${{ secrets.MYSQL_PASSWORD }}
+  mysql-username: MysqlUsername
+  mysql-password: MysqlPassword
   
 ---
 apiVersion: apps/v1

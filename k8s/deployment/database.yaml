@@ -90,7 +90,7 @@ metadata:
   namespace: tnf-collector
 type: Opaque
 data:
-  db_root_password: ${{ secrets.DB_ROOT_PASSWORD }}
+  db_root_password: DBRootPassword
 
 ---
 apiVersion: v1
