@@ -111,6 +111,16 @@ deploy-collector: clone-tnf-secrets
 	rm collector-deployment-dev.yml
 	rm -rf ./tnf-secrets
 
+# Temproray
+deploy-collector-for-CI:
+	sed \
+		-e 's/latest/dev/g' \
+		-e 's/MysqlUsername/Y2lhZG1pbg==/g' \
+		-e 's/MysqlPassword/Y2lwYXNzd29yZA==/g' \
+		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
+	oc apply -f ./collector-deployment-dev.yml -n tnf-collector
+	rm collector-deployment-dev.yml
+
 # Removes collector image and deployment
 delete-collector:
 	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
@@ -123,6 +133,14 @@ deploy-mysql: clone-tnf-secrets
 	oc apply -f mysql-deployment-dev.yaml -n tnf-collector
 	rm mysql-deployment-dev.yaml
 	rm -rf ./tnf-secrets
+
+# Temproray
+deploy-mysql-for-CI: 
+	sed \
+		-e "s/DBRootPassword/Y2lwYXNzd29yZA==/" \
+		${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-dev.yaml
+	oc apply -f mysql-deployment-dev.yaml -n tnf-collector
+	rm mysql-deployment-dev.yaml
 
 delete-mysql:
 	oc delete -f ${MYSQL_DEPLOYMENT_PATH}
