@@ -1,0 +1,17 @@
+name: run-sanity-check
+description: Runs sanity checks on the collector
+inputs:
+  working_directory:
+    description: Default directory
+    default: .
+  oc_collector_timeout:
+    description: Default timeout
+    default: 5m
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run sanity check script
+      run: ./scripts/sanity-check.sh
+      working-directory: ${{ inputs.working_directory }}
+      shell: bash
