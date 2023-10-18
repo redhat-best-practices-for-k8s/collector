@@ -94,21 +94,21 @@ delete-collector-latest:
 
 # Builds collector image with dev tag
 build-image-collector:
-	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev .
 
 # Pushes collector image with dev tag
 push-image-collector:
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 
 # Deploys collector based on dev tag
-deploy-collector: build-image-collector push-image-collector
+deploy-collector:
 	# temporary replacement for secret to able local testing
 	sed \
 		-e 's/latest/dev/g' \
 		-e 's/\$${{ secrets.MYSQL_USERNAME }}/Y29sbGVjdG9ydXNlcg==/g' \
 		-e 's/\$${{ secrets.MYSQL_PASSWORD }}/cGFzc3dvcmQ='/g \
 		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
-	oc apply -f ./collector-deployment-dev.yml
+	oc apply -f ./collector-deployment-dev.yml -n tnf-collector
 	rm collector-deployment-dev.yml
 
 # Removes collector image and deployment
@@ -119,7 +119,7 @@ delete-collector:
 deploy-mysql:
 	# temporary replacement for secret to able local testing
 	sed -e 's/\$${{ secrets.DB_ROOT_PASSWORD }}/YWRtaW4=/g' ${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-dev.yaml
-	oc apply -f mysql-deployment-dev.yaml
+	oc apply -f mysql-deployment-dev.yaml -n tnf-collector
 	rm mysql-deployment-dev.yaml
 
 delete-mysql:

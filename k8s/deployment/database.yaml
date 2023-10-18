@@ -1,14 +1,22 @@
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: tnf-collector
+  labels:
+    name: tnf-collector
+
+---
+apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mysql-pv-volume
+  namespace: tnf-collector
   labels:
     type: local
 spec:
-  storageClassName: manual
   capacity:
-    storage: 20Gi
+    storage: 300Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
@@ -19,19 +27,19 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pv-claim
+  namespace: tnf-collector
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 300Mi
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: default
+  namespace: tnf-collector
   name: mysql-r
   rules:
     - apiGroups: [""]
@@ -43,7 +51,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: mysql-rb
-  namespace: default
+  namespace: tnf-collector
 subjects:
   - kind: ServiceAccount
     name: mysql-sa
@@ -57,13 +65,14 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: mysql-sa
-  namespace: default
+  namespace: tnf-collector
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mysql
+  namespace: tnf-collector
 spec:
   ports:
     - port: 3306
@@ -78,6 +87,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: collectorapi-secrets
+  namespace: tnf-collector
 type: Opaque
 data:
   db_root_password: ${{ secrets.DB_ROOT_PASSWORD }}
@@ -87,6 +97,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: initdb-scripts
+  namespace: tnf-collector
 data:
   create_schema.sql: |
     create database if not exists cnf;
@@ -147,6 +158,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
+  namespace: tnf-collector
 spec:
   selector:
     matchLabels:
