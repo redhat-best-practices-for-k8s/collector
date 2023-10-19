@@ -84,13 +84,19 @@ build-image-collector-latest:
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
 
+# Pushes collector image with dev and version tags
+push-image-collector-latest:
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG}
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
+
 # Deploy collector based on latest tag
 deploy-collector-latest:
-	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH}
-
-# Delete collector based on latest tag
-delete-collector-latest:
-	oc delete -f ${COLLECTOR_DEPLOYMENT_PATH}
+	sed \
+		-e 's/\$${{ secrets.MYSQL_USERNAME }}/Y29sbGVjdG9ydXNlcg==/g' \
+		-e 's/\$${{ secrets.MYSQL_PASSWORD }}/cGFzc3dvcmQ='/g \
+		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-temp.yml
+	oc apply -f collector-deployment-temp.yml
+	rm collector-deployment-temp.yml
 
 # Builds collector image with dev tag
 build-image-collector:
@@ -111,10 +117,10 @@ deploy-collector:
 	oc apply -f ./collector-deployment-dev.yml -n tnf-collector
 	rm collector-deployment-dev.yml
 
-# Removes collector image and deployment
+# Removes collector deployment
 delete-collector:
-	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
-	oc delete deployment collector-deployment
+	oc delete deployment -n tnf-collector collector-deployment
+	oc delete secret -n tnf-collector collector-db-creds
 
 deploy-mysql:
 	# temporary replacement for secret to able local testing

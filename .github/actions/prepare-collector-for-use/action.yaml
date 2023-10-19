@@ -24,7 +24,7 @@ runs:
       shell: bash
 
     - name: Deploy collector into the test Kind cluster
-      run: make deploy-collector
+      run: make deploy-collector-latest
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
