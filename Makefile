@@ -114,7 +114,6 @@ deploy-collector: clone-tnf-secrets
 # Temproray
 deploy-collector-for-CI:
 	sed \
-		-e 's/latest/dev/g' \
 		-e 's/MysqlUsername/Y2lhZG1pbg==/g' \
 		-e 's/MysqlPassword/Y2lwYXNzd29yZA==/g' \
 		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
