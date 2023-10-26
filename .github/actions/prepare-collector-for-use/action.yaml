@@ -7,13 +7,28 @@ inputs:
   oc_collector_timeout:
     description: Default timeout
     default: 10m
+secrets:
+  db_url:
+    required: true
+  db_user:
+    required: true
+  db_password: 
+    required: true
+  mysql_root_password:
+    required: true
 
 runs:
   using: 'composite'
   steps:
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      
+    - name: echo inputs
+      run: |
+        echo "working_directory: ${{ inputs.working_directory }}"
+        echo "COLLECTOR_DB_CI_URL: ${{ secrets.db_url }}"
+        echo "DB_USER: ${{ secrets.db_user }}"
+        echo "DB_PASSWORD: ${{ inputs.db_password }}"
+      working-directory: ${{ inputs.working_directory }}
+      shell: bash
+
     - name: Enable deploying mysql
       run: |
         sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
@@ -22,12 +37,24 @@ runs:
       shell: bash
 
     - name: Deploy mysql into the test kind cluster
-      run: make deploy-mysql-prod
+      env:
+        MYSQL_ROOT_PASSWORD: ${{ inputs.mysql_root_password }}
+      run: |
+        echo "MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD"
+        make deploy-mysql-for-CI
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
     - name: Deploy collector into the test Kind cluster
-      run: make deploy-collector-prod
+      env:
+        DB_URL: ${{ inputs.db_url }}
+        DB_USER: ${{ inputs.db_userURL }}
+        DB_PASSWORD: ${{ inputs.db_password }}
+      run: |
+        echo "DB_URL: $DB_URL"
+        echo "DB_USER: $DB_USER"
+        echo "DB_PASSWORD: $DB_PASSWORD"
+        make deploy-collector-for-CI
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
