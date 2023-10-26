@@ -38,7 +38,7 @@ spec:
           image: quay.io/testnetworkfunction/collector:latest
           env:
             - name: DB_URL
-              value: "mysql.tnf-collector.svc.cluster.local"
+              value: "collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com"
             - name: DB_PORT
               value: "3306"
             - name: DB_USER
