@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: collector-container
-          image: quay.io/testnetworkfunction/collector:latest
+          image: quay.io/testnetworkfunction/collector:0.0.1
           env:
             - name: DB_URL
               value: "collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com"

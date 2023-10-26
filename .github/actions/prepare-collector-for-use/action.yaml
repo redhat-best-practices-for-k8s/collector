@@ -11,6 +11,9 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      
     - name: Enable deploying mysql
       run: |
         sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
@@ -19,12 +22,12 @@ runs:
       shell: bash
 
     - name: Deploy mysql into the test kind cluster
-      run: make deploy-mysql-for-CI
+      run: make deploy-mysql-prod
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 
     - name: Deploy collector into the test Kind cluster
-      run: make deploy-collector-for-CI
+      run: make deploy-collector-prod
       working-directory: ${{ inputs.working_directory }}
       shell: bash
 

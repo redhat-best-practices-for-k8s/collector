@@ -78,32 +78,42 @@ build-image-local:
 		-f Dockerfile .
 
 # Builds collector image with latest and version tags
-build-image-collector-latest:
+build-image-collector-prod:
 	docker build \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
 
-# Deploy collector based on latest tag
-deploy-collector-latest:
-	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH}
+# Pushes collector image with updated version tag
+push-image-collector-prod:
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG}
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
 
-# Delete collector based on latest tag
-delete-collector-latest:
+# Deploy collector based on updated version tag
+deploy-collector-prod:
+	sed \
+		-e 's/MysqlUsername//g' \
+		-e 's/MysqlPassword//g' \
+		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-prod.yml
+	oc apply -f collector-deployment-prod.yml -n tnf-collector
+	rm collector-deployment-prod.yml
+
+# Delete collector based on updated version tag
+delete-collector-prod:
 	oc delete -f ${COLLECTOR_DEPLOYMENT_PATH}
 
-# Builds collector image with dev tag
+# Builds collector image with latest tag
 build-image-collector:
-	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev .
+	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME} .
 
-# Pushes collector image with dev tag
+# Pushes collector image with latest tag
 push-image-collector:
-	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
 
-# Deploys collector based on dev tag
+# Deploys collector based on latest tag (for dev)
 deploy-collector: clone-tnf-secrets
 	sed \
-		-e 's/latest/dev/g' \
+		-e 's/${COLLECTOR_VERSION}/latest/g' \
 		-e 's/MysqlUsername/$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json")/g' \
 		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json")/g' \
 		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
@@ -111,20 +121,21 @@ deploy-collector: clone-tnf-secrets
 	rm collector-deployment-dev.yml
 	rm -rf ./tnf-secrets
 
-# Temproray
-deploy-collector-for-CI:
-	sed \
-		-e 's/MysqlUsername/Y2lhZG1pbg==/g' \
-		-e 's/MysqlPassword/Y2lwYXNzd29yZA==/g' \
-		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
-	oc apply -f ./collector-deployment-dev.yml -n tnf-collector
-	rm collector-deployment-dev.yml
-
 # Removes collector image and deployment
 delete-collector:
 	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 	oc delete -f ${COLLECTOR_DEPLOYMENT_PATH}
 
+# Deploy mysql for CI
+deploy-mysql-prod:
+		sed \
+		-e "s/DBRootPassword//g" \
+		${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-prod.yaml
+	oc apply -f mysql-deployment-prod.yaml -n tnf-collector
+	rm mysql-deployment-prod.yaml
+	rm -rf ./tnf-secrets
+
+# Deploys mysql for dev
 deploy-mysql: clone-tnf-secrets
 	sed \
 		-e "s/DBRootPassword/$(shell jq -r ".DBRootPassword" "./tnf-secrets/collector-secrets.json")/" \
@@ -132,14 +143,6 @@ deploy-mysql: clone-tnf-secrets
 	oc apply -f mysql-deployment-dev.yaml -n tnf-collector
 	rm mysql-deployment-dev.yaml
 	rm -rf ./tnf-secrets
-
-# Temproray
-deploy-mysql-for-CI: 
-	sed \
-		-e "s/DBRootPassword/Y2lwYXNzd29yZA==/" \
-		${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-dev.yaml
-	oc apply -f mysql-deployment-dev.yaml -n tnf-collector
-	rm mysql-deployment-dev.yaml
 
 delete-mysql:
 	oc delete -f ${MYSQL_DEPLOYMENT_PATH}
