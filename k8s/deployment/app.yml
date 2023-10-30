@@ -5,17 +5,6 @@ metadata:
   name: tnf-collector
   labels:
     name: tnf-collector
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: collector-db-creds
-  namespace: tnf-collector
-type: Opaque
-data:
-  mysql-username: ${{ secrets.MYSQL_USERNAME }}
-  mysql-password: ${{ secrets.MYSQL_PASSWORD }}
   
 ---
 apiVersion: apps/v1
@@ -42,15 +31,9 @@ spec:
             - name: DB_PORT
               value: "3306"
             - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: collector-db-creds
-                  key: mysql-username
+              value: "collectoruser"
             - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: collector-db-creds
-                  key: mysql-password
+              value: "password"
           ports:
             - containerPort: 8080
           securityContext:

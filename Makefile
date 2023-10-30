@@ -57,70 +57,87 @@ install-mac-brew-tools:
 
 # Pulls collector image from quay.io
 pull-image-collector:
-	docker pull ${COLLECTOR_IMAGE_NAME}
+	docker pull ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} 
 
-# Runs collector with docker
-run-collector:
-	docker run --network=host -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} ${COLLECTOR_IMAGE_NAME}
+# Runs collector locally with docker
+run-collector: clone-tnf-secrets
+	docker run --network=host -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
+		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
+		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
+		-e DB_URL='localhost' \
+		-e DB_PORT='3306' \
+		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
+	rm -rf tnf-secrets
 
-# Runs collector with docker in headless mode
-run-collector-headless:
-	docker run --network=host --name ${COLLECTOR_CONTAINER_NAME} -p 8080:8080 -d ${COLLECTOR_IMAGE_NAME}
+# Runs collector on rds with docker
+run-collector-rds: clone-tnf-secrets
+	docker run --network=host -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
+		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
+		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
+		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
+		-e DB_PORT='3306' \
+		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
+	rm -rf tnf-secrets
+
+# Runs collector on rds with docker in headless mode
+run-collector-rds-headless: clone-tnf-secrets
+	docker run --network=host --name ${COLLECTOR_CONTAINER_NAME} -p 8080:8080 \
+		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
+		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
+		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
+		-e DB_PORT='3306'\
+		-d ${COLLECTOR_IMAGE_NAME}
+	rm -rf tnf-secrets
 
 # Stops collector container
 stop-collector:
 	docker stop ${COLLECTOR_CONTAINER_NAME}
 
 # Builds collector image locally
-build-image-local:
+build-image-collector:
 	docker build \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
 		-f Dockerfile .
 
 # Builds collector image with latest and version tags
-build-image-collector-latest:
+build-image-collector-by-version:
 	docker build \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
 
-# Deploy collector based on latest tag
-deploy-collector-latest:
-	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH}
-
-# Delete collector based on latest tag
-delete-collector-latest:
-	oc delete -f ${COLLECTOR_DEPLOYMENT_PATH}
-
-# Builds collector image with dev tag
-build-image-collector:
-	docker build -f Dockerfile -t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev .
-
-# Pushes collector image with dev tag
+# Pushes collector image with latest tag
 push-image-collector:
-	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG}
 
-# Deploys collector based on dev tag
-deploy-collector:
-	# temporary replacement for secret to able local testing
+# Pushes collector image with latest tag and version tags
+push-image-collector-by-version:
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG}
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
+
+run-initial-mysql-scripts: clone-tnf-secrets
 	sed \
-		-e 's/latest/dev/g' \
-		-e 's/\$${{ secrets.MYSQL_USERNAME }}/Y29sbGVjdG9ydXNlcg==/g' \
-		-e 's/\$${{ secrets.MYSQL_PASSWORD }}/cGFzc3dvcmQ='/g \
-		${COLLECTOR_DEPLOYMENT_PATH} > collector-deployment-dev.yml
-	oc apply -f ./collector-deployment-dev.yml -n tnf-collector
-	rm collector-deployment-dev.yml
+		-e 's|CollectorAdminUser|$(shell jq -r ".CollectorAdminUser" "./tnf-secrets/collector-secrets.json" | base64 -d)|g' \
+		-e 's|CollectorAdminPassword|$(shell jq -r ".CollectorAdminPassword" "./tnf-secrets/collector-secrets.json")|g' \
+		./scripts/database/create_schema.sql > create_schema_prod.sql
+	sed \
+		-e 's/MysqlUsername/$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
+		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
+		./scripts/database/create_user.sql > create_user_prod.sql
+	mysql -uroot -p < create_schema_prod.sql	# enter local mysql root password
+	mysql -uroot -p < create_user_prod.sql		# enter local mysql root password
+	rm create_schema_prod.sql create_user_prod.sql
+	rm -rf tnf-secrets
 
-# Removes collector image and deployment
-delete-collector:
-	docker rmi ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
-	oc delete deployment collector-deployment
 
-deploy-mysql:
-	# temporary replacement for secret to able local testing
-	sed -e 's/\$${{ secrets.DB_ROOT_PASSWORD }}/YWRtaW4=/g' ${MYSQL_DEPLOYMENT_PATH} > mysql-deployment-dev.yaml
-	oc apply -f mysql-deployment-dev.yaml -n tnf-collector
-	rm mysql-deployment-dev.yaml
+# Deploys collector for CI test purposes
+deploy-collector-for-CI:
+	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH} -n tnf-collector
 
-delete-mysql:
-	oc delete -f ${MYSQL_DEPLOYMENT_PATH}
+# Deploys mysql for CI test purposes
+deploy-mysql-for-CI:
+	oc apply -f ${MYSQL_DEPLOYMENT_PATH} -n tnf-collector
+
+# Clones tnf-secret private repo (temprary Shir's fork and branch)
+clone-tnf-secrets:
+	git clone git@github.com:test-network-function/tnf-secrets.git
