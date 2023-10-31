@@ -2,6 +2,6 @@
 
 endpoint="$1"
 partnerName="$2"
-decoded_password="$3"
+decodedPassword="$3"
 
-curl "$endpoint?partner_name=$partnerName&decoded_password=$decoded_password"
+curl "$endpoint?partner_name=$partnerName&decoded_password=$decodedPassword"

@@ -8,7 +8,7 @@ fi
 
 # Check if Environment variables exists
 if [ -z "$ENDPOINT" ]; then
-    echo "Error: Collector's endpoint must be specifeid."
+    echo "Error: Collector's endpoint must be specified."
     exit 1
 fi
 

@@ -4,11 +4,11 @@ endpoint="$1"
 claimFile="$2"
 executedBy="$3"
 partnerName="$4"
-decoded_password="$5"
+decodedPassword="$5"
 
 curl -X POST $endpoint \
     -H "Content-Type: multipart/form-data" \
     -F "claimFile=@$claimFile" \
     -F "executed_by=$executedBy" \
     -F "partner_name=$partnerName" \
-    -F "decoded_password=$decoded_password"
+    -F "decoded_password=$decodedPassword"
