@@ -6,8 +6,19 @@ if ! command -v jq &>/dev/null; then
     exit 1
 fi
 
+# Check if Environment variables exists
+if [ -z "$ENDPOINT" ]; then
+    echo "Error: Collector's endpoint must be specifeid."
+    exit 1
+fi
+
+if [ -z "$COLLECTOR_USERNAME" ] || [ -z "$COLLECTOR_PASSWORD" ]; then
+    echo "Error: COLLECTOR_USERNAME and COLLECTOR_PASSWORD env variables must be set."
+    exit 1
+fi
+
 # Get results from collector
-results=$(./scripts/get-from-collector.sh "admin" "adminpa55")
+results=$(./scripts/get-from-collector.sh "$ENDPOINT" "$COLLECTOR_USERNAME" "$COLLECTOR_PASSWORD")
 results_test_ids=($(echo $results | jq -r '.[-1].ClaimResults[].test_id'))
 
 # Get generated policy requiredPassingTests ids

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-claimFile="$1"
-executedBy="$2"
-partnerName="$3"
-decoded_password="$4"
-endpoint="http://localhost:8080"
+endpoint="$1"
+claimFile="$2"
+executedBy="$3"
+partnerName="$4"
+decoded_password="$5"
 
 curl -X POST $endpoint \
     -H "Content-Type: multipart/form-data" \
