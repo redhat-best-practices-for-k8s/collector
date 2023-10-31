@@ -84,16 +84,6 @@ spec:
 
 ---
 apiVersion: v1
-kind: Secret
-metadata:
-  name: collectorapi-secrets
-  namespace: tnf-collector
-type: Opaque
-data:
-  db_root_password: ${{ secrets.DB_ROOT_PASSWORD }}
-
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: initdb-scripts
@@ -186,10 +176,7 @@ spec:
               memory: 500Mi
           env:
             - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: collectorapi-secrets
-                  key: db_root_password
+              value: "admin"
           ports:
             - containerPort: 3306
               name: mysql

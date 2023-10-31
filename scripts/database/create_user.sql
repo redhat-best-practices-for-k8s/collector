@@ -1,5 +1,5 @@
-CREATE USER if not exists 'collectoruser'@'%' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON cnf.claim TO 'collectoruser'@'%';
-GRANT ALL PRIVILEGES ON cnf.claim_result TO 'collectoruser'@'%';
-GRANT ALL PRIVILEGES ON cnf.authenticator TO 'collectoruser'@'%';
+CREATE USER if not exists 'MysqlUsername'@'%' IDENTIFIED BY 'MysqlPassword';
+GRANT ALL PRIVILEGES ON cnf.claim TO 'MysqlUsername'@'%';
+GRANT ALL PRIVILEGES ON cnf.claim_result TO 'MysqlUsername'@'%';
+GRANT ALL PRIVILEGES ON cnf.authenticator TO 'MysqlUsername'@'%';
 FLUSH PRIVILEGES;

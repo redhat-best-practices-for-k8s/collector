@@ -39,7 +39,6 @@ create table if not exists authenticator (
 );
 
 insert into authenticator (partner_name, encoded_password)
-# temporary encoded password - will be changed saved in Bitwarden
-select 'admin', '$2a$04$9D2A660Ez6SyE4hvhOjqn.6hODSsA/aitF7GpM7DgGL.KQZ/djOhK'
+select 'CollectorAdminUser', 'CollectorAdminPassword'
 from dual
 where not exists (select 1 from authenticator limit 1);
