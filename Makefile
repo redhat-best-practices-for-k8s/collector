@@ -19,7 +19,7 @@ COMMON_GO_ARGS=-race
 GIT_COMMIT=$(shell scripts/create-version-files.sh)
 GIT_RELEASE=$(shell scripts/get-git-release.sh)
 GIT_PREVIOUS_RELEASE=$(shell scripts/get-git-previous-release.sh)
-GOLANGCI_VERSION=v1.53.3
+GOLANGCI_VERSION=v1.55.1
 LINKER_TNF_RELEASE_FLAGS=-X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitCommit=${GIT_COMMIT}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitRelease=${GIT_RELEASE}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
