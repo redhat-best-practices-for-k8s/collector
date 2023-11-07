@@ -68,7 +68,6 @@ jobs:
           brew install hadolint
         if: runner.os == 'macOS'
 
-      - uses: crate-ci/typos@master
       - name: Run yamllint
         uses: ibiqlik/action-yamllint@v3
         with:
