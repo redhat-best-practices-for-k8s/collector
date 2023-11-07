@@ -83,6 +83,12 @@ jobs:
               empty-lines:
                 level: warning
 
+      - uses: mfinelli/setup-shfmt@v3
+      - run: shfmt -d scripts
+      - uses: ludeeus/action-shellcheck@master
+        with:
+          additional_files: ./scripts/*.sh
+
       - name: make lint
         run: make lint
 
