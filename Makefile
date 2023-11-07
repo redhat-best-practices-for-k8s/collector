@@ -138,6 +138,6 @@ deploy-collector-for-CI:
 deploy-mysql-for-CI:
 	oc apply -f ${MYSQL_DEPLOYMENT_PATH} -n tnf-collector
 
-# Clones tnf-secret private repo (temprary Shir's fork and branch)
+# Clones tnf-secret private repo (temporary Shir's fork and branch)
 clone-tnf-secrets:
 	git clone git@github.com:test-network-function/tnf-secrets.git
