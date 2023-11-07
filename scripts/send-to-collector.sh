@@ -11,9 +11,9 @@ if [ -z "$endpoint" ] || [ -z "$claimFile" ] || [ -z "$executedBy" ]; then
     exit 1
 fi
 
-curl -X POST $endpoint \
-    -H "Content-Type: multipart/form-data" \
-    -F "claimFile=@$claimFile" \
-    -F "executed_by=$executedBy" \
-    -F "partner_name=$partnerName" \
-    -F "decoded_password=$decodedPassword"
+curl -X POST "$endpoint" \
+	-H "Content-Type: multipart/form-data" \
+	-F "claimFile=@$claimFile" \
+	-F "executed_by=$executedBy" \
+	-F "partner_name=$partnerName" \
+	-F "decoded_password=$decodedPassword"
