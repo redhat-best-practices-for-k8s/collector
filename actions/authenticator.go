@@ -17,7 +17,7 @@ func authenticatePostRequest(r *http.Request, tx *sql.Tx) (string, error) {
 		return "", nil
 	}
 
-	// Search for partner in authenticator talbe
+	// Search for partner in authenticator table
 	var encodedPassword string
 	searchPartnerErr := tx.QueryRow(ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
 	// Encode given decoded password
@@ -49,7 +49,7 @@ func authenticateGetRequest(r *http.Request, db *sql.DB) (string, error) {
 	partnerName := r.FormValue(PartnerNameInputName)
 	decodedPassword := r.FormValue(DedcodedPasswordInputName)
 
-	// Search for partner in authenticator talbe
+	// Search for partner in authenticator table
 	var encodedPassword string
 	err := db.QueryRow(ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
 	if err != nil {
