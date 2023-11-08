@@ -120,3 +120,12 @@ jobs:
       - name: (if on main and upstream) Push the newly built image to Quay.io
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
+
+        # run ansible deployment to deploy the new image to the cluster
+      - name: (if on main and upstream) Deploy the newly built image to the cluster
+        if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: playbooks/start-collector.yml
+          key: ${{secrets.COLLECTOR_KEYPAIR}}
+          inventory: playbooks/inventory.ini
