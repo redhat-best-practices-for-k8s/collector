@@ -34,7 +34,7 @@ runs:
         oc wait --for=condition=ready pod --all=true -n tnf-collector --timeout=${{ inputs.oc_collector_timeout }}
       shell: bash
 
-    - name: Port forward collector (temporarly)
+    - name: Port forward collector (temporarily)
       run: oc port-forward $(oc get pods -n tnf-collector -o name | grep collector) 8080:8080 -n tnf-collector &
       working-directory: ${{ inputs.working_directory }}
       shell: bash
