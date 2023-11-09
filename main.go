@@ -14,6 +14,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+type CollectorApp struct {
+	Database *sql.DB
+}
+
 func connectToDB() (*sql.DB, error) {
 	DBUsername := os.Getenv("DB_USER")
 	DBPassword := os.Getenv("DB_PASSWORD")
@@ -30,26 +34,16 @@ func connectToDB() (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return db, nil
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	db, err := connectToDB()
-	if err != nil {
-		_, writeErr := w.Write([]byte(err.Error() + "\n"))
-		if writeErr != nil {
-			logrus.Errorf(actions.WritingResponseErr, writeErr)
-		}
-		logrus.Errorf(actions.FailedToConnectDBErr, err)
-		return
-	}
-	defer db.Close()
-
+func (collector *CollectorApp) handler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		actions.ResultsHandler(w, r, db)
+		actions.ResultsHandler(w, r, collector.Database)
 	case http.MethodPost:
-		actions.ParserHandler(w, r, db)
+		actions.ParserHandler(w, r, collector.Database)
 	default:
 		_, writeErr := w.Write([]byte(actions.InvalidRequestErr + "\n"))
 		if writeErr != nil {
@@ -60,7 +54,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handler)
+	// connect to DB
+	db, _ := connectToDB()
+
+	collector := &CollectorApp{Database: db}
+
+	http.HandleFunc("/", collector.handler)
 	server := &http.Server{
 		Addr:         ":8080",
 		ReadTimeout:  10 * time.Second,
@@ -68,6 +67,8 @@ func main() {
 	}
 	err := server.ListenAndServe()
 	if err != nil {
+		db.Close()
 		log.Fatal(err)
 	}
+	db.Close()
 }
