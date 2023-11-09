@@ -61,7 +61,7 @@ pull-image-collector:
 
 # Runs collector locally with docker
 run-collector: clone-tnf-secrets
-	docker run --network=host -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run --network=host -d -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='localhost' \
@@ -71,7 +71,7 @@ run-collector: clone-tnf-secrets
 
 # Runs collector on rds with docker
 run-collector-rds: clone-tnf-secrets
-	docker run --network=host -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run --network=host -d -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
@@ -81,7 +81,7 @@ run-collector-rds: clone-tnf-secrets
 
 # Runs collector on rds with docker in headless mode
 run-collector-rds-headless: clone-tnf-secrets
-	docker run --network=host --name ${COLLECTOR_CONTAINER_NAME} -p 8080:8080 \
+	docker run -d --network=host --name ${COLLECTOR_CONTAINER_NAME} -p 8080:8080 \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \

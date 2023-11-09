@@ -132,7 +132,19 @@ func printCollectorJSONFile(w http.ResponseWriter, collector []ClaimCollector) {
 	}
 }
 
-func ResultsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func ResultsHandler(w http.ResponseWriter, r *http.Request) {
+	// connect to DB
+	db, err := connectToDB()
+	if err != nil {
+		_, writeErr := w.Write([]byte(err.Error() + "\n"))
+		if writeErr != nil {
+			logrus.Errorf(WritingResponseErr, writeErr)
+		}
+		logrus.Errorf(FailedToConnectDBErr, err)
+		return
+	}
+	defer db.Close()
+
 	partnerName, err := authenticateGetRequest(r, db)
 	if err != nil {
 		// authentication failed

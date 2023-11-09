@@ -1,8 +1,6 @@
 package main
 
 import (
-	"database/sql"
-	"os"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -14,34 +12,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func connectToDB() (*sql.DB, error) {
-	DBUsername := os.Getenv("DB_USER")
-	DBPassword := os.Getenv("DB_PASSWORD")
-	DBURL := os.Getenv("DB_URL")
-	DBPort := os.Getenv("DB_PORT")
-
-	DBConnStr := DBUsername + ":" + DBPassword + "@tcp(" + DBURL + ":" + DBPort + ")/"
-	db, err := sql.Open("mysql", DBConnStr)
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
-}
-
 func handler(w http.ResponseWriter, r *http.Request) {
-	db, _ := connectToDB()
-	defer db.Close()
-
 	switch r.Method {
 	case http.MethodGet:
-		actions.ResultsHandler(w, r, db)
+		actions.ResultsHandler(w, r)
 	case http.MethodPost:
-		actions.ParserHandler(w, r, db)
+		actions.ParserHandler(w, r)
 	default:
 		_, writeErr := w.Write([]byte(actions.InvalidRequestErr + "\n"))
 		if writeErr != nil {

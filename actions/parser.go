@@ -180,7 +180,15 @@ func parseClaimFile(w http.ResponseWriter, r *http.Request, tx *sql.Tx, claimFil
 	return false
 }
 
-func ParserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func ParserHandler(w http.ResponseWriter, r *http.Request) {
+	// connect to DB
+	db, err := connectToDB()
+	if err != nil {
+		writeError(w, FailedToConnectDBErr, err.Error())
+		return
+	}
+	defer db.Close()
+
 	// Beginning the transaction.
 	tx, err := db.Begin()
 	if err != nil {
