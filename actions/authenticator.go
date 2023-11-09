@@ -2,32 +2,11 @@ package actions
 
 import (
 	"database/sql"
-	"os"
 	"fmt"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
 )
-
-func connectToDB() (*sql.DB, error) {
-	DBUsername := os.Getenv("DB_USER")
-	DBPassword := os.Getenv("DB_PASSWORD")
-	DBURL := os.Getenv("DB_URL")
-	DBPort := os.Getenv("DB_PORT")
-
-	DBConnStr := DBUsername + ":" + DBPassword + "@tcp(" + DBURL + ":" + DBPort + ")/"
-	db, err := sql.Open("mysql", DBConnStr)
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
-}
 
 func authenticatePostRequest(r *http.Request, tx *sql.Tx) (string, error) {
 	partnerName := r.FormValue(PartnerNameInputName)
