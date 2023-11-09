@@ -24,6 +24,9 @@ Run the application via container:
 Cleanup after:
 - `make stop-collector`
 
+Initialize db:
+- `make run-initial-mysql-scripts`
+
 # Instructions for running send-to-collector.sh
 
 From collector's repo root directory, use the following command:
