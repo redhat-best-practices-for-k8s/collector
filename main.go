@@ -34,15 +34,7 @@ func connectToDB() (*sql.DB, error) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	db, err := connectToDB()
-	if err != nil {
-		_, writeErr := w.Write([]byte(err.Error() + "\n"))
-		if writeErr != nil {
-			logrus.Errorf(actions.WritingResponseErr, writeErr)
-		}
-		logrus.Errorf(actions.FailedToConnectDBErr, err)
-		return
-	}
+	db, _ := connectToDB()
 	defer db.Close()
 
 	switch r.Method {
