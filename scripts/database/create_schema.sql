@@ -38,6 +38,7 @@ create table if not exists authenticator (
   encoded_password varchar(255) not null
 );
 
+-- CollectorAdminUser's and CollectorAdminPassword's values are in tnf-secrets/collector-secrets.json
 insert into authenticator (partner_name, encoded_password)
 select 'CollectorAdminUser', 'CollectorAdminPassword'
 from dual
