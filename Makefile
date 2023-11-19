@@ -138,6 +138,18 @@ deploy-collector-for-CI:
 deploy-mysql-for-CI:
 	oc apply -f ${MYSQL_DEPLOYMENT_PATH} -n tnf-collector
 
-# Clones tnf-secret private repo
+run-grafana: clone-tnf-secrets
+	sed \
+		-e 's/MysqlUsername/$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
+		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
+		./grafana/datasource/datasource-config.yaml > datasource-config-prod.yaml
+	docker run -d -p 3000:3000 --name=grafana \
+		-v ./grafana/dashboard:/etc/grafana/provisioning/dashboards \
+		-v ./datasource-config-prod.yaml:/etc/grafana/provisioning/datasources/datasource-config-prod.yaml \
+		grafana/grafana
+	rm datasource-config-prod.yaml
+	rm -rf tnf-secrets
+
+# Clones tnf-secret private repo if does not exist
 clone-tnf-secrets:
 	git clone git@github.com:test-network-function/tnf-secrets.git
