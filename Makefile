@@ -61,7 +61,7 @@ pull-image-collector:
 
 # Runs collector locally with docker
 run-collector: clone-tnf-secrets
-	docker run --network=host -d -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run -d -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='localhost' \
@@ -71,7 +71,7 @@ run-collector: clone-tnf-secrets
 
 # Runs collector on rds with docker
 run-collector-rds: clone-tnf-secrets
-	docker run --network=host -d -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run -d -p 8080:8080 --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
@@ -138,6 +138,20 @@ deploy-collector-for-CI:
 deploy-mysql-for-CI:
 	oc apply -f ${MYSQL_DEPLOYMENT_PATH} -n tnf-collector
 
-# Clones tnf-secret private repo
+run-grafana: clone-tnf-secrets
+	sed \
+		-e 's/MysqlUsername/$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
+		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
+		./grafana/datasource/datasource-config.yaml > datasource-config-prod.yaml
+	docker run -d -p 3000:3000 --name=grafana \
+	  	-e "GF_SECURITY_ADMIN_USER=$(shell jq -r ".GrafanaUsername" "./tnf-secrets/collector-secrets.json")" \
+  		-e "GF_SECURITY_ADMIN_PASSWORD=$(shell jq -r ".GrafanaPassword" "./tnf-secrets/collector-secrets.json")" \
+		-v ./grafana/dashboard:/etc/grafana/provisioning/dashboards \
+		-v ./datasource-config-prod.yaml:/etc/grafana/provisioning/datasources/datasource-config-prod.yaml \
+		grafana/grafana
+	rm datasource-config-prod.yaml
+	rm -rf tnf-secrets
+
+# Clones tnf-secret private repo if does not exist
 clone-tnf-secrets:
 	git clone git@github.com:test-network-function/tnf-secrets.git
