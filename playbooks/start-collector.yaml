@@ -83,11 +83,9 @@
           docker rm grafana
         fi
         
-    # temporarily cloning from shir's fork and branch
     - name: Clone the collector repo
       ansible.builtin.git:
-        repo: 'https://github.com/shirmoran/collector.git'
-        version: update-makefile-with-grafana
+        repo: 'https://github.com/test-network-function/collector.git'
         dest: /home/ec2-user/collector
         clone: yes
 
