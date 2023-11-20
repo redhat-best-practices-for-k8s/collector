@@ -52,14 +52,51 @@
         groups: docker
         append: yes
         state: present
-    
+
+    - name: Remove Collector clone if it exists
+      shell: |
+        if [ -d "./collector" ]; then 
+          sudo rm -rf ./collector
+        fi
+
+    - name: Remove Tnf-secrets clone if it exists
+      shell: |
+        if [ -d "./tnf-secrets" ]; then 
+          sudo rm -rf ./tnf-secrets
+        fi
+
+    - name: Remove Collector docker if they exists
+      shell: |
+        if docker ps | grep tnf-collector; then
+          docker stop tnf-collector
+        fi
+        if docker ps -a | grep tnf-collector; then
+          docker rm tnf-collector
+        fi
+
+    - name: Remove Grafana docker if exists
+      shell: |
+        if docker ps | grep grafana; then
+          docker stop grafana
+        fi
+        if docker ps -a | grep grafana; then
+          docker rm grafana
+        fi
+        
+    # temporarily cloning from shir's fork and branch
     - name: Clone the collector repo
       ansible.builtin.git:
-        repo: 'https://github.com/test-network-function/collector.git'
+        repo: 'https://github.com/shirmoran/collector.git'
+        version: update-makefile-with-grafana
         dest: /home/ec2-user/collector
         clone: yes
 
-    # TODO: The collector is now cloned and Docker is running.
-    #      The next step is to run the collector container.
-    #       1) Run the make commands to start the collector container
-    #       2) Run the make commands to start the grafana container
+    - name: Start Collector container 
+      shell: |
+        cd collector
+        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa -o IdentitiesOnly=yes' make run-collector-rds
+
+    - name: Start Grafana container 
+      shell: |
+        cd collector
+        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa -o IdentitiesOnly=yes' make run-grafana
