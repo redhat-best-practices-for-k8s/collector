@@ -144,6 +144,8 @@ run-grafana: clone-tnf-secrets
 		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
 		./grafana/datasource/datasource-config.yaml > datasource-config-prod.yaml
 	docker run -d -p 3000:3000 --name=grafana \
+	  	-e "GF_SECURITY_ADMIN_USER=$(shell jq -r ".GrafanaUsername" "./tnf-secrets/collector-secrets.json")" \
+  		-e "GF_SECURITY_ADMIN_PASSWORD=$(shell jq -r ".GrafanaPassword" "./tnf-secrets/collector-secrets.json")" \
 		-v ./grafana/dashboard:/etc/grafana/provisioning/dashboards \
 		-v ./datasource-config-prod.yaml:/etc/grafana/provisioning/datasources/datasource-config-prod.yaml \
 		grafana/grafana
