@@ -60,8 +60,8 @@ pull-image-collector:
 	docker pull ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} 
 
 stop-running-collector-container:
-	docker stop ${COLLECTOR_CONTAINER_NAME}
-	docker rm ${COLLECTOR_CONTAINER_NAME}
+	docker ps -q --filter "name=${COLLECTOR_CONTAINER_NAME}" | xargs -r docker stop
+	docker ps -aq --filter "name=${COLLECTOR_CONTAINER_NAME}" | xargs -r docker rm
 
 # Runs collector locally with docker
 run-collector: clone-tnf-secrets stop-running-collector-container
@@ -92,10 +92,6 @@ run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
 		-e DB_PORT='3306'\
 		-d ${COLLECTOR_IMAGE_NAME}
 	rm -rf tnf-secrets
-
-# Stops collector container
-stop-collector:
-	docker stop ${COLLECTOR_CONTAINER_NAME}
 
 # Builds collector image locally
 build-image-collector:
