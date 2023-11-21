@@ -92,17 +92,16 @@ jobs:
       - name: Push the newly built image to Quay.io
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
 
-      - name: (if on main and upstream) Fix ssh-keygen hostname
-        if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
-        run: ssh-keygen -R 44.195.143.94
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
-      - uses: webfactory/ssh-agent@v0.8.0
-        name: (if on main and upstream) Add SSH key to agent
-        if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
-        with:
-          ssh-private-key: ${{ secrets.COLLECTOR_KEYPAIR }}
+      # - uses: webfactory/ssh-agent@v0.8.0
+      #   name: (if on main and upstream) Add SSH key to agent
+      #   if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
+      #   with:
+      #     ssh-private-key: ${{ secrets.COLLECTOR_KEYPAIR }}
 
-        # run ansible deployment to deploy the new image to the cluster
-      - name: (if on main and upstream) Deploy the newly built image to the cluster
-        if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
-        run: ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml
+      #   # run ansible deployment to deploy the new image to the cluster
+      # - name: (if on main and upstream) Deploy the newly built image to the cluster
+      #   if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
+      #   run: ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml

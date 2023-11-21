@@ -6,7 +6,7 @@
   vars:
     # Note: Keeping docker packages separate just for organization
     docker_package_names: [docker-ce, docker-ce-cli, containerd.io, docker-compose-plugin, docker-buildx-plugin]
-    yum_packages: [yum-utils, git, device-mapper-persistent-data, lvm2, make]
+    yum_packages: [yum-utils, git, device-mapper-persistent-data, lvm2, make, golang]
 
   tasks:
     - name: Add ec2-user to sudoers
