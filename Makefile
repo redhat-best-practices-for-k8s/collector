@@ -154,4 +154,10 @@ run-grafana: clone-tnf-secrets
 
 # Clones tnf-secret private repo if does not exist
 clone-tnf-secrets:
-	git clone git@github.com:test-network-function/tnf-secrets.git
+	if [ -d "./tnf-secrets" ]; then \
+		echo "tnf-secrets directory exists"; \
+	else \
+		echo "tnf-secrets directory does not exist"; \
+		echo "Cloning tnf-secrets repo"; \
+		git clone git@github.com:test-network-function/tnf-secrets.git
+	fi
