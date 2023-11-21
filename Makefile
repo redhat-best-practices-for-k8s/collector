@@ -159,5 +159,5 @@ clone-tnf-secrets:
 	else \
 		echo "tnf-secrets directory does not exist"; \
 		echo "Cloning tnf-secrets repo"; \
-		git clone git@github.com:test-network-function/tnf-secrets.git
+		git clone git@github.com:test-network-function/tnf-secrets.git \
 	fi
