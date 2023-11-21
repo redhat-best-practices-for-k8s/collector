@@ -6,7 +6,7 @@
   vars:
     # Note: Keeping docker packages separate just for organization
     docker_package_names: [docker-ce, docker-ce-cli, containerd.io, docker-compose-plugin, docker-buildx-plugin]
-    yum_packages: [yum-utils, git, device-mapper-persistent-data, lvm2]
+    yum_packages: [yum-utils, git, device-mapper-persistent-data, lvm2, make]
 
   tasks:
     - name: Add ec2-user to sudoers
@@ -29,17 +29,26 @@
 
     - name: Add docker repository to yum
       command: sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+      when: ansible_distribution=="Red Hat Enterprise Linux"
 
     # https://stackoverflow.com/questions/70358656/rhel8-fedora-yum-dns-causes-cannot-download-repodata-repomd-xml-for-docker-ce
     - name: Fix the docker-ce.repo file
       command: sed -i -e 's/baseurl=https:\/\/download\.docker\.com\/linux\/\(fedora\|rhel\)\/$releasever/baseurl\=https:\/\/download.docker.com\/linux\/centos\/$releasever/g' /etc/yum.repos.d/docker-ce.repo
+      when: ansible_distribution=="Red Hat Enterprise Linux"
 
-    - name: Install Required Docker Packages
+    - name: Install Required Docker Packages for RHEL
       yum:
         name: "{{item}}"
         state: present
       with_items: "{{ docker_package_names }}"
+      when: ansible_distribution=="Red Hat Enterprise Linux"
 
+    - name: Install Required Docker Packages for Amazon Linux
+      yum:
+        name: docker
+        state: present
+      when: ansible_distribution!="Red Hat Enterprise Linux"
+      
     - name: Start Docker Service
       service:
         name: docker
@@ -52,12 +61,6 @@
         groups: docker
         append: yes
         state: present
-
-    - name: Remove Collector clone if it exists
-      shell: |
-        if [ -d "./collector" ]; then 
-          sudo rm -rf ./collector
-        fi
 
     - name: Remove Tnf-secrets clone if it exists
       shell: |
@@ -84,17 +87,19 @@
         fi
         
     - name: Clone the collector repo
+      become: no
       ansible.builtin.git:
         repo: 'https://github.com/test-network-function/collector.git'
         dest: /home/ec2-user/collector
         clone: yes
+        force: true
 
     - name: Start Collector container 
       shell: |
         cd collector
-        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa -o IdentitiesOnly=yes' make run-collector-rds
+        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa_git -o IdentitiesOnly=yes' make run-collector-rds
 
     - name: Start Grafana container 
       shell: |
         cd collector
-        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa -o IdentitiesOnly=yes' make run-grafana
+        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa_git -o IdentitiesOnly=yes' make run-grafana
