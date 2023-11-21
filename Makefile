@@ -59,8 +59,12 @@ install-mac-brew-tools:
 pull-image-collector:
 	docker pull ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} 
 
+stop-running-collector-container:
+	docker stop ${COLLECTOR_CONTAINER_NAME}
+	docker rm ${COLLECTOR_CONTAINER_NAME}
+
 # Runs collector locally with docker
-run-collector: clone-tnf-secrets
+run-collector: clone-tnf-secrets stop-running-collector-container
 	docker run -d -p 80:80 --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
@@ -70,7 +74,7 @@ run-collector: clone-tnf-secrets
 	rm -rf tnf-secrets
 
 # Runs collector on rds with docker
-run-collector-rds: clone-tnf-secrets
+run-collector-rds: clone-tnf-secrets stop-running-collector-container
 	docker run -d -p 80:80 --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
@@ -80,7 +84,7 @@ run-collector-rds: clone-tnf-secrets
 	rm -rf tnf-secrets
 
 # Runs collector on rds with docker in headless mode
-run-collector-rds-headless: clone-tnf-secrets
+run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
 	docker run -d --name ${COLLECTOR_CONTAINER_NAME} -p 80:80 \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
