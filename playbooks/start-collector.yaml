@@ -61,30 +61,6 @@
         groups: docker
         append: yes
         state: present
-
-    - name: Remove Tnf-secrets clone if it exists
-      shell: |
-        if [ -d "./tnf-secrets" ]; then 
-          sudo rm -rf ./tnf-secrets
-        fi
-
-    - name: Remove Collector docker if they exists
-      shell: |
-        if docker ps | grep tnf-collector; then
-          docker stop tnf-collector
-        fi
-        if docker ps -a | grep tnf-collector; then
-          docker rm tnf-collector
-        fi
-
-    - name: Remove Grafana docker if exists
-      shell: |
-        if docker ps | grep grafana; then
-          docker stop grafana
-        fi
-        if docker ps -a | grep grafana; then
-          docker rm grafana
-        fi
         
     - name: Clone the collector repo
       become: no
