@@ -11,7 +11,8 @@ endif
 MYSQL_CONTAINER_NAME?=mysql-container
 COLLECTOR_IMAGE_NAME?=testnetworkfunction/collector
 COLLECTOR_IMAGE_TAG?=latest
-COLLECTOR_CONTAINER_NAME?=tnf-collector
+COLLECTOR_CONTAINER_NAME?=cnf-collector
+COLLECTOR_NS?=cnf-collector
 GRAFANA_CONTAINER_NAME?=grafana
 COLLECTOR_VERSION?=0.0.1
 REGISTRY?=quay.io
@@ -133,11 +134,11 @@ run-initial-mysql-scripts: clone-tnf-secrets
 
 # Deploys collector for CI test purposes
 deploy-collector-for-CI:
-	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH} -n tnf-collector
+	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH} -n ${COLLECTOR_NS}
 
 # Deploys mysql for CI test purposes
 deploy-mysql-for-CI:
-	oc apply -f ${MYSQL_DEPLOYMENT_PATH} -n tnf-collector
+	oc apply -f ${MYSQL_DEPLOYMENT_PATH} -n ${COLLECTOR_NS}
 
 stop-running-grafana-container:
 	docker ps -q --filter "name=${GRAFANA_CONTAINER_NAME}" | xargs -r docker stop
