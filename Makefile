@@ -11,7 +11,9 @@ endif
 MYSQL_CONTAINER_NAME?=mysql-container
 COLLECTOR_IMAGE_NAME?=testnetworkfunction/collector
 COLLECTOR_IMAGE_TAG?=latest
-COLLECTOR_CONTAINER_NAME?=tnf-collector
+COLLECTOR_CONTAINER_NAME?=cnf-collector
+COLLECTOR_NS?=cnf-collector
+GRAFANA_CONTAINER_NAME?=grafana
 COLLECTOR_VERSION?=0.0.1
 REGISTRY?=quay.io
 
@@ -132,18 +134,22 @@ run-initial-mysql-scripts: clone-tnf-secrets
 
 # Deploys collector for CI test purposes
 deploy-collector-for-CI:
-	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH} -n tnf-collector
+	oc apply -f ${COLLECTOR_DEPLOYMENT_PATH} -n ${COLLECTOR_NS}
 
 # Deploys mysql for CI test purposes
 deploy-mysql-for-CI:
-	oc apply -f ${MYSQL_DEPLOYMENT_PATH} -n tnf-collector
+	oc apply -f ${MYSQL_DEPLOYMENT_PATH} -n ${COLLECTOR_NS}
 
-run-grafana: clone-tnf-secrets
+stop-running-grafana-container:
+	docker ps -q --filter "name=${GRAFANA_CONTAINER_NAME}" | xargs -r docker stop
+	docker ps -aq --filter "name=${GRAFANA_CONTAINER_NAME}" | xargs -r docker rm
+
+run-grafana: clone-tnf-secrets stop-running-grafana-container
 	sed \
 		-e 's/MysqlUsername/$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
 		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
 		./grafana/datasource/datasource-config.yaml > datasource-config-prod.yaml
-	docker run -d -p 3000:3000 --name=grafana \
+	docker run -d -p 3000:3000 --name=${GRAFANA_CONTAINER_NAME} \
 	  	-e "GF_SECURITY_ADMIN_USER=$(shell jq -r ".GrafanaUsername" "./tnf-secrets/collector-secrets.json")" \
   		-e "GF_SECURITY_ADMIN_PASSWORD=$(shell jq -r ".GrafanaPassword" "./tnf-secrets/collector-secrets.json")" \
 		-v ./grafana/dashboard:/etc/grafana/provisioning/dashboards \
