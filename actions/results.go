@@ -136,10 +136,14 @@ func ResultsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	partnerName, err := authenticateGetRequest(r, db)
 	if err != nil {
 		// authentication failed
-		_, err = w.Write([]byte(InvalidUserOrPasswordErr))
+		_, err = w.Write([]byte(err.Error() + "\n"))
 		if err != nil {
 			logrus.Errorf(WritingResponseErr, err)
 		}
+		return
+	}
+	if partnerName == "" {
+		// partner name and password were not given
 		return
 	}
 

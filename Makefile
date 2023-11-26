@@ -16,6 +16,7 @@ COLLECTOR_NS?=cnf-collector
 GRAFANA_CONTAINER_NAME?=grafana
 COLLECTOR_VERSION?=0.0.1
 REGISTRY?=quay.io
+HOST_PORT?=80
 
 COMMON_GO_ARGS=-race
 GIT_COMMIT=$(shell scripts/create-version-files.sh)
@@ -67,31 +68,40 @@ stop-running-collector-container:
 
 # Runs collector locally with docker
 run-collector: clone-tnf-secrets stop-running-collector-container
-	docker run -d -p 80:80 --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run -d -p ${HOST_PORT}:80 --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='localhost' \
 		-e DB_PORT='3306' \
+		-e SERVER_ADDR=':${HOST_PORT}' \
+		-e SERVER_READ_TIMEOUT=10 \
+		-e SERVER_WRITE_TIMEOUT=10 \
 		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
 	rm -rf tnf-secrets
 
 # Runs collector on rds with docker
 run-collector-rds: clone-tnf-secrets stop-running-collector-container
-	docker run -d -p 80:80 --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run -d -p ${HOST_PORT}:80 --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
 		-e DB_PORT='3306' \
-		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
+		-e SERVER_ADDR=':${HOST_PORT}' \
+		-e SERVER_READ_TIMEOUT=10 \
+		-e SERVER_WRITE_TIMEOUT=10 \
+		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:dev
 	rm -rf tnf-secrets
 
 # Runs collector on rds with docker in headless mode
 run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
-	docker run -d --name ${COLLECTOR_CONTAINER_NAME} -p 80:80 \
+	docker run -d --name ${COLLECTOR_CONTAINER_NAME} -p ${HOST_PORT}:80 \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
 		-e DB_PORT='3306'\
+		-e SERVER_ADDR=':${HOST_PORT}' \
+		-e SERVER_READ_TIMEOUT=10 \
+		-e SERVER_WRITE_TIMEOUT=10 \
 		-d ${COLLECTOR_IMAGE_NAME}
 	rm -rf tnf-secrets
 

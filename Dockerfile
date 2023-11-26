@@ -35,7 +35,7 @@ WORKDIR $SRC_DIR/collectoruser
 # Copy the built app from the build image
 COPY --from=builder /tnf/collector ./collector
 
-EXPOSE 8080
+EXPOSE 80
 
 # Set the command to run when the container starts
 ENTRYPOINT ["./collector"]

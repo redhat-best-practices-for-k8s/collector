@@ -20,6 +20,7 @@ const ResultsFieldMissingErr = "results field is missing."
 const ExecutedByMissingErr = "Executed by value is missing."
 const MalformedJSONFileErr = "Malformed json file."
 const InvalidPasswordErr = "invalid password to given partner's name"
+const InvalidUsernameErr = "invalid partner name"
 const RollbackErr = "Error found while Rollbacking transaction: %s"
 const ExecQueryErr = "Error found while executing a mysql query: %s"
 const ScanDBFieldErr = "Error found while scanning db field: %s"
@@ -27,6 +28,7 @@ const BeginTxErr = "Error found while beginning transaction: %s"
 const CommitTxErr = "Error found while committing transaction: %s"
 const AuthError = "Error found while authenticating partner's password: %s"
 const EncodingPasswordError = "Failed encoding password." // #nosec
+const ServerIsUpMsg = "Server is up."
 
 // parser.go constants
 const ClaimTag = "claim"
@@ -58,5 +60,4 @@ const SelectAllFromClaim = "SELECT * FROM cnf.claim"
 const SelectAllClaimIDsByPartner = "SELECT id FROM cnf.claim WHERE partner_name = ?"
 const SelectAllFromClaimResultByClaimIDs = "SELECT * FROM cnf.claim_result WHERE claim_id IN (%s)"
 const SelectAllFromClaimResult = "SELECT * FROM cnf.claim_result"
-const InvalidUserOrPasswordErr = "Invalid user name or password." // #nosec
 const AdminUserName = "admin"

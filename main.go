@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -39,6 +40,12 @@ func connectToDB() (*sql.DB, error) {
 }
 
 func (collector *CollectorApp) handler(w http.ResponseWriter, r *http.Request) {
+	logrus.Info(actions.ServerIsUpMsg)
+	_, writeErr := w.Write([]byte(actions.ServerIsUpMsg + "\n"))
+	if writeErr != nil {
+		logrus.Errorf(actions.WritingResponseErr, writeErr)
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		actions.ResultsHandler(w, r, collector.Database)
@@ -54,6 +61,10 @@ func (collector *CollectorApp) handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	readTimeOut, _ := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
+	writeTimeOut, _ := strconv.Atoi(os.Getenv("SERVER_WRITE_TIMEOUT"))
+	adrr := os.Getenv("SERVER_ADDR")
+
 	// connect to DB
 	db, _ := connectToDB()
 
@@ -61,9 +72,9 @@ func main() {
 
 	http.HandleFunc("/", collector.handler)
 	server := &http.Server{
-		Addr:         ":8080",
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		Addr:         adrr,
+		ReadTimeout:  time.Duration(readTimeOut) * time.Second,
+		WriteTimeout: time.Duration(writeTimeOut) * time.Second,
 	}
 	err := server.ListenAndServe()
 	if err != nil {

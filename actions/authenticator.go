@@ -49,11 +49,16 @@ func authenticateGetRequest(r *http.Request, db *sql.DB) (string, error) {
 	partnerName := r.FormValue(PartnerNameInputName)
 	decodedPassword := r.FormValue(DedcodedPasswordInputName)
 
+	// If partner name and password are not given return
+	if partnerName == "" && decodedPassword == "" {
+		return "", nil
+	}
+
 	// Search for partner in authenticator table
 	var encodedPassword string
 	err := db.QueryRow(ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf(InvalidUsernameErr)
 	}
 
 	// Compare encoded and given passwords
