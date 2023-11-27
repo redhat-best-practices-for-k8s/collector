@@ -31,10 +31,10 @@ runs:
     - name: Wait for all pods to be ready
       run: |
         echo "Waiting for collector... (timeout: ${{ inputs.oc_collector_timeout }})" && \
-        oc wait --for=condition=ready pod --all=true -n tnf-collector --timeout=${{ inputs.oc_collector_timeout }}
+        oc wait --for=condition=ready pod --all=true -n cnf-collector --timeout=${{ inputs.oc_collector_timeout }}
       shell: bash
 
     - name: Port forward collector (temporarily)
-      run: oc port-forward $(oc get pods -n tnf-collector -o name | grep collector) 8080:8080 -n tnf-collector &
+      run: oc port-forward $(oc get pods -n cnf-collector -o name | grep collector) 8080:8080 -n cnf-collector &
       working-directory: ${{ inputs.working_directory }}
       shell: bash
