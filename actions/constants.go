@@ -29,6 +29,10 @@ const CommitTxErr = "Error found while committing transaction: %s"
 const AuthError = "Error found while authenticating partner's password: %s"
 const EncodingPasswordError = "Failed encoding password." // #nosec
 const ServerIsUpMsg = "Server is up."
+const ServerReadTimeOutEnvVarErr = "SERVER_READ_TIMEOUT environment variable must be set."
+const ServerWriteTimeOutEnvVarErr = "SERVER_WRITE_TIMEOUT environment variable must be set."
+const ServerAddrEnvVarErr = "SERVER_ADDR environment variable must be set."
+const ServerEnvVarsError = "Error found while extracting environment variables realted to the server: %s"
 
 // parser.go constants
 const ClaimTag = "claim"
