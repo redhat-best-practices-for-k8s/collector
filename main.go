@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -16,6 +17,37 @@ import (
 
 type CollectorApp struct {
 	Database *sql.DB
+}
+
+func getServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) {
+	// Verify existence of env vars.
+	readTimeOutStr := os.Getenv("SERVER_READ_TIMEOUT")
+	if readTimeOutStr == "" {
+		return -1, -1, "", actions.ServerReadTimeOutEnvVarErr
+	}
+
+	writeTimeOutStr := os.Getenv("SERVER_WRITE_TIMEOUT")
+	if writeTimeOutStr == "" {
+		return -1, -1, "", actions.ServerWriteTimeOutEnvVarErr
+	}
+
+	adrr := os.Getenv("SERVER_ADDR")
+	if addr == "" {
+		return -1, -1, "", actions.ServerAddrEnvVarErr
+	}
+
+	// Convert read and write time outs to integers.
+	readTimeOutInt, atoiErr := strconv.Atoi(readTimeOutStr)
+	if atoiErr != nil {
+		return -1, -1, "", atoiErr.Error()
+	}
+
+	writeTimeOutInt, atoiErr = strconv.Atoi(writeTimeOutStr)
+	if atoiErr != nil {
+		return -1, -1, "", atoiErr.Error()
+	}
+
+	return readTimeOutInt, writeTimeOutInt, adrr, ""
 }
 
 func connectToDB() (*sql.DB, error) {
@@ -39,6 +71,12 @@ func connectToDB() (*sql.DB, error) {
 }
 
 func (collector *CollectorApp) handler(w http.ResponseWriter, r *http.Request) {
+	logrus.Info(actions.ServerIsUpMsg)
+	_, writeErr := w.Write([]byte(actions.ServerIsUpMsg + "\n"))
+	if writeErr != nil {
+		logrus.Errorf(actions.WritingResponseErr, writeErr)
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		actions.ResultsHandler(w, r, collector.Database)
@@ -54,6 +92,11 @@ func (collector *CollectorApp) handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	readTimeOut, writeTimeOut, addr, envErr := getServerEnvVars()
+	if envErr != "" {
+		logrus.Errorf(actions.ServerEnvVarsError, envErr)
+	}
+
 	// connect to DB
 	db, _ := connectToDB()
 
@@ -61,9 +104,9 @@ func main() {
 
 	http.HandleFunc("/", collector.handler)
 	server := &http.Server{
-		Addr:         ":8080",
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		Addr:         addr,
+		ReadTimeout:  time.Duration(readTimeOut) * time.Second,
+		WriteTimeout: time.Duration(writeTimeOut) * time.Second,
 	}
 	err := server.ListenAndServe()
 	if err != nil {
