@@ -874,7 +874,10 @@
       "type": "barchart"
     },
     {
-      "datasource": {},
+      "datasource": {
+        "type": "mysql",
+        "uid": "0"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -920,7 +923,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "passed_tests (count)"
+              "options": "passed_tests (sum)"
             },
             "properties": [
               {
@@ -932,7 +935,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "failed_tests (count)"
+              "options": "failed_tests (sum)"
             },
             "properties": [
               {
@@ -944,7 +947,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "skipped_tests (count)"
+              "options": "skipped_tests (sum)"
             },
             "properties": [
               {
@@ -972,6 +975,7 @@
           ],
           "show": false
         },
+        "frameIndex": 1,
         "showHeader": true
       },
       "pluginVersion": "10.2.2",
@@ -1051,7 +1055,7 @@
             "fields": {
               "failed_tests": {
                 "aggregations": [
-                  "count"
+                  "sum"
                 ],
                 "operation": "aggregate"
               },
@@ -1061,13 +1065,13 @@
               },
               "passed_tests": {
                 "aggregations": [
-                  "count"
+                  "sum"
                 ],
                 "operation": "aggregate"
               },
               "skipped_tests": {
                 "aggregations": [
-                  "count"
+                  "sum"
                 ],
                 "operation": "aggregate"
               }
