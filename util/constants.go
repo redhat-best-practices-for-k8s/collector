@@ -1,4 +1,4 @@
-package actions
+package util
 
 const FailedToConnectDBErr = "Error found while trying to connect db: %s"
 const InvalidRequestErr = "Invalid request."
@@ -44,7 +44,7 @@ const PartnerNameInputName = "partner_name"
 const DedcodedPasswordInputName = "decoded_password"
 
 const UseCollectorSQLCmd = `USE cnf; `
-const InsertToClaimSQLCmd = `INSERT INTO claim 
+const InsertToClaimSQLCmd = `INSERT INTO claim
 								(cnf_version, executed_by, upload_time, partner_name)
 								VALUES (?, ?, ?, ?);`
 const InsertToClaimResSQLCmd = `INSERT INTO claim_result
