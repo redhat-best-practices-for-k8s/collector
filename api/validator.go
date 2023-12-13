@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+	"github.com/test-network-function/collector/types"
 	"github.com/test-network-function/collector/util"
 )
 
@@ -24,7 +25,7 @@ func validatePostRequest(w http.ResponseWriter, r *http.Request) (map[string]int
 		return nil, nil, false
 	}
 
-	claimFileMap := uploadAndConvertClaimFile(w, r)
+	claimFileMap := parseClaimFile(w, r)
 	if claimFileMap == nil {
 		// error occurred while uploading\converting claim file.
 		return nil, nil, false
@@ -69,7 +70,40 @@ func validateGetRequest(w http.ResponseWriter, r *http.Request, db *sql.DB) (str
 	return partnerName, true
 }
 
-// Done
+/*
+The validation is done at first, so that we do not keep database transaction open for validation
+to reduce network bandwith to the remote RDS. Also, since the claim file structure can be changed in
+the future, validation is kept separate from database insert which gives us less effort to make code
+changes.
+*/
+func verifyClaimResultInJson(w http.ResponseWriter, claimFileMap map[string]interface{}) (bool, []types.ClaimResult) {
+	results, keyExists := claimFileMap[util.ResultsTag].(map[string]interface{})
+	if !keyExists {
+		util.WriteError(w, util.MalformedClaimFileErr, util.ResultsFieldMissingErr)
+		return false, nil
+	}
+
+	claimResults := []types.ClaimResult{}
+	for testName := range results {
+		testData, testID, keyErr := validateInnerResultsKeys(results, testName)
+		if keyErr != "" {
+			util.WriteError(w, util.MalformedClaimFileErr, keyErr)
+			return false, nil
+		}
+
+		claimResult := types.ClaimResult{
+			SuiteName: testID["suite"].(string),
+			TestID:    testID["id"].(string),
+			TesStatus: testData["state"].(string),
+		}
+
+		claimResults = append(claimResults, claimResult)
+
+	}
+
+	return true, claimResults
+}
+
 func validateInnerResultsKeys(results map[string]interface{}, testName string) (
 	testData map[string]interface{}, testID map[string]interface{}, err string) {
 	testData, _ = results[testName].([]interface{})[0].(map[string]interface{})
@@ -94,4 +128,20 @@ func validateInnerResultsKeys(results map[string]interface{}, testName string) (
 		return nil, nil, fmt.Sprintf(util.TestIDIDMissingErr, testName)
 	}
 	return testData, testID, ""
+}
+
+func validateClaimKeys(w http.ResponseWriter, claimFileMap map[string]interface{}) map[string]interface{} {
+	versions, keyExists := claimFileMap[util.VersionsTag].(map[string]interface{})
+	if !keyExists {
+		util.WriteError(w, util.MalformedClaimFileErr, util.VersionsFieldMissingErr)
+		return nil
+	}
+
+	_, keyExists = versions["ocp"]
+	if !keyExists {
+		util.WriteError(w, util.MalformedClaimFileErr, util.OcpFieldMissingErr)
+		return nil
+	}
+
+	return versions
 }

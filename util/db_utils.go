@@ -3,9 +3,12 @@ package util
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
+	"github.com/test-network-function/collector/types"
 )
 
 func HandleTransactionRollback(tx *sql.Tx, context string, err error) {
@@ -61,4 +64,69 @@ func GetCollectorTablesByPartner(db *sql.DB, partnerName string) (claimRows, cla
 	}
 
 	return claimRows, claimResultsRows
+}
+
+// This function stores the claim and claim result into the database in a transaction
+func StoreClaimFileInDatabase(w http.ResponseWriter, r *http.Request, db *sql.DB, claimFileMap map[string]interface{}, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion string) bool {
+	// Begin transaction here
+	tx, err := db.Begin()
+	if err != nil {
+		logrus.Errorf(BeginTxErr, err)
+		return false
+	}
+
+	_, err = tx.Exec(UseCollectorSQLCmd)
+	if err != nil {
+		HandleTransactionRollback(tx, ExecQueryErr, err)
+		return false
+	}
+
+	// store claim
+	success, claimId := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, tx)
+	if !success {
+		return false
+	}
+
+	success = storeClaimResultIntoDatabase(claimResult, claimId, tx)
+	if !success {
+		return false
+	}
+
+	// Commit the transaction
+	err = tx.Commit()
+	if err != nil {
+		HandleTransactionRollback(tx, CommitTxErr, err)
+		return false
+	}
+	logrus.Info("Claim file is entirely stored into the database.")
+
+	return true
+}
+
+func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimId int64, tx *sql.Tx) bool {
+	for _, cr := range claimResults {
+		_, err := tx.Exec(InsertToClaimResSQLCmd, claimId, cr.SuiteName, cr.TestID, cr.TesStatus)
+		if err != nil {
+			HandleTransactionRollback(tx, ExecQueryErr, err)
+			return false
+		}
+	}
+	logrus.Info("Claim is stored into table CLAIM_RESULT successfully.")
+	return true
+}
+
+// Inserts into claim table and returns the id
+func storeClaimIntoDatabase(partnerName, executedBy, ocpVersion string, tx *sql.Tx) (bool, int64) {
+	result, err := tx.Exec(InsertToClaimSQLCmd, ocpVersion, executedBy, time.Now(), partnerName)
+	if err != nil {
+		HandleTransactionRollback(tx, ExecQueryErr, err)
+		return false, -1
+	}
+	logrus.Info("Claim is stored into table successfully.")
+	claimId, err := result.LastInsertId()
+	if err != nil {
+		HandleTransactionRollback(tx, ExecQueryErr, err)
+		return false, -1
+	}
+	return true, claimId
 }

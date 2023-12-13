@@ -11,7 +11,7 @@ type Claim struct {
 	MarkForDelete bool   `json:"mark_for_delete"`
 }
 
-type ClaimResults struct {
+type ClaimResult struct {
 	ID        int    `json:"id"`
 	ClaimID   int    `json:"claim_id"`
 	SuiteName string `json:"suite_name"`
@@ -21,7 +21,7 @@ type ClaimResults struct {
 
 type ClaimCollector struct {
 	Claim        Claim
-	ClaimResults []ClaimResults
+	ClaimResults []ClaimResult
 }
 
 type CollectorApp struct {

@@ -55,9 +55,9 @@ func getEnv(key, fallback string) string {
 
 func GetDatabaseEnvVars() (user, password, dbUrl, port string) {
 	user = getEnv("DB_USER", "admin")
-	password = getEnv("DB_PASSWORD", "admin")
-	dbUrl = getEnv("DB_URL", "mysql")
-	port = getEnv("DB_PORT", "3380")
+	password = getEnv("DB_PASSWORD", "collector1")
+	dbUrl = getEnv("DB_URL", "collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com")
+	port = getEnv("DB_PORT", "3306")
 
 	return user, password, dbUrl, port
 }
@@ -66,7 +66,7 @@ func GetServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) 
 
 	readTimeOutStr := getEnv("SERVER_READ_TIMEOUT", "20")
 	writeTimeOutStr := getEnv("SERVER_WRITE_TIMEOUT", "20")
-	adrr := getEnv("SERVER_ADDR", ":8081")
+	adrr := getEnv("SERVER_ADDR", ":8080")
 
 	// Convert read and write time outs to integers.
 	readTimeOutInt, atoiErr := strconv.Atoi(readTimeOutStr)

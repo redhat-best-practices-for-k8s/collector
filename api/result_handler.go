@@ -12,7 +12,7 @@ import (
 )
 
 func ResultsHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySqlStorage) {
-	logrus.Info("Handling the GET request", r.Body)
+	logrus.Info("Handling the GET request")
 	db := storage.MySql
 	partnerName, isValid := validateGetRequest(w, r, db)
 
@@ -66,10 +66,10 @@ func mapClaimsToStruct(claimRows *sql.Rows) []types.Claim {
 	return claims
 }
 
-func mapClaimResultsToStruct(claimResultsRows *sql.Rows) []types.ClaimResults {
-	var claimResults []types.ClaimResults
+func mapClaimResultsToStruct(claimResultsRows *sql.Rows) []types.ClaimResult {
+	var claimResults []types.ClaimResult
 	for claimResultsRows.Next() {
-		var row types.ClaimResults
+		var row types.ClaimResult
 		err := claimResultsRows.Scan(&row.ID, &row.ClaimID, &row.SuiteName, &row.TestID, &row.TesStatus)
 		if err != nil {
 			logrus.Errorf(util.ScanDBFieldErr, err)
@@ -79,7 +79,7 @@ func mapClaimResultsToStruct(claimResultsRows *sql.Rows) []types.ClaimResults {
 	return claimResults
 }
 
-func combineClaimAndResultsToStruct(claims []types.Claim, claimResults []types.ClaimResults) []types.ClaimCollector {
+func combineClaimAndResultsToStruct(claims []types.Claim, claimResults []types.ClaimResult) []types.ClaimCollector {
 	var collector []types.ClaimCollector
 	for _, claim := range claims {
 		var curClaim types.ClaimCollector

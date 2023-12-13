@@ -26,29 +26,25 @@ func CheckIfValidCredentials(partnerName, decodePassword string, db *sql.DB) err
 }
 
 // Already non-empty partner name and decoded password are given
-func CreateCredentialsIfNotExists(partnerName, decodedPassword string, tx *sql.Tx) error {
+func VerifyCredentialsAndCreateIfNotExists(partnerName, partnerPassword string, db *sql.DB) error {
+	// Encode the given password
+	encodedPartnerPassword, err := bcrypt.GenerateFromPassword([]byte(partnerPassword), bcrypt.MinCost)
+
 	// Search for partner in authenticator table
 	var encodedPassword string
-	searchPartnerErr := tx.QueryRow(util.ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
-	// Encode given decoded password
-	encodedDecodedPassword, err := bcrypt.GenerateFromPassword([]byte(decodedPassword), bcrypt.MinCost)
+	searchPartnerErr := db.QueryRow(util.ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
 
 	// If partner name is not recorded, add partner with encoded password
 	if searchPartnerErr == sql.ErrNoRows {
-		_, txErr := tx.Exec(util.InsertPartnerToAuthSQLCmd, partnerName, encodedDecodedPassword)
+		// Create partner entry into the database
+		_, txErr := db.Exec(util.InsertPartnerToAuthSQLCmd, partnerName, encodedPartnerPassword)
 		if txErr != nil {
-			util.HandleTransactionRollback(tx, util.AuthError, err)
 			return txErr
 		}
 		return nil
 	}
-	if err != nil {
-		util.HandleTransactionRollback(tx, util.AuthError, err)
-		return err
-	}
-
-	// If partner is recorded and password is wrong throw data
-	err = bcrypt.CompareHashAndPassword([]byte(encodedPassword), []byte(decodedPassword))
+	// If partner is found then check if password matches
+	err = bcrypt.CompareHashAndPassword([]byte(encodedPassword), []byte(encodedPartnerPassword))
 	if err != nil {
 		return fmt.Errorf(util.InvalidPasswordErr)
 	}
