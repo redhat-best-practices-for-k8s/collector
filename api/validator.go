@@ -10,7 +10,7 @@ import (
 	"github.com/test-network-function/collector/util"
 )
 
-func validatePostRequest(w http.ResponseWriter, r *http.Request) (map[string]interface{}, []string, bool) {
+func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, bool) {
 
 	partnerName := r.FormValue(util.PartnerNameInputName)
 	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
@@ -38,8 +38,13 @@ func validatePostRequest(w http.ResponseWriter, r *http.Request) (map[string]int
 
 	ocpVersion := versions["ocp"].(string)
 
-	return claimFileMap, []string{partnerName, decodedPassword, executedBy, ocpVersion}, true
+	// validate results in claim results in JSON
+	isValid, claimResults := verifyClaimResultInJson(w, claimFileMap)
+	if !isValid {
+		return nil, nil, false
+	}
 
+	return claimResults, []string{partnerName, decodedPassword, executedBy, ocpVersion}, true
 }
 
 func validateGetRequest(w http.ResponseWriter, r *http.Request, db *sql.DB) (string, bool) {
@@ -48,13 +53,8 @@ func validateGetRequest(w http.ResponseWriter, r *http.Request, db *sql.DB) (str
 	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
 
 	// If partner name and password are not given return
-	if partnerName == "" && decodedPassword == "" {
+	if partnerName == "" || decodedPassword == "" {
 		return "", false
-	}
-
-	if partnerName == "" {
-		// partner name and password were not given
-		return partnerName, false
 	}
 
 	err := CheckIfValidCredentials(partnerName, decodedPassword, db)

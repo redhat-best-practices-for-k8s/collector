@@ -66,7 +66,7 @@ func GetServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) 
 
 	readTimeOutStr := getEnv("SERVER_READ_TIMEOUT", "20")
 	writeTimeOutStr := getEnv("SERVER_WRITE_TIMEOUT", "20")
-	adrr := getEnv("SERVER_ADDR", ":8080")
+	adrr := getEnv("SERVER_ADDR", ":80")
 
 	// Convert read and write time outs to integers.
 	readTimeOutInt, atoiErr := strconv.Atoi(readTimeOutStr)

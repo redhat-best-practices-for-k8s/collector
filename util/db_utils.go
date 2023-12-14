@@ -3,7 +3,6 @@ package util
 import (
 	"database/sql"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -67,7 +66,7 @@ func GetCollectorTablesByPartner(db *sql.DB, partnerName string) (claimRows, cla
 }
 
 // This function stores the claim and claim result into the database in a transaction
-func StoreClaimFileInDatabase(w http.ResponseWriter, r *http.Request, db *sql.DB, claimFileMap map[string]interface{}, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion string) bool {
+func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion string) bool {
 	// Begin transaction here
 	tx, err := db.Begin()
 	if err != nil {

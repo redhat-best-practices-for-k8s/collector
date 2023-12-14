@@ -12,13 +12,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySq
 	defer db.Close()
 
 	// 1. Validate the request (includes validation of the claim file format)
-	claimFileMap, params, isValid := validatePostRequest(w, r)
-	if !isValid {
-		return
-	}
-
-	// 2. Validate claim results, and forms the input for db insert queries
-	isValid, claimResults := verifyClaimResultInJson(w, claimFileMap)
+	claimResults, params, isValid := validatePostRequest(w, r)
 	if !isValid {
 		return
 	}
@@ -38,7 +32,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySq
 	}
 
 	// 4. Store claim + claim result into the database
-	if !util.StoreClaimFileInDatabase(w, r, db, claimFileMap, claimResults, partnerName, ocpVersion, executedBy) {
+	if !util.StoreClaimFileInDatabase(db, claimResults, partnerName, ocpVersion, executedBy) {
 		util.WriteError(w, util.ClaimFileError, err.Error())
 		return
 	}

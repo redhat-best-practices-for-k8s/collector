@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -35,7 +34,6 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Handling")
 	printServerUpMessage(w)
 
 	switch r.Method {
