@@ -18,18 +18,18 @@ func HandleUpload() {
 }
 
 const (
-	AWS_S3_REGION  = "us-east-1"     // Region
-	AWS_S3_BUCKET  = "cnf-collector" // Bucket
-	AWS_ACCESS_KEY = ""
-	AWS_SECRET_KEY = ""
+	Region       = "us-east-1"     // Region
+	S3BucketName = "cnf-collector" // Bucket
+	AwsAccessKey = ""
+	AwsSecretKey = ""
 )
 
 // We will be using this client everywhere in our code
 var awsS3Client *s3.Client
 
 func configS3() {
-	creds := credentials.NewStaticCredentialsProvider(AWS_ACCESS_KEY, AWS_SECRET_KEY, "")
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(creds), config.WithRegion(AWS_S3_BUCKET))
+	creds := credentials.NewStaticCredentialsProvider(AwsAccessKey, AwsSecretKey, "")
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(creds), config.WithRegion(S3BucketName))
 	if err != nil {
 		log.Printf("error: %v", err)
 		return
@@ -41,7 +41,7 @@ func configS3() {
 func uploadFileToS3(file multipart.File, partner string) {
 	uploader := manager.NewUploader(awsS3Client)
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(AWS_S3_BUCKET),
+		Bucket: aws.String(S3BucketName),
 		Key:    aws.String("claim_" + partner + "_" + time.Now().Format("YYYY-MM-DD")),
 		Body:   file,
 	})
@@ -51,5 +51,5 @@ func uploadFileToS3(file multipart.File, partner string) {
 		return
 	}
 
-	log.Printf("Sucecssfully uploaded to %q\n", AWS_S3_BUCKET)
+	log.Printf("Sucecssfully uploaded to %q\n", S3BucketName)
 }

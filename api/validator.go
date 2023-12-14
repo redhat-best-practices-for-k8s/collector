@@ -11,7 +11,6 @@ import (
 )
 
 func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, bool) {
-
 	partnerName := r.FormValue(util.PartnerNameInputName)
 	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
 	if partnerName == "" || decodedPassword == "" {
@@ -48,7 +47,6 @@ func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimR
 }
 
 func validateGetRequest(w http.ResponseWriter, r *http.Request, db *sql.DB) (string, bool) {
-
 	partnerName := r.FormValue(util.PartnerNameInputName)
 	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
 

@@ -20,10 +20,9 @@ func main() {
 
 	s3Store := storage.NewS3Storage()
 	mysqlStore := storage.NewMySqlStorage()
+	defer mysqlStore.MySql.Close()
 
 	server := api.NewServer(addr, mysqlStore, s3Store,
 		time.Duration(readTimeOut)*time.Second, time.Duration(writeTimeOut)*time.Second)
 	log.Fatal(server.Start())
-
-	mysqlStore.MySql.Close()
 }
