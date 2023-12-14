@@ -120,7 +120,7 @@ jobs:
       - name: (if on main and upstream) Push the newly built image to Quay.io
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
-
+      
       - uses: webfactory/ssh-agent@v0.8.0
         name: (if on main and upstream) Add SSH key to agent
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
@@ -130,4 +130,4 @@ jobs:
         # run ansible deployment to deploy the new image to the cluster
       - name: (if on main and upstream) Deploy the newly built image to the cluster
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
-        run: ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml
+        run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml
