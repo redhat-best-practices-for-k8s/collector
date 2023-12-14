@@ -23,7 +23,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySq
 	ocpVersion := params[2]
 	executedBy := params[3]
 
-	// 3. Validate partner's credentials, for non-existent partner create an entry in the database
+	// 2. Validate partner's credentials, for non-existent partner create an entry in the database
 	// which he has to use each time even when the claim file error happens
 	err := VerifyCredentialsAndCreateIfNotExists(partnerName, decodedPassword, db)
 	if err != nil {
@@ -31,7 +31,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySq
 		return
 	}
 
-	// 4. Store claim + claim result into the database
+	// 3. Store claim + claim result into the database
 	if !util.StoreClaimFileInDatabase(db, claimResults, partnerName, ocpVersion, executedBy) {
 		util.WriteError(w, util.ClaimFileError, err.Error())
 		return
