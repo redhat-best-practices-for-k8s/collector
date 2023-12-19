@@ -1,0 +1,21 @@
+---
+name: 'Perfrom a GET request to collector'
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+env:
+  ENDPOINT: "44.195.143.94"
+defaults:
+  run:
+    shell: bash
+jobs:
+  get-from-collector:
+    name: 'Perfrom a GET request to collector'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Perfrom a GET request to collector'
+        run: |
+          curl $ENDPOINT
+          if [ $? -ne 0 ]; then
+            exit 1
+          fi
