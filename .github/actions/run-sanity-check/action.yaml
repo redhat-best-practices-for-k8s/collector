@@ -12,6 +12,6 @@ runs:
   using: 'composite'
   steps:
     - name: Run sanity check script
-      run: ENDPOINT=http://localhost:8080 COLLECTOR_USERNAME=admin COLLECTOR_PASSWORD=adminpa55 ./scripts/sanity-check.sh
+      run: ENDPOINT=http://localhost:8080 COLLECTOR_USERNAME=admin COLLECTOR_PASSWORD=password ./scripts/sanity-check.sh
       working-directory: ${{ inputs.working_directory }}
       shell: bash
