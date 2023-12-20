@@ -15,7 +15,4 @@ jobs:
     steps:
       - name: 'Perfrom a GET request to collector'
         run: |
-          curl $ENDPOINT
-          if [ $? -ne 0 ]; then
-            exit 1
-          fi
+          curl $ENDPOINT || exit $?
