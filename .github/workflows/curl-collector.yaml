@@ -13,6 +13,6 @@ jobs:
     name: 'Perform a GET request to collector'
     runs-on: ubuntu-22.04
     steps:
-      - name: 'Perfrom a GET request to collector'
+      - name: 'Perform a GET request to collector'
         run: |
           curl $ENDPOINT || exit $?
