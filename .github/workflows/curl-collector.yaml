@@ -1,5 +1,5 @@
 ---
-name: 'Perfrom a GET request to collector'
+name: 'Perform a GET request to collector'
 on:
   schedule:
     - cron: "0 */6 * * *"
