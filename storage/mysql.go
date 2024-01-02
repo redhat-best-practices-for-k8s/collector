@@ -7,16 +7,16 @@ import (
 	"github.com/test-network-function/collector/util"
 )
 
-type MySqlStorage struct{ MySql *sql.DB }
+type MySQLStorage struct{ MySql *sql.DB }
 
-func (s *MySqlStorage) Get() *MySqlStorage {
-	return NewMySqlStorage()
+func (s *MySQLStorage) Get() *MySQLStorage {
+	return NewMySQLStorage()
 }
 
 // constructor
-func NewMySqlStorage() *MySqlStorage {
+func NewMySQLStorage() *MySQLStorage {
 
-	logrus.Info("Retrieving database infomation")
+	logrus.Info("Retrieving database information")
 	DBUsername, DBPassword, DBURL, DBPort := util.GetDatabaseEnvVars()
 
 	DBConnStr := DBUsername + ":" + DBPassword + "@tcp(" + DBURL + ":" + DBPort + ")/"
@@ -31,5 +31,5 @@ func NewMySqlStorage() *MySqlStorage {
 		return nil
 	}
 	logrus.Info("Connection successful")
-	return &MySqlStorage{MySql: db}
+	return &MySQLStorage{MySql: db}
 }

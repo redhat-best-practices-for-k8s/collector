@@ -7,7 +7,7 @@ import (
 	"github.com/test-network-function/collector/util"
 )
 
-func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySqlStorage) {
+func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySQLStorage) {
 	db := storage.MySql
 	defer db.Close()
 

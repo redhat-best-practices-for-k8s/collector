@@ -81,12 +81,12 @@ func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partn
 	}
 
 	// store claim
-	success, claimId := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, tx)
+	success, claimID := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, tx)
 	if !success {
 		return false
 	}
 
-	success = storeClaimResultIntoDatabase(claimResult, claimId, tx)
+	success = storeClaimResultIntoDatabase(claimResult, claimID, tx)
 	if !success {
 		return false
 	}
@@ -102,9 +102,9 @@ func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partn
 	return true
 }
 
-func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimId int64, tx *sql.Tx) bool {
+func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimID int64, tx *sql.Tx) bool {
 	for _, cr := range claimResults {
-		_, err := tx.Exec(InsertToClaimResSQLCmd, claimId, cr.SuiteName, cr.TestID, cr.TesStatus)
+		_, err := tx.Exec(InsertToClaimResSQLCmd, claimID, cr.SuiteName, cr.TestID, cr.TesStatus)
 		if err != nil {
 			HandleTransactionRollback(tx, ExecQueryErr, err)
 			return false
@@ -115,17 +115,17 @@ func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimId int6
 }
 
 // Inserts into claim table and returns the id
-func storeClaimIntoDatabase(partnerName, executedBy, ocpVersion string, tx *sql.Tx) (bool, int64) {
+func storeClaimIntoDatabase(partnerName, executedBy, ocpVersion string, tx *sql.Tx) (success bool, claimID int64) {
 	result, err := tx.Exec(InsertToClaimSQLCmd, ocpVersion, executedBy, time.Now(), partnerName)
 	if err != nil {
 		HandleTransactionRollback(tx, ExecQueryErr, err)
 		return false, -1
 	}
 	logrus.Info("Claim is stored into table successfully.")
-	claimId, err := result.LastInsertId()
+	claimID, err = result.LastInsertId()
 	if err != nil {
 		HandleTransactionRollback(tx, ExecQueryErr, err)
 		return false, -1
 	}
-	return true, claimId
+	return true, claimID
 }

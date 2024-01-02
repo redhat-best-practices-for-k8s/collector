@@ -38,7 +38,7 @@ func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimR
 	ocpVersion := versions["ocp"].(string)
 
 	// validate results in claim results in JSON
-	isValid, claimResults := verifyClaimResultInJson(w, claimFileMap)
+	isValid, claimResults := verifyClaimResultInJSON(w, claimFileMap)
 	if !isValid {
 		return nil, nil, false
 	}
@@ -70,11 +70,11 @@ func validateGetRequest(w http.ResponseWriter, r *http.Request, db *sql.DB) (str
 
 /*
 The validation is done at first, so that we do not keep database transaction open for validation
-to reduce network bandwith to the remote RDS. Also, since the claim file structure can be changed in
+to reduce network bandwidth to the remote RDS. Also, since the claim file structure can be changed in
 the future, validation is kept separate from database insert which gives us less effort to make code
 changes.
 */
-func verifyClaimResultInJson(w http.ResponseWriter, claimFileMap map[string]interface{}) (bool, []types.ClaimResult) {
+func verifyClaimResultInJSON(w http.ResponseWriter, claimFileMap map[string]interface{}) (bool, []types.ClaimResult) {
 	results, keyExists := claimFileMap[util.ResultsTag].(map[string]interface{})
 	if !keyExists {
 		util.WriteError(w, util.MalformedClaimFileErr, util.ResultsFieldMissingErr)
@@ -96,7 +96,6 @@ func verifyClaimResultInJson(w http.ResponseWriter, claimFileMap map[string]inte
 		}
 
 		claimResults = append(claimResults, claimResult)
-
 	}
 
 	return true, claimResults

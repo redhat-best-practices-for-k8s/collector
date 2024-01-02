@@ -11,13 +11,13 @@ import (
 
 type Server struct {
 	listenAddr   string
-	database     *storage.MySqlStorage
+	database     *storage.MySQLStorage
 	objectStore  *storage.S3Storage
 	readTimeout  time.Duration
 	writeTimeout time.Duration
 }
 
-func NewServer(listenAddr string, db *storage.MySqlStorage, objectStore *storage.S3Storage, rTimeout, wTimeout time.Duration) *Server {
+func NewServer(listenAddr string, db *storage.MySQLStorage, objectStore *storage.S3Storage, rTimeout, wTimeout time.Duration) *Server {
 	return &Server{
 		listenAddr:   listenAddr,
 		database:     db,

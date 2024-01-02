@@ -11,7 +11,7 @@ import (
 	"github.com/test-network-function/collector/util"
 )
 
-func ResultsHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySqlStorage) {
+func ResultsHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySQLStorage) {
 	logrus.Info("Handling the GET request")
 	db := storage.MySql
 	partnerName, isValid := validateGetRequest(w, r, db)

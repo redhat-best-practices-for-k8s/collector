@@ -12,14 +12,13 @@ import (
 )
 
 func main() {
-
 	readTimeOut, writeTimeOut, addr, envErr := util.GetServerEnvVars()
 	if envErr != "" {
 		logrus.Errorf(util.ServerEnvVarsError, envErr)
 	}
 
 	s3Store := storage.NewS3Storage()
-	mysqlStore := storage.NewMySqlStorage()
+	mysqlStore := storage.NewMySQLStorage()
 	defer mysqlStore.MySql.Close()
 
 	server := api.NewServer(addr, mysqlStore, s3Store,

@@ -53,17 +53,16 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func GetDatabaseEnvVars() (user, password, dbUrl, port string) {
+func GetDatabaseEnvVars() (user, password, dbURL, port string) {
 	user = getEnv("DB_USER", "collectoruser")
 	password = getEnv("DB_PASSWORD", "password")
-	dbUrl = getEnv("DB_URL", "mysql.cnf-collector.svc.cluster.local")
+	dbURL = getEnv("DB_URL", "mysql.cnf-collector.svc.cluster.local")
 	port = getEnv("DB_PORT", "3306")
 
-	return user, password, dbUrl, port
+	return user, password, dbURL, port
 }
 
 func GetServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) {
-
 	readTimeOutStr := getEnv("SERVER_READ_TIMEOUT", "20")
 	writeTimeOutStr := getEnv("SERVER_WRITE_TIMEOUT", "20")
 	adrr := getEnv("SERVER_ADDR", ":80")
@@ -82,6 +81,6 @@ func GetServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) 
 	return readTimeOutInt, writeTimeOutInt, adrr, ""
 }
 
-func GetS3ConnectEnvVars() (string, string) {
+func GetS3ConnectEnvVars() (accessKey string, secretAccessKey string) {
 	return getEnv("AWS_ACCESS_KEY", ""), getEnv("AWS_SECRET_ACCESS_KEY", "")
 }
