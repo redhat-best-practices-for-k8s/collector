@@ -18,7 +18,7 @@ func WriteError(w http.ResponseWriter, context, err string) {
 	logrus.Errorf(context, err)
 }
 
-func getClaimFile(w http.ResponseWriter, r *http.Request) multipart.File {
+func GetClaimFile(w http.ResponseWriter, r *http.Request) multipart.File {
 	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
 	if err != nil {
 		WriteError(w, RequestContentTypeErr, err.Error())
@@ -34,7 +34,7 @@ func getClaimFile(w http.ResponseWriter, r *http.Request) multipart.File {
 }
 
 func ReadClaimFile(w http.ResponseWriter, r *http.Request) []byte {
-	claimFile := getClaimFile(w, r)
+	claimFile := GetClaimFile(w, r)
 	defer claimFile.Close()
 
 	claimFileBytes, err := io.ReadAll(claimFile)
@@ -54,9 +54,9 @@ func getEnv(key, fallback string) string {
 }
 
 func GetDatabaseEnvVars() (user, password, dbUrl, port string) {
-	user = getEnv("DB_USER", "admin")
-	password = getEnv("DB_PASSWORD", "collector1")
-	dbUrl = getEnv("DB_URL", "collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com")
+	user = getEnv("DB_USER", "collectoruser")
+	password = getEnv("DB_PASSWORD", "password")
+	dbUrl = getEnv("DB_URL", "mysql.cnf-collector.svc.cluster.local")
 	port = getEnv("DB_PORT", "3306")
 
 	return user, password, dbUrl, port
