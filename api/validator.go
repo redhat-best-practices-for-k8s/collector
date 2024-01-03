@@ -103,7 +103,7 @@ func verifyClaimResultInJSON(w http.ResponseWriter, claimFileMap map[string]inte
 
 func validateInnerResultsKeys(results map[string]interface{}, testName string) (
 	testData map[string]interface{}, testID map[string]interface{}, err string) {
-	testData, _ = results[testName].([]interface{})[0].(map[string]interface{})
+	testData, _ = results[testName].(map[string]interface{})
 
 	testID, keyExists := testData["testID"].(map[string]interface{})
 	if !keyExists {
