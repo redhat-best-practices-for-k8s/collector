@@ -110,7 +110,7 @@ func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimID int6
 			return false
 		}
 	}
-	logrus.Info("Claim is stored into table CLAIM_RESULT successfully.")
+	logrus.Info(FileStoredIntoClaimResultTableSuccessfully)
 	return true
 }
 
@@ -121,7 +121,7 @@ func storeClaimIntoDatabase(partnerName, executedBy, ocpVersion string, tx *sql.
 		HandleTransactionRollback(tx, ExecQueryErr, err)
 		return false, -1
 	}
-	logrus.Info("Claim is stored into table successfully.")
+	logrus.Info(FileStoredIntoClaimTableSuccessfully)
 	claimID, err = result.LastInsertId()
 	if err != nil {
 		HandleTransactionRollback(tx, ExecQueryErr, err)

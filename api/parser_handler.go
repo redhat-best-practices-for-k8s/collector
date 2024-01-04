@@ -37,17 +37,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySQ
 		return
 	}
 
-	/*
-	   // Successfully write to S3
-	   claimFile := getClaimFile(w, r)
-	   uploadFileToS3(claimFile, partnerName)
-	   // Succfully uploaded file
-	   _, writeErr := w.Write([]byte(SuccessUploadingFileMSG + "\n"))
-
-	   	if writeErr != nil {
-	   		logrus.Errorf(WritingResponseErr, writeErr)
-	   	}
-
-	   logrus.Info(SuccessUploadingFileMSG)
-	*/
+	// 4. Store file to S3
+	claimFile := util.GetClaimFile(w, r)
+	uploadFileToS3(claimFile, partnerName)
 }

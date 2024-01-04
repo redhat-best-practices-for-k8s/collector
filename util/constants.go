@@ -56,8 +56,9 @@ const ExtractPartnerAndPasswordCmd = `SELECT encoded_password FROM cnf.authentic
 const InsertPartnerToAuthSQLCmd = `INSERT INTO cnf.authenticator (partner_name, encoded_password) VALUES (?, ?)`
 const ParseLowerBound = 10
 const ParseUpperBound = 20
-
-const SuccessUploadingFileMSG = "File was uploaded successfully!"
+const FileStoredIntoClaimTableSuccessfully = `Claim is stored into table successfully.`
+const FileStoredIntoClaimResultTableSuccessfully = `Claim is stored into table CLAIM_RESULT successfully.`
+const FileUploadedSuccessfullyToBucket= `Claim file was successfully uploaded bucket %q\n`
 
 // results.go constants
 const SelectAllFromClaimByPartner = "SELECT * FROM cnf.claim WHERE partner_name = ?"
