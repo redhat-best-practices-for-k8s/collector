@@ -19,8 +19,8 @@ const TestIDIDMissingErr = "id subfield of %s's testID field is missing."
 const ResultsFieldMissingErr = "results field is missing."
 const ExecutedByMissingErr = "Executed by value is missing."
 const MalformedJSONFileErr = "Malformed json file."
-const InvalidPasswordErr = "Wrong password"
-const InvalidUsernameErr = "Partner is not found"
+const InvalidPasswordErr = "wrong password"
+const InvalidUsernameErr = "partner is not found"
 const RollbackErr = "Error found while Rollbacking transaction: %s"
 const ExecQueryErr = "Error found while executing a mysql query: %s"
 const ScanDBFieldErr = "Error found while scanning db field: %s"
@@ -30,6 +30,7 @@ const AuthError = "Error found while authenticating partner's password: %s"
 const ClaimFileError = "Error while storing the claim file in the database"
 const EncodingPasswordError = "Failed encoding password." // #nosec
 const ServerIsUpMsg = "Server is up."
+const SuccessUploadingFileMSG = "File was uploaded successfully!"
 const ServerReadTimeOutEnvVarErr = "SERVER_READ_TIMEOUT environment variable must be set."
 const ServerWriteTimeOutEnvVarErr = "SERVER_WRITE_TIMEOUT environment variable must be set."
 const ServerAddrEnvVarErr = "SERVER_ADDR environment variable must be set."
@@ -58,7 +59,7 @@ const ParseLowerBound = 10
 const ParseUpperBound = 20
 const FileStoredIntoClaimTableSuccessfully = `Claim is stored into table successfully.`
 const FileStoredIntoClaimResultTableSuccessfully = `Claim is stored into table CLAIM_RESULT successfully.`
-const FileUploadedSuccessfullyToBucket= `Claim file was successfully uploaded bucket %q\n`
+const FileUploadedSuccessfullyToBucket = `Claim file was successfully uploaded bucket %q`
 
 // results.go constants
 const SelectAllFromClaimByPartner = "SELECT * FROM cnf.claim WHERE partner_name = ?"

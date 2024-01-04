@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -19,9 +18,9 @@ func main() {
 
 	s3Store := storage.NewS3Storage()
 	mysqlStore := storage.NewMySQLStorage()
-	defer mysqlStore.MySql.Close()
+	defer mysqlStore.MySQL.Close()
 
 	server := api.NewServer(addr, mysqlStore, s3Store,
 		time.Duration(readTimeOut)*time.Second, time.Duration(writeTimeOut)*time.Second)
-	log.Fatal(server.Start())
+	logrus.Fatal(server.Start())
 }

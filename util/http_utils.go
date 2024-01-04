@@ -81,6 +81,6 @@ func GetServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) 
 	return readTimeOutInt, writeTimeOutInt, adrr, ""
 }
 
-func GetS3ConnectEnvVars() (accessKey string, secretAccessKey string) {
+func GetS3ConnectEnvVars() (accessKey, secretAccessKey string) {
 	return getEnv("AWS_ACCESS_KEY", ""), getEnv("AWS_SECRET_ACCESS_KEY", "")
 }

@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"log"
 	"mime/multipart"
 	"time"
 
@@ -11,11 +10,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/sirupsen/logrus"
 	"github.com/test-network-function/collector/util"
 )
 
 const (
-	Region       = "us-east-1"     // Region
+	Region       = "us-east-1" // Region
 	S3BucketName = "cnf-suite" // Bucket
 )
 
@@ -25,14 +25,14 @@ func configS3() *s3.Client {
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(creds), config.WithRegion(Region))
 	if err != nil {
-		log.Printf("error: %v", err)
+		logrus.Errorf("error: %v", err)
 		return nil
 	}
 
 	return s3.NewFromConfig(cfg)
 }
 
-func uploadFileToS3(file multipart.File, partner string) {
+func uploadFileToS3(file multipart.File, partner string) bool {
 	awsS3Client := configS3()
 	uploader := manager.NewUploader(awsS3Client)
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
@@ -41,9 +41,10 @@ func uploadFileToS3(file multipart.File, partner string) {
 		Body:   file,
 	})
 	if err != nil {
-		log.Printf("error: %v", err)
-		return
+		logrus.Errorf("error: %v", err)
+		return false
 	}
 
-	log.Printf(util.FileUploadedSuccessfullyToBucket, S3BucketName)
+	logrus.Infof(util.FileUploadedSuccessfullyToBucket, S3BucketName)
+	return true
 }

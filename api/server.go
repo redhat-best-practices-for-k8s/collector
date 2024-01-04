@@ -10,27 +10,27 @@ import (
 )
 
 type Server struct {
-	listenAddr   string
-	database     *storage.MySQLStorage
-	objectStore  *storage.S3Storage
-	readTimeout  time.Duration
-	writeTimeout time.Duration
+	database    *storage.MySQLStorage
+	objectStore *storage.S3Storage
+	server      *http.Server
 }
 
 func NewServer(listenAddr string, db *storage.MySQLStorage, objectStore *storage.S3Storage, rTimeout, wTimeout time.Duration) *Server {
 	return &Server{
-		listenAddr:   listenAddr,
-		database:     db,
-		objectStore:  objectStore,
-		readTimeout:  rTimeout,
-		writeTimeout: wTimeout,
+		database:    db,
+		objectStore: objectStore,
+		server: &http.Server{
+			Addr:         listenAddr,
+			ReadTimeout:  rTimeout,
+			WriteTimeout: wTimeout,
+		},
 	}
 }
 
 func (s *Server) Start() error {
 	logrus.Info("Starting server")
 	http.HandleFunc("/", s.handler)
-	return http.ListenAndServe(s.listenAddr, nil)
+	return s.server.ListenAndServe()
 }
 
 func (s *Server) handler(w http.ResponseWriter, r *http.Request) {

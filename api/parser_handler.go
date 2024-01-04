@@ -3,12 +3,13 @@ package api
 import (
 	"net/http"
 
+	"github.com/sirupsen/logrus"
 	"github.com/test-network-function/collector/storage"
 	"github.com/test-network-function/collector/util"
 )
 
-func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySQLStorage) {
-	db := storage.MySql
+func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage.MySQLStorage) {
+	db := mysqlStorage.MySQL
 	defer db.Close()
 
 	// 1. Validate the request (includes validation of the claim file format)
@@ -39,5 +40,13 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, storage *storage.MySQ
 
 	// 4. Store file to S3
 	claimFile := util.GetClaimFile(w, r)
-	uploadFileToS3(claimFile, partnerName)
+	if !uploadFileToS3(claimFile, partnerName) {
+		return
+	}
+
+	// Succfully uploaded file
+	_, writeErr := w.Write([]byte(util.SuccessUploadingFileMSG + "\n"))
+	if writeErr != nil {
+		logrus.Errorf(util.WritingResponseErr, writeErr)
+	}
 }
