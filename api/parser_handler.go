@@ -44,7 +44,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 		return
 	}
 
-	// Succfully uploaded file
+	// Successfully uploaded file
 	_, writeErr := w.Write([]byte(util.SuccessUploadingFileMSG + "\n"))
 	if writeErr != nil {
 		logrus.Errorf(util.WritingResponseErr, writeErr)
