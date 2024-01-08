@@ -104,7 +104,7 @@ func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partn
 
 func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimID int64, tx *sql.Tx) bool {
 	for _, cr := range claimResults {
-		_, err := tx.Exec(InsertToClaimResSQLCmd, claimID, cr.SuiteName, cr.TestID, cr.TesStatus)
+		_, err := tx.Exec(InsertToClaimResSQLCmd, claimID, cr.SuiteName, cr.TestID, cr.TestStatus)
 		if err != nil {
 			HandleTransactionRollback(tx, ExecQueryErr, err)
 			return false

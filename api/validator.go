@@ -90,9 +90,9 @@ func verifyClaimResultInJSON(w http.ResponseWriter, claimFileMap map[string]inte
 		}
 
 		claimResult := types.ClaimResult{
-			SuiteName: testID["suite"].(string),
-			TestID:    testID["id"].(string),
-			TesStatus: testData["state"].(string),
+			SuiteName:  testID["suite"].(string),
+			TestID:     testID["id"].(string),
+			TestStatus: testData["state"].(string),
 		}
 
 		claimResults = append(claimResults, claimResult)

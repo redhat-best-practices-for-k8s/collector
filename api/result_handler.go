@@ -70,7 +70,7 @@ func mapClaimResultsToStruct(claimResultsRows *sql.Rows) []types.ClaimResult {
 	var claimResults []types.ClaimResult
 	for claimResultsRows.Next() {
 		var row types.ClaimResult
-		err := claimResultsRows.Scan(&row.ID, &row.ClaimID, &row.SuiteName, &row.TestID, &row.TesStatus)
+		err := claimResultsRows.Scan(&row.ID, &row.ClaimID, &row.SuiteName, &row.TestID, &row.TestStatus)
 		if err != nil {
 			logrus.Errorf(util.ScanDBFieldErr, err)
 		}

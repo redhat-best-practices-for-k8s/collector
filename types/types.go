@@ -12,11 +12,11 @@ type Claim struct {
 }
 
 type ClaimResult struct {
-	ID        int    `json:"id"`
-	ClaimID   int    `json:"claim_id"`
-	SuiteName string `json:"suite_name"`
-	TestID    string `json:"test_id"`
-	TesStatus string `json:"test_status"`
+	ID         int    `json:"id"`
+	ClaimID    int    `json:"claim_id"`
+	SuiteName  string `json:"suite_name"`
+	TestID     string `json:"test_id"`
+	TestStatus string `json:"test_status"`
 }
 
 type ClaimCollector struct {
