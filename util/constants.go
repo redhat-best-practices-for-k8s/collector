@@ -1,4 +1,4 @@
-package actions
+package util
 
 const FailedToConnectDBErr = "Error found while trying to connect db: %s"
 const InvalidRequestErr = "Invalid request."
@@ -19,16 +19,18 @@ const TestIDIDMissingErr = "id subfield of %s's testID field is missing."
 const ResultsFieldMissingErr = "results field is missing."
 const ExecutedByMissingErr = "Executed by value is missing."
 const MalformedJSONFileErr = "Malformed json file."
-const InvalidPasswordErr = "invalid password to given partner's name"
-const InvalidUsernameErr = "invalid partner name"
+const InvalidPasswordErr = "wrong password"
+const InvalidUsernameErr = "partner is not found"
 const RollbackErr = "Error found while Rollbacking transaction: %s"
 const ExecQueryErr = "Error found while executing a mysql query: %s"
 const ScanDBFieldErr = "Error found while scanning db field: %s"
 const BeginTxErr = "Error found while beginning transaction: %s"
 const CommitTxErr = "Error found while committing transaction: %s"
 const AuthError = "Error found while authenticating partner's password: %s"
+const ClaimFileError = "Error while storing the claim file in the database"
 const EncodingPasswordError = "Failed encoding password." // #nosec
 const ServerIsUpMsg = "Server is up."
+const SuccessUploadingFileMSG = "File was uploaded successfully!"
 const ServerReadTimeOutEnvVarErr = "SERVER_READ_TIMEOUT environment variable must be set."
 const ServerWriteTimeOutEnvVarErr = "SERVER_WRITE_TIMEOUT environment variable must be set."
 const ServerAddrEnvVarErr = "SERVER_ADDR environment variable must be set."
@@ -44,7 +46,7 @@ const PartnerNameInputName = "partner_name"
 const DedcodedPasswordInputName = "decoded_password"
 
 const UseCollectorSQLCmd = `USE cnf; `
-const InsertToClaimSQLCmd = `INSERT INTO claim 
+const InsertToClaimSQLCmd = `INSERT INTO claim
 								(cnf_version, executed_by, upload_time, partner_name)
 								VALUES (?, ?, ?, ?);`
 const InsertToClaimResSQLCmd = `INSERT INTO claim_result
@@ -55,8 +57,9 @@ const ExtractPartnerAndPasswordCmd = `SELECT encoded_password FROM cnf.authentic
 const InsertPartnerToAuthSQLCmd = `INSERT INTO cnf.authenticator (partner_name, encoded_password) VALUES (?, ?)`
 const ParseLowerBound = 10
 const ParseUpperBound = 20
-
-const SuccessUploadingFileMSG = "File was uploaded successfully!"
+const FileStoredIntoClaimTableSuccessfully = `Claim is stored into table successfully.`
+const FileStoredIntoClaimResultTableSuccessfully = `Claim is stored into table CLAIM_RESULT successfully.`
+const FileUploadedSuccessfullyToBucket = `Claim file was successfully uploaded bucket %q`
 
 // results.go constants
 const SelectAllFromClaimByPartner = "SELECT * FROM cnf.claim WHERE partner_name = ?"
