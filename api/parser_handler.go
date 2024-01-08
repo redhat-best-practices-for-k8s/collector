@@ -10,7 +10,6 @@ import (
 
 func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage.MySQLStorage) {
 	db := mysqlStorage.MySQL
-	defer db.Close()
 
 	// 1. Validate the request (includes validation of the claim file format)
 	claimResults, params, isValid := validatePostRequest(w, r)
