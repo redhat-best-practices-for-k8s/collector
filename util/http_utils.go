@@ -65,7 +65,7 @@ func GetDatabaseEnvVars() (user, password, dbURL, port string) {
 func GetServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) {
 	readTimeOutStr := getEnv("SERVER_READ_TIMEOUT", "20")
 	writeTimeOutStr := getEnv("SERVER_WRITE_TIMEOUT", "20")
-	adrr := getEnv("SERVER_ADDR", ":80")
+	addr = getEnv("SERVER_ADDR", ":80")
 
 	// Convert read and write time outs to integers.
 	readTimeOutInt, atoiErr := strconv.Atoi(readTimeOutStr)
@@ -78,7 +78,7 @@ func GetServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) 
 		return -1, -1, "", atoiErr.Error()
 	}
 
-	return readTimeOutInt, writeTimeOutInt, adrr, ""
+	return readTimeOutInt, writeTimeOutInt, addr, ""
 }
 
 func GetS3ConnectEnvVars() (accessKey, secretAccessKey string) {

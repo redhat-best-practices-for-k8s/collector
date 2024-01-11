@@ -72,14 +72,14 @@ run-collector: clone-tnf-secrets stop-running-collector-container
 	docker run -d -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
-		-e DB_URL='172.18.0.1' \
+		-e DB_URL='localhost' \
 		-e DB_PORT='3306' \
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
 		-e SERVER_WRITE_TIMEOUT=10 \
 		-e AWS_ACCESS_KEY=$(shell jq -r ".CollectorAWSAccessKey" "./tnf-secrets/collector-secrets.json") \
 		-e AWS_SECRET_ACCESS_KEY=$(shell jq -r ".CollectorAWSSecretAccessKey" "./tnf-secrets/collector-secrets.json") \
-		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:latest
+		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
 	rm -rf tnf-secrets
 
 # Runs collector on rds with docker
