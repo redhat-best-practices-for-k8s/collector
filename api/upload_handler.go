@@ -37,7 +37,7 @@ func uploadFileToS3(file multipart.File, partner string) bool {
 	uploader := manager.NewUploader(awsS3Client)
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(S3BucketName),
-		Key:    aws.String("claim_" + partner + "_" + time.Now().Format("2006-01-02-15:04:05")),
+		Key:    aws.String(partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")),
 		Body:   file,
 	})
 	if err != nil {
