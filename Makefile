@@ -87,7 +87,7 @@ run-collector-rds: clone-tnf-secrets stop-running-collector-container
 	docker run -d -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
-		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
+		-e DB_URL='database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
 		-e DB_PORT='3306' \
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
@@ -102,7 +102,7 @@ run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
 	docker run -d --name ${COLLECTOR_CONTAINER_NAME} -p ${HOST_PORT}:${TARGET_PORT} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
-		-e DB_URL='collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
+		-e DB_URL='database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
 		-e DB_PORT='3306'\
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
