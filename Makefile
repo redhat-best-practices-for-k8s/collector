@@ -77,6 +77,8 @@ run-collector: clone-tnf-secrets stop-running-collector-container
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
 		-e SERVER_WRITE_TIMEOUT=10 \
+		-e AWS_ACCESS_KEY=$(shell jq -r ".CollectorAWSAccessKey" "./tnf-secrets/collector-secrets.json") \
+		-e AWS_SECRET_ACCESS_KEY=$(shell jq -r ".CollectorAWSSecretAccessKey" "./tnf-secrets/collector-secrets.json") \
 		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
 	rm -rf tnf-secrets
 
@@ -90,6 +92,8 @@ run-collector-rds: clone-tnf-secrets stop-running-collector-container
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
 		-e SERVER_WRITE_TIMEOUT=10 \
+		-e AWS_ACCESS_KEY=$(shell jq -r ".CollectorAWSAccessKey" "./tnf-secrets/collector-secrets.json") \
+		-e AWS_SECRET_ACCESS_KEY=$(shell jq -r ".CollectorAWSSecretAccessKey" "./tnf-secrets/collector-secrets.json") \
 		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
 	rm -rf tnf-secrets
 
@@ -103,6 +107,8 @@ run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
 		-e SERVER_WRITE_TIMEOUT=10 \
+		-e AWS_ACCESS_KEY=$(shell jq -r ".CollectorAWSAccessKey" "./tnf-secrets/collector-secrets.json") \
+		-e AWS_SECRET_ACCESS_KEY=$(shell jq -r ".CollectorAWSSecretAccessKey" "./tnf-secrets/collector-secrets.json") \
 		-d ${COLLECTOR_IMAGE_NAME}
 	rm -rf tnf-secrets
 
