@@ -7,7 +7,7 @@ datasources:
     access: proxy
     orgId: 1
     uid: 0
-    url: collector-db.cn9luyhgvfkp.us-east-1.rds.amazonaws.com:3306
+    url: database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.com:3306
     user: MysqlUsername # value in tnf-secrets/collector-secrets.json
     database: cnf
     isDefault: true
