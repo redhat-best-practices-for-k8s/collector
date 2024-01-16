@@ -66,7 +66,7 @@ func GetCollectorTablesByPartner(db *sql.DB, partnerName string) (claimRows, cla
 }
 
 // This function stores the claim and claim result into the database in a transaction
-func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion string) bool {
+func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion, s3Key string) bool {
 	// Begin transaction here
 	tx, err := db.Begin()
 	if err != nil {
@@ -81,7 +81,7 @@ func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partn
 	}
 
 	// store claim
-	success, claimID := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, tx)
+	success, claimID := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, s3Key, tx)
 	if !success {
 		return false
 	}
@@ -115,8 +115,8 @@ func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimID int6
 }
 
 // Inserts into claim table and returns the id
-func storeClaimIntoDatabase(partnerName, executedBy, ocpVersion string, tx *sql.Tx) (success bool, claimID int64) {
-	result, err := tx.Exec(InsertToClaimSQLCmd, ocpVersion, executedBy, time.Now(), partnerName)
+func storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, s3Key string, tx *sql.Tx) (success bool, claimID int64) {
+	result, err := tx.Exec(InsertToClaimSQLCmd, ocpVersion, executedBy, time.Now(), partnerName, s3Key)
 	if err != nil {
 		HandleTransactionRollback(tx, ExecQueryErr, err)
 		return false, -1

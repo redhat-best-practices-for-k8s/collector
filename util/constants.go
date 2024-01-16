@@ -47,8 +47,8 @@ const DedcodedPasswordInputName = "decoded_password"
 
 const UseCollectorSQLCmd = `USE cnf; `
 const InsertToClaimSQLCmd = `INSERT INTO claim
-								(cnf_version, executed_by, upload_time, partner_name)
-								VALUES (?, ?, ?, ?);`
+								(cnf_version, executed_by, upload_time, partner_name, s3_key)
+								VALUES (?, ?, ?, ?, ?);`
 const InsertToClaimResSQLCmd = `INSERT INTO claim_result
 							(claim_id, suite_name, test_id, test_status)
 							VALUES (?, ?, ?, ?);`

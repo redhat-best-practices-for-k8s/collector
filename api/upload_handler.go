@@ -26,20 +26,21 @@ func configS3(region, accessKey, secretAccessKey string) *s3.Client {
 	return s3.NewFromConfig(cfg)
 }
 
-func uploadFileToS3(file multipart.File, executedBy, partner string) bool {
+func uploadFileToS3(file multipart.File, executedBy, partner string) (string, bool) {
 	s3BucketName, region, accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
 	awsS3Client := configS3(region, accessKey, secretAccessKey)
 	uploader := manager.NewUploader(awsS3Client)
+	fileKey := executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(s3BucketName),
-		Key:    aws.String(executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")),
+		Bucket: aws.String(S3BucketName),
+		Key:    aws.String(fileKey),
 		Body:   file,
 	})
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return false
+		return "", false
 	}
 
-	logrus.Infof(util.FileUploadedSuccessfullyToBucket, s3BucketName)
-	return true
+	logrus.Infof(util.FileUploadedSuccessfullyToBucket, S3BucketName)
+	return fileKey, true
 }
