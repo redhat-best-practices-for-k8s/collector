@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"github.com/test-network-function/collector/storage"
@@ -18,10 +19,10 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	}
 
 	// Valid parameters for database calls
-	partnerName := params[0]
+	partnerName := strings.ToLower(params[0])
 	decodedPassword := params[1]
 	ocpVersion := params[2]
-	executedBy := params[3]
+	executedBy := strings.ToLower(params[3])
 
 	// 2. Validate partner's credentials, for non-existent partner create an entry in the database
 	// which he has to use each time even when the claim file error happens
@@ -39,7 +40,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 
 	// 4. Store file to S3
 	claimFile := util.GetClaimFile(w, r)
-	if !uploadFileToS3(claimFile, partnerName) {
+	if !uploadFileToS3(claimFile, executedBy, partnerName) {
 		return
 	}
 

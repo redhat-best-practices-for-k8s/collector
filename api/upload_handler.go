@@ -32,12 +32,12 @@ func configS3() *s3.Client {
 	return s3.NewFromConfig(cfg)
 }
 
-func uploadFileToS3(file multipart.File, partner string) bool {
+func uploadFileToS3(file multipart.File, executedBy, partner string) bool {
 	awsS3Client := configS3()
 	uploader := manager.NewUploader(awsS3Client)
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(S3BucketName),
-		Key:    aws.String(partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")),
+		Key:    aws.String(executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")),
 		Body:   file,
 	})
 	if err != nil {
