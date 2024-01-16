@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	Region       = "us-east-1" // Region
-	S3BucketName = "cnf-suite" // Bucket
+	Region       = "us-east-1"        // Region
+	S3BucketName = "cnf-suite-claims" // Bucket
 )
 
 func configS3() *s3.Client {
