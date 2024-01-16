@@ -21,8 +21,8 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	// Valid parameters for database calls
 	partnerName := strings.ToLower(params[0])
 	decodedPassword := params[1]
-	ocpVersion := params[2]
-	executedBy := strings.ToLower(params[3])
+	executedBy := strings.ToLower(params[2])
+	ocpVersion := params[3]
 
 	// 2. Validate partner's credentials, for non-existent partner create an entry in the database
 	// which he has to use each time even when the claim file error happens
