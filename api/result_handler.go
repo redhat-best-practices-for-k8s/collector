@@ -14,10 +14,11 @@ import (
 func ResultsHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage.MySQLStorage) {
 	logrus.Info("Handling the GET request")
 	db := mysqlStorage.MySQL
-	partnerName, isValid := validateGetRequest(w, r, db)
+	partnerName, err := validateGetRequest(r, db)
 
-	if !isValid {
-		logrus.Error("Authentication is not successful. No result returned")
+	if err != nil {
+		util.WriteError(w, err.Error())
+		logrus.Errorf(util.AuthError, err)
 		return
 	}
 

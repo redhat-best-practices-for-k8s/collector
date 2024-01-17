@@ -40,7 +40,7 @@ func deleteFileFromS3(awsS3Client *s3.Client, s3FileKey, s3BucketName string) {
 	logrus.Infof(util.FileHasBeenDeletedFromBucket, s3BucketName)
 }
 
-func uploadFileToS3(awsS3Client *s3.Client, file multipart.File, executedBy, partner, s3BucketName string) (string, bool) {
+func uploadFileToS3(awsS3Client *s3.Client, file multipart.File, executedBy, partner, s3BucketName string) (string, error) {
 	uploader := manager.NewUploader(awsS3Client)
 	s3FileKey := executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
@@ -49,10 +49,9 @@ func uploadFileToS3(awsS3Client *s3.Client, file multipart.File, executedBy, par
 		Body:   file,
 	})
 	if err != nil {
-		logrus.Errorf("error: %v", err)
-		return "", false
+		return "", err
 	}
 
 	logrus.Infof(util.FileUploadedSuccessfullyToBucket, s3BucketName)
-	return s3FileKey, true
+	return s3FileKey, nil
 }
