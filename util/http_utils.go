@@ -81,10 +81,10 @@ func GetServerEnvVars() (readTimeOutInt, writeTimeOutInt int, addr, err string) 
 	return readTimeOutInt, writeTimeOutInt, addr, ""
 }
 
-func GetS3ConnectEnvVars() (s3bucketName, region, accessKey, secretAccessKey string) {
-	s3bucketName = getEnv("S3_BUCKET_NAME", "")
+func GetS3ConnectEnvVars() (s3BucketName, region, accessKey, secretAccessKey string) {
+	s3BucketName = getEnv("S3_BUCKET_NAME", "")
 	region = getEnv("S3_BUCKET_REGION", "")
 	accessKey = getEnv("AWS_ACCESS_KEY", "")
 	secretAccessKey = getEnv("AWS_SECRET_ACCESS_KEY", "")
-	return s3bucketName, region, accessKey, secretAccessKey
+	return s3BucketName, region, accessKey, secretAccessKey
 }

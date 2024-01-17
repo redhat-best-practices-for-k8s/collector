@@ -27,11 +27,11 @@ func configS3(region, accessKey, secretAccessKey string) *s3.Client {
 }
 
 func uploadFileToS3(file multipart.File, executedBy, partner string) bool {
-	s3bucketName, region, accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
+	s3BucketName, region, accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
 	awsS3Client := configS3(region, accessKey, secretAccessKey)
 	uploader := manager.NewUploader(awsS3Client)
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(s3bucketName),
+		Bucket: aws.String(s3BucketName),
 		Key:    aws.String(executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")),
 		Body:   file,
 	})
@@ -40,6 +40,6 @@ func uploadFileToS3(file multipart.File, executedBy, partner string) bool {
 		return false
 	}
 
-	logrus.Infof(util.FileUploadedSuccessfullyToBucket, s3bucketName)
+	logrus.Infof(util.FileUploadedSuccessfullyToBucket, s3BucketName)
 	return true
 }
