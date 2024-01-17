@@ -30,6 +30,9 @@ LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification
 MYSQL_DEPLOYMENT_PATH = ./k8s/deployment/database.yaml
 COLLECTOR_DEPLOYMENT_PATH = ./k8s/deployment/app.yml
 
+S3_BUCKET_NAME?=cnf-suite-claims
+S3_BUCKET_REGION?=us-east-1
+
 .PHONY: all clean test
 
 # Build and run unit tests
@@ -79,6 +82,8 @@ run-collector: clone-tnf-secrets stop-running-collector-container
 		-e SERVER_WRITE_TIMEOUT=10 \
 		-e AWS_ACCESS_KEY=$(shell jq -r ".CollectorAWSAccessKey" "./tnf-secrets/collector-secrets.json") \
 		-e AWS_SECRET_ACCESS_KEY=$(shell jq -r ".CollectorAWSSecretAccessKey" "./tnf-secrets/collector-secrets.json") \
+		-e S3_BUCKET_NAME=${S3_BUCKET_NAME} \
+		-e S3_BUCKET_REGION=${S3_BUCKET_REGION} \
 		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
 	rm -rf tnf-secrets
 
@@ -94,6 +99,8 @@ run-collector-rds: clone-tnf-secrets stop-running-collector-container
 		-e SERVER_WRITE_TIMEOUT=10 \
 		-e AWS_ACCESS_KEY=$(shell jq -r ".CollectorAWSAccessKey" "./tnf-secrets/collector-secrets.json") \
 		-e AWS_SECRET_ACCESS_KEY=$(shell jq -r ".CollectorAWSSecretAccessKey" "./tnf-secrets/collector-secrets.json") \
+		-e S3_BUCKET_NAME=${S3_BUCKET_NAME} \
+		-e S3_BUCKET_REGION=${S3_BUCKET_REGION} \
 		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
 	rm -rf tnf-secrets
 
@@ -109,6 +116,8 @@ run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
 		-e SERVER_WRITE_TIMEOUT=10 \
 		-e AWS_ACCESS_KEY=$(shell jq -r ".CollectorAWSAccessKey" "./tnf-secrets/collector-secrets.json") \
 		-e AWS_SECRET_ACCESS_KEY=$(shell jq -r ".CollectorAWSSecretAccessKey" "./tnf-secrets/collector-secrets.json") \
+		-e S3_BUCKET_NAME=${S3_BUCKET_NAME} \
+		-e S3_BUCKET_REGION=${S3_BUCKET_REGION} \
 		-d ${COLLECTOR_IMAGE_NAME}
 	rm -rf tnf-secrets
 

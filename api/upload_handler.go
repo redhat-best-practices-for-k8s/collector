@@ -14,16 +14,10 @@ import (
 	"github.com/test-network-function/collector/util"
 )
 
-const (
-	Region       = "us-east-1" // Region
-	S3BucketName = "cnf-suite" // Bucket
-)
-
-func configS3() *s3.Client {
-	accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
+func configS3(region, accessKey, secretAccessKey string) *s3.Client {
 	creds := credentials.NewStaticCredentialsProvider(accessKey, secretAccessKey, "")
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(creds), config.WithRegion(Region))
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(creds), config.WithRegion(region))
 	if err != nil {
 		logrus.Errorf("error: %v", err)
 		return nil
@@ -33,10 +27,11 @@ func configS3() *s3.Client {
 }
 
 func uploadFileToS3(file multipart.File, executedBy, partner string) bool {
-	awsS3Client := configS3()
+	s3BucketName, region, accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
+	awsS3Client := configS3(region, accessKey, secretAccessKey)
 	uploader := manager.NewUploader(awsS3Client)
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(S3BucketName),
+		Bucket: aws.String(s3BucketName),
 		Key:    aws.String(executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")),
 		Body:   file,
 	})
@@ -45,6 +40,6 @@ func uploadFileToS3(file multipart.File, executedBy, partner string) bool {
 		return false
 	}
 
-	logrus.Infof(util.FileUploadedSuccessfullyToBucket, S3BucketName)
+	logrus.Infof(util.FileUploadedSuccessfullyToBucket, s3BucketName)
 	return true
 }
