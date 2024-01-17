@@ -32,15 +32,19 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 		return
 	}
 
-	// 3. Store claim + claim result into the database
-	if !util.StoreClaimFileInDatabase(db, claimResults, partnerName, ocpVersion, executedBy) {
-		util.WriteError(w, util.ClaimFileError, err.Error())
+	// 3. Store file to S3
+	claimFile := util.GetClaimFile(w, r)
+	s3BucketName, region, accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
+	awsS3Client := configS3(region, accessKey, secretAccessKey)
+	s3FileKey, success := uploadFileToS3(awsS3Client, claimFile, executedBy, partnerName, s3BucketName)
+	if !success {
 		return
 	}
 
-	// 4. Store file to S3
-	claimFile := util.GetClaimFile(w, r)
-	if !uploadFileToS3(claimFile, executedBy, partnerName) {
+	// 4. Store claim + claim result into the database
+	if !util.StoreClaimFileInDatabase(db, claimResults, partnerName, executedBy, ocpVersion, s3FileKey) {
+		deleteFileFromS3(awsS3Client, s3FileKey, s3BucketName)
+		util.WriteError(w, util.ClaimFileError, err.Error())
 		return
 	}
 
