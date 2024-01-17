@@ -21,7 +21,7 @@ func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimR
 	executedBy := r.FormValue(util.ExecutedByInputName)
 
 	if executedBy == "" {
-		util.WriteError(w, util.ExecutedByMissingErr)
+		util.WriteMsg(w, util.ExecutedByMissingErr)
 		logrus.Errorf(util.PostRequestIsNotValidErr, util.ExecutedByMissingErr)
 		return nil, nil, false
 	}
@@ -29,14 +29,14 @@ func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimR
 	claimFileMap, err := parseClaimFile(w, r)
 	if err != nil {
 		// error occurred while uploading\converting claim file.
-		util.WriteError(w, err.Error())
+		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.PostRequestIsNotValidErr, err)
 		return nil, nil, false
 	}
 
 	versions, err := validateClaimKeys(claimFileMap)
 	if err != nil {
-		util.WriteError(w, err.Error())
+		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.PostRequestIsNotValidErr, err)
 		return nil, nil, false
 	}
@@ -44,7 +44,7 @@ func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimR
 	// validate results in claim results in JSON
 	claimResults, err := verifyClaimResultInJSON(claimFileMap)
 	if err != nil {
-		util.WriteError(w, err.Error())
+		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.PostRequestIsNotValidErr, err)
 		return nil, nil, false
 	}

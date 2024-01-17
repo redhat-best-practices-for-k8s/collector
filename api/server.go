@@ -42,7 +42,7 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		ParserHandler(w, r, s.database)
 	default:
-		util.WriteError(w, util.InvalidRequestErr)
+		util.WriteMsg(w, util.InvalidRequestErr)
 		logrus.Errorf(util.InvalidRequestErr)
 	}
 }

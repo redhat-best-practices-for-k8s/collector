@@ -10,8 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Writes Error using http response writer.
-func WriteError(w http.ResponseWriter, err string) {
+// Writes Error or Msg using http response writer.
+func WriteMsg(w http.ResponseWriter, err string) {
 	_, writeErr := w.Write([]byte(err + "\n"))
 	if writeErr != nil {
 		logrus.Errorf(WritingResponseErr, writeErr)
@@ -21,14 +21,14 @@ func WriteError(w http.ResponseWriter, err string) {
 func GetClaimFile(w http.ResponseWriter, r *http.Request) multipart.File {
 	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
 	if err != nil {
-		WriteError(w, err.Error())
+		WriteMsg(w, err.Error())
 		logrus.Errorf(RequestContentTypeErr, err)
 		return nil
 	}
 
 	claimFile, _, err := r.FormFile(ClaimFileInputName)
 	if err != nil {
-		WriteError(w, err.Error())
+		WriteMsg(w, err.Error())
 		logrus.Errorf(FormFileErr, err)
 		return nil
 	}

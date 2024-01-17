@@ -28,7 +28,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	// which he has to use each time even when the claim file error happens
 	err := VerifyCredentialsAndCreateIfNotExists(partnerName, decodedPassword, db)
 	if err != nil {
-		util.WriteError(w, err.Error())
+		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.AuthError, err)
 		return
 	}
@@ -39,7 +39,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	awsS3Client := configS3(region, accessKey, secretAccessKey)
 	s3FileKey, err := uploadFileToS3(awsS3Client, claimFile, executedBy, partnerName, s3BucketName)
 	if err != nil {
-		util.WriteError(w, err.Error())
+		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.FailedToUploadFileToS3Err, err)
 		return
 	}
@@ -54,8 +54,5 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	}
 
 	// Successfully uploaded file
-	_, writeErr := w.Write([]byte(util.SuccessUploadingFileMSG + "\n"))
-	if writeErr != nil {
-		logrus.Errorf(util.WritingResponseErr, writeErr)
-	}
+	util.WriteMsg(w, util.SuccessUploadingFileMSG)
 }
