@@ -26,9 +26,9 @@ func configS3(region, accessKey, secretAccessKey string) *s3.Client {
 	return s3.NewFromConfig(cfg)
 }
 
-func deleteFileFromS3(awsS3Client *s3.Client, s3FileKey string) {
+func deleteFileFromS3(awsS3Client *s3.Client, s3FileKey, s3BucketName string) {
 	deleteFileInput := s3.DeleteObjectInput{
-		Bucket: aws.String(S3BucketName),
+		Bucket: aws.String(s3BucketName),
 		Key:    aws.String(s3FileKey),
 	}
 
@@ -37,16 +37,14 @@ func deleteFileFromS3(awsS3Client *s3.Client, s3FileKey string) {
 		logrus.Errorf(util.FailedToDeleteFileFromS3Err, err)
 	}
 
-	logrus.Infof(util.FileHasBeenDeletedFromBucket, S3BucketName)
+	logrus.Infof(util.FileHasBeenDeletedFromBucket, s3BucketName)
 }
 
-func uploadFileToS3(awsS3Client *s3.Client, file multipart.File, executedBy, partner string) (string, bool) {
-	s3BucketName, region, accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
-	awsS3Client := configS3(region, accessKey, secretAccessKey)
+func uploadFileToS3(awsS3Client *s3.Client, file multipart.File, executedBy, partner, s3BucketName string) (string, bool) {
 	uploader := manager.NewUploader(awsS3Client)
 	s3FileKey := executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(S3BucketName),
+		Bucket: aws.String(s3BucketName),
 		Key:    aws.String(s3FileKey),
 		Body:   file,
 	})
@@ -55,6 +53,6 @@ func uploadFileToS3(awsS3Client *s3.Client, file multipart.File, executedBy, par
 		return "", false
 	}
 
-	logrus.Infof(util.FileUploadedSuccessfullyToBucket, S3BucketName)
+	logrus.Infof(util.FileUploadedSuccessfullyToBucket, s3BucketName)
 	return s3FileKey, true
 }
