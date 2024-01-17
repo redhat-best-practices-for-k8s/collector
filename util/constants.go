@@ -59,7 +59,7 @@ const ParseLowerBound = 10
 const ParseUpperBound = 20
 const FileStoredIntoClaimTableSuccessfully = `Claim is stored into table successfully.`
 const FileStoredIntoClaimResultTableSuccessfully = `Claim is stored into table CLAIM_RESULT successfully.`
-const FileUploadedSuccessfullyToBucket = `Claim file was successfully uploaded bucket %s`
+const FileUploadedSuccessfullyToBucket = `Claim file is successfully uploaded to bucket %s`
 const FileHasBeenDeletedFromBucket = `Claim file has been deleted from bucket %s`
 
 const SelectAllFromClaimByPartner = "SELECT * FROM cnf.claim WHERE partner_name = ?"
