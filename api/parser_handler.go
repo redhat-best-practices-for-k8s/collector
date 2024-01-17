@@ -48,7 +48,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	err = util.StoreClaimFileInDatabase(db, claimResults, partnerName, executedBy, ocpVersion, s3FileKey)
 	if err != nil {
 		deleteFileFromS3(awsS3Client, s3FileKey, s3BucketName)
-		util.WriteError(w, err.Error())
+		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.ClaimFileError, err)
 		return
 	}

@@ -65,7 +65,7 @@ func GetCollectorTablesByPartner(db *sql.DB, partnerName string) (claimRows, cla
 }
 
 // This function stores the claim and claim result into the database in a transaction
-func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion string) error {
+func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion, s3FileKey string) error {
 	// Begin transaction here
 	tx, err := db.Begin()
 	if err != nil {
@@ -78,7 +78,7 @@ func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partn
 	}
 
 	// store claim
-	claimID, err := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, tx)
+	claimID, err := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, s3FileKey, tx)
 	if err != nil {
 		HandleTransactionRollback(tx)
 		return err
