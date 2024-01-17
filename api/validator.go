@@ -13,10 +13,6 @@ import (
 func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, bool) {
 	partnerName := r.FormValue(util.PartnerNameInputName)
 	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
-	// if partner name or password aren't given, post anonymously
-	if partnerName == "" || decodedPassword == "" {
-		return nil, nil, true
-	}
 
 	executedBy := r.FormValue(util.ExecutedByInputName)
 

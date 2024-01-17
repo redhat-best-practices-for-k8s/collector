@@ -27,6 +27,11 @@ func CheckIfValidCredentials(partnerName, decodePassword string, db *sql.DB) err
 
 // Already non-empty partner name and decoded password are given
 func VerifyCredentialsAndCreateIfNotExists(partnerName, partnerPassword string, db *sql.DB) error {
+	// if partner name or password aren't given, post anonymously
+	if partnerName == "" || partnerPassword == "" {
+		return nil
+	}
+
 	// Search for partner in authenticator table
 	var encodedPassword string
 	searchPartnerErr := db.QueryRow(util.ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
