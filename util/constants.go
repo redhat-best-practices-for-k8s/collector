@@ -35,8 +35,8 @@ const ServerReadTimeOutEnvVarErr = "SERVER_READ_TIMEOUT environment variable mus
 const ServerWriteTimeOutEnvVarErr = "SERVER_WRITE_TIMEOUT environment variable must be set."
 const ServerAddrEnvVarErr = "SERVER_ADDR environment variable must be set."
 const ServerEnvVarsError = "Error found while extracting environment variables realted to the server: %s"
+const FailedToDeleteFileFromS3Err = "Error found while trying to delete file from s3: %s"
 
-// parser.go constants
 const ClaimTag = "claim"
 const VersionsTag = "versions"
 const ResultsTag = "results"
@@ -47,7 +47,7 @@ const DedcodedPasswordInputName = "decoded_password"
 
 const UseCollectorSQLCmd = `USE cnf; `
 const InsertToClaimSQLCmd = `INSERT INTO claim
-								(cnf_version, executed_by, upload_time, partner_name, s3_key)
+								(cnf_version, executed_by, upload_time, partner_name, s3_file_key)
 								VALUES (?, ?, ?, ?, ?);`
 const InsertToClaimResSQLCmd = `INSERT INTO claim_result
 							(claim_id, suite_name, test_id, test_status)
@@ -59,9 +59,9 @@ const ParseLowerBound = 10
 const ParseUpperBound = 20
 const FileStoredIntoClaimTableSuccessfully = `Claim is stored into table successfully.`
 const FileStoredIntoClaimResultTableSuccessfully = `Claim is stored into table CLAIM_RESULT successfully.`
-const FileUploadedSuccessfullyToBucket = `Claim file was successfully uploaded bucket %q`
+const FileUploadedSuccessfullyToBucket = `Claim file was successfully uploaded bucket %s`
+const FileHasBeenDeletedFromBucket = `Claim file has been deleted from bucket %s`
 
-// results.go constants
 const SelectAllFromClaimByPartner = "SELECT * FROM cnf.claim WHERE partner_name = ?"
 const SelectAllFromClaim = "SELECT * FROM cnf.claim"
 const SelectAllClaimIDsByPartner = "SELECT id FROM cnf.claim WHERE partner_name = ?"
