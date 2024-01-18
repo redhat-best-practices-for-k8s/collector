@@ -8,7 +8,6 @@ create table if not exists claim (
   upload_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   partner_name varchar(50),
   s3_file_key varchar(255),
-  mark_for_delete boolean DEFAULT false,
   primary key (id)
 );
 
