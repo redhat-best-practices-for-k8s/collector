@@ -27,8 +27,8 @@ func CheckIfValidCredentials(partnerName, decodePassword string, db *sql.DB) err
 
 // Already non-empty partner name and decoded password are given
 func VerifyCredentialsAndCreateIfNotExists(partnerName, partnerPassword string, db *sql.DB) error {
-	// if partner name or password aren't given, post anonymously
-	if partnerName == "" || partnerPassword == "" {
+	// if partner name and password aren't given, post anonymously
+	if partnerName == "" && partnerPassword == "" {
 		return nil
 	}
 
