@@ -5,47 +5,38 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
 	"github.com/test-network-function/collector/types"
 	"github.com/test-network-function/collector/util"
 )
 
-func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, bool) {
+func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, error) {
 	partnerName := r.FormValue(util.PartnerNameInputName)
 	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
 
 	executedBy := r.FormValue(util.ExecutedByInputName)
 
 	if executedBy == "" {
-		util.WriteMsg(w, util.ExecutedByMissingErr)
-		logrus.Errorf(util.PostRequestIsNotValidErr, util.ExecutedByMissingErr)
-		return nil, nil, false
+		return nil, nil, fmt.Errorf(util.ExecutedByMissingErr)
 	}
 
 	claimFileMap, err := parseClaimFile(w, r)
 	if err != nil {
 		// error occurred while uploading\converting claim file.
-		util.WriteMsg(w, err.Error())
-		logrus.Errorf(util.PostRequestIsNotValidErr, err)
-		return nil, nil, false
+		return nil, nil, err
 	}
 
 	versions, err := validateClaimKeys(claimFileMap)
 	if err != nil {
-		util.WriteMsg(w, err.Error())
-		logrus.Errorf(util.PostRequestIsNotValidErr, err)
-		return nil, nil, false
+		return nil, nil, err
 	}
 
 	// validate results in claim results in JSON
 	claimResults, err := verifyClaimResultInJSON(claimFileMap)
 	if err != nil {
-		util.WriteMsg(w, err.Error())
-		logrus.Errorf(util.PostRequestIsNotValidErr, err)
-		return nil, nil, false
+		return nil, nil, err
 	}
 
-	return claimResults, []string{partnerName, decodedPassword, executedBy, versions["ocp"].(string)}, true
+	return claimResults, []string{partnerName, decodedPassword, executedBy, versions["ocp"].(string)}, nil
 }
 
 func validateGetRequest(r *http.Request, db *sql.DB) (string, error) {

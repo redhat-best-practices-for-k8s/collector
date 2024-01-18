@@ -9,12 +9,15 @@ import (
 	"github.com/test-network-function/collector/util"
 )
 
+//nolint:funlen
 func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage.MySQLStorage) {
 	db := mysqlStorage.MySQL
 
 	// 1. Validate the request (includes validation of the claim file format)
-	claimResults, params, isValid := validatePostRequest(w, r)
-	if !isValid {
+	claimResults, params, err := validatePostRequest(w, r)
+	if err != nil {
+		util.WriteMsg(w, err.Error())
+		logrus.Errorf(util.PostRequestIsNotValidErr, err)
 		return
 	}
 
@@ -26,7 +29,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 
 	// 2. Validate partner's credentials, for non-existent partner create an entry in the database
 	// which he has to use each time even when the claim file error happens
-	err := VerifyCredentialsAndCreateIfNotExists(partnerName, decodedPassword, db)
+	err = VerifyCredentialsAndCreateIfNotExists(partnerName, decodedPassword, db)
 	if err != nil {
 		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.AuthError, err)
