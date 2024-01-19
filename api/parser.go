@@ -2,29 +2,28 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/test-network-function/collector/util"
 )
 
-func parseClaimFile(w http.ResponseWriter, r *http.Request) map[string]interface{} {
-	claimFileBytes := util.ReadClaimFile(w, r)
-	if claimFileBytes == nil {
+func parseClaimFile(w http.ResponseWriter, r *http.Request) (map[string]interface{}, error) {
+	claimFileBytes, err := util.ReadClaimFile(w, r)
+	if err != nil {
 		// error occurred while reading claim file
-		return nil
+		return nil, err
 	}
 
 	var claimFileMap map[string]interface{}
-	err := json.Unmarshal(claimFileBytes, &claimFileMap)
+	err = json.Unmarshal(claimFileBytes, &claimFileMap)
 	if err != nil {
-		util.WriteError(w, util.UnmarshalErr, err.Error())
-		return nil
+		return nil, err
 	}
 
 	_, keyExists := claimFileMap[util.ClaimTag]
 	if !keyExists {
-		util.WriteError(w, util.MalformedClaimFileErr, util.ClaimFieldMissingErr)
-		return nil
+		return nil, fmt.Errorf(util.ClaimFieldMissingErr)
 	}
-	return claimFileMap[util.ClaimTag].(map[string]interface{})
+	return claimFileMap[util.ClaimTag].(map[string]interface{}), nil
 }

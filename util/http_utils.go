@@ -10,40 +10,41 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func WriteError(w http.ResponseWriter, context, err string) {
+// Writes Error or Msg using http response writer.
+func WriteMsg(w http.ResponseWriter, err string) {
 	_, writeErr := w.Write([]byte(err + "\n"))
 	if writeErr != nil {
 		logrus.Errorf(WritingResponseErr, writeErr)
 	}
-	logrus.Errorf(context, err)
 }
 
 func GetClaimFile(w http.ResponseWriter, r *http.Request) multipart.File {
 	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
 	if err != nil {
-		WriteError(w, RequestContentTypeErr, err.Error())
+		WriteMsg(w, err.Error())
+		logrus.Errorf(RequestContentTypeErr, err)
 		return nil
 	}
 
 	claimFile, _, err := r.FormFile(ClaimFileInputName)
 	if err != nil {
-		WriteError(w, FormFileErr, err.Error())
+		WriteMsg(w, err.Error())
+		logrus.Errorf(FormFileErr, err)
 		return nil
 	}
 	return claimFile
 }
 
-func ReadClaimFile(w http.ResponseWriter, r *http.Request) []byte {
+func ReadClaimFile(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	claimFile := GetClaimFile(w, r)
 	defer claimFile.Close()
 
 	claimFileBytes, err := io.ReadAll(claimFile)
 	if err != nil {
-		WriteError(w, ReadingFileErr, err.Error())
-		return nil
+		return nil, err
 	}
 
-	return claimFileBytes
+	return claimFileBytes, nil
 }
 
 func getEnv(key, fallback string) string {

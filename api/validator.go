@@ -5,67 +5,56 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
 	"github.com/test-network-function/collector/types"
 	"github.com/test-network-function/collector/util"
 )
 
-func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, bool) {
+func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, error) {
 	partnerName := r.FormValue(util.PartnerNameInputName)
 	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
-	if partnerName == "" || decodedPassword == "" {
-		return nil, nil, false
-	}
 
 	executedBy := r.FormValue(util.ExecutedByInputName)
 
 	if executedBy == "" {
-		util.WriteError(w, "%s", util.ExecutedByMissingErr)
-		return nil, nil, false
+		return nil, nil, fmt.Errorf(util.ExecutedByMissingErr)
 	}
 
-	claimFileMap := parseClaimFile(w, r)
-	if claimFileMap == nil {
+	claimFileMap, err := parseClaimFile(w, r)
+	if err != nil {
 		// error occurred while uploading\converting claim file.
-		return nil, nil, false
+		return nil, nil, err
 	}
 
-	versions := validateClaimKeys(w, claimFileMap)
-	if versions == nil {
-		return nil, nil, false
+	versions, err := validateClaimKeys(claimFileMap)
+	if err != nil {
+		return nil, nil, err
 	}
-
-	ocpVersion := versions["ocp"].(string)
 
 	// validate results in claim results in JSON
-	isValid, claimResults := verifyClaimResultInJSON(w, claimFileMap)
-	if !isValid {
-		return nil, nil, false
+	claimResults, err := verifyClaimResultInJSON(claimFileMap)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return claimResults, []string{partnerName, decodedPassword, executedBy, ocpVersion}, true
+	return claimResults, []string{partnerName, decodedPassword, executedBy, versions["ocp"].(string)}, nil
 }
 
-func validateGetRequest(w http.ResponseWriter, r *http.Request, db *sql.DB) (string, bool) {
+func validateGetRequest(r *http.Request, db *sql.DB) (string, error) {
 	partnerName := r.FormValue(util.PartnerNameInputName)
 	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
 
 	// If partner name and password are not given return
 	if partnerName == "" || decodedPassword == "" {
-		return "", false
+		return "", fmt.Errorf(util.PartnerOrPasswordArgsMissingErr)
 	}
 
 	err := CheckIfValidCredentials(partnerName, decodedPassword, db)
 	if err != nil {
 		// authentication failed
-		_, err = w.Write([]byte(err.Error() + "\n"))
-		if err != nil {
-			logrus.Errorf(util.WritingResponseErr, err)
-		}
-		return "", false
+		return "", err
 	}
 
-	return partnerName, true
+	return partnerName, nil
 }
 
 /*
@@ -74,19 +63,17 @@ to reduce network bandwidth to the remote RDS. Also, since the claim file struct
 the future, validation is kept separate from database insert which gives us less effort to make code
 changes.
 */
-func verifyClaimResultInJSON(w http.ResponseWriter, claimFileMap map[string]interface{}) (bool, []types.ClaimResult) {
+func verifyClaimResultInJSON(claimFileMap map[string]interface{}) ([]types.ClaimResult, error) {
 	results, keyExists := claimFileMap[util.ResultsTag].(map[string]interface{})
 	if !keyExists {
-		util.WriteError(w, util.MalformedClaimFileErr, util.ResultsFieldMissingErr)
-		return false, nil
+		return nil, fmt.Errorf(util.ResultsFieldMissingErr)
 	}
 
 	claimResults := []types.ClaimResult{}
 	for testName := range results {
 		testData, testID, keyErr := validateInnerResultsKeys(results, testName)
-		if keyErr != "" {
-			util.WriteError(w, util.MalformedClaimFileErr, keyErr)
-			return false, nil
+		if keyErr != nil {
+			return nil, keyErr
 		}
 
 		claimResult := types.ClaimResult{
@@ -98,47 +85,45 @@ func verifyClaimResultInJSON(w http.ResponseWriter, claimFileMap map[string]inte
 		claimResults = append(claimResults, claimResult)
 	}
 
-	return true, claimResults
+	return claimResults, nil
 }
 
 func validateInnerResultsKeys(results map[string]interface{}, testName string) (
-	testData map[string]interface{}, testID map[string]interface{}, err string) {
+	testData map[string]interface{}, testID map[string]interface{}, err error) {
 	testData, _ = results[testName].(map[string]interface{})
 
 	testID, keyExists := testData["testID"].(map[string]interface{})
 	if !keyExists {
-		return nil, nil, fmt.Sprintf(util.TestTestIDMissingErr, testName)
+		return nil, nil, fmt.Errorf(util.TestTestIDMissingErr, testName)
 	}
 
 	_, stateKeyExists := testData["state"]
 	if !stateKeyExists {
-		return nil, nil, fmt.Sprintf(util.TestStateMissingErr, testName)
+		return nil, nil, fmt.Errorf(util.TestStateMissingErr, testName)
 	}
 
 	_, suiteKeyExists := testID["suite"]
 	if !suiteKeyExists {
-		return nil, nil, fmt.Sprintf(util.TestIDSuiteMissingErr, testName)
+		return nil, nil, fmt.Errorf(util.TestIDSuiteMissingErr, testName)
 	}
 
 	_, idKeyExists := testID["id"]
 	if !idKeyExists {
-		return nil, nil, fmt.Sprintf(util.TestIDIDMissingErr, testName)
+		return nil, nil, fmt.Errorf(util.TestIDIDMissingErr, testName)
 	}
-	return testData, testID, ""
+	return testData, testID, nil
 }
 
-func validateClaimKeys(w http.ResponseWriter, claimFileMap map[string]interface{}) map[string]interface{} {
+func validateClaimKeys(claimFileMap map[string]interface{}) (map[string]interface{}, error) {
 	versions, keyExists := claimFileMap[util.VersionsTag].(map[string]interface{})
 	if !keyExists {
-		util.WriteError(w, util.MalformedClaimFileErr, util.VersionsFieldMissingErr)
-		return nil
+		return nil, fmt.Errorf(util.VersionsFieldMissingErr)
 	}
 
 	_, keyExists = versions["ocp"]
 	if !keyExists {
-		util.WriteError(w, util.MalformedClaimFileErr, util.OcpFieldMissingErr)
-		return nil
+		return nil, fmt.Errorf(util.OcpFieldMissingErr)
 	}
 
-	return versions
+	return versions, nil
 }

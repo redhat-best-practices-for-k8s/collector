@@ -10,12 +10,11 @@ import (
 	"github.com/test-network-function/collector/types"
 )
 
-func HandleTransactionRollback(tx *sql.Tx, context string, err error) {
+func HandleTransactionRollback(tx *sql.Tx) {
 	txErr := tx.Rollback()
 	if txErr != nil {
 		logrus.Errorf(RollbackErr, txErr)
 	}
-	logrus.Errorf(context, err)
 }
 
 func GetEntireCollectorTable(db *sql.DB) (claimRows, claimResultsRows *sql.Rows) {
@@ -66,66 +65,63 @@ func GetCollectorTablesByPartner(db *sql.DB, partnerName string) (claimRows, cla
 }
 
 // This function stores the claim and claim result into the database in a transaction
-func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion, s3FileKey string) bool {
+func StoreClaimFileInDatabase(db *sql.DB, claimResult []types.ClaimResult, partnerName, executedBy, ocpVersion, s3FileKey string) error {
 	// Begin transaction here
 	tx, err := db.Begin()
 	if err != nil {
-		logrus.Errorf(BeginTxErr, err)
-		return false
+		return err
 	}
 
 	_, err = tx.Exec(UseCollectorSQLCmd)
 	if err != nil {
-		HandleTransactionRollback(tx, ExecQueryErr, err)
-		return false
+		return err
 	}
 
 	// store claim
-	success, claimID := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, s3FileKey, tx)
-	if !success {
-		return false
+	claimID, err := storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, s3FileKey, tx)
+	if err != nil {
+		HandleTransactionRollback(tx)
+		return err
 	}
 
-	success = storeClaimResultIntoDatabase(claimResult, claimID, tx)
-	if !success {
-		return false
+	err = storeClaimResultIntoDatabase(claimResult, claimID, tx)
+	if err != nil {
+		HandleTransactionRollback(tx)
+		return err
 	}
 
 	// Commit the transaction
 	err = tx.Commit()
 	if err != nil {
-		HandleTransactionRollback(tx, CommitTxErr, err)
-		return false
+		HandleTransactionRollback(tx)
+		return err
 	}
 	logrus.Info("Claim file is entirely stored into the database.")
 
-	return true
+	return nil
 }
 
-func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimID int64, tx *sql.Tx) bool {
+func storeClaimResultIntoDatabase(claimResults []types.ClaimResult, claimID int64, tx *sql.Tx) error {
 	for _, cr := range claimResults {
 		_, err := tx.Exec(InsertToClaimResSQLCmd, claimID, cr.SuiteName, cr.TestID, cr.TestStatus)
 		if err != nil {
-			HandleTransactionRollback(tx, ExecQueryErr, err)
-			return false
+			return err
 		}
 	}
 	logrus.Info(FileStoredIntoClaimResultTableSuccessfully)
-	return true
+	return nil
 }
 
 // Inserts into claim table and returns the id
-func storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, s3FileKey string, tx *sql.Tx) (success bool, claimID int64) {
+func storeClaimIntoDatabase(partnerName, executedBy, ocpVersion, s3FileKey string, tx *sql.Tx) (claimID int64, err error) {
 	result, err := tx.Exec(InsertToClaimSQLCmd, ocpVersion, executedBy, time.Now(), partnerName, s3FileKey)
 	if err != nil {
-		HandleTransactionRollback(tx, ExecQueryErr, err)
-		return false, -1
+		return -1, err
 	}
 	logrus.Info(FileStoredIntoClaimTableSuccessfully)
 	claimID, err = result.LastInsertId()
 	if err != nil {
-		HandleTransactionRollback(tx, ExecQueryErr, err)
-		return false, -1
+		return -1, err
 	}
-	return true, claimID
+	return claimID, nil
 }

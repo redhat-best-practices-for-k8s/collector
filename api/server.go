@@ -42,10 +42,7 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		ParserHandler(w, r, s.database)
 	default:
-		_, writeErr := w.Write([]byte(util.InvalidRequestErr + "\n"))
-		if writeErr != nil {
-			logrus.Errorf(util.WritingResponseErr, writeErr)
-		}
+		util.WriteMsg(w, util.InvalidRequestErr)
 		logrus.Errorf(util.InvalidRequestErr)
 	}
 }
