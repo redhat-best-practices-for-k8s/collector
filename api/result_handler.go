@@ -58,7 +58,7 @@ func mapClaimsToStruct(claimRows *sql.Rows) []types.Claim {
 	var claims []types.Claim
 	for claimRows.Next() {
 		var row types.Claim
-		err := claimRows.Scan(&row.ID, &row.CnfVersion, &row.ExecutedBy, &row.UploadTime, &row.PartnerName, &row.MarkForDelete)
+		err := claimRows.Scan(&row.ID, &row.CnfVersion, &row.ExecutedBy, &row.UploadTime, &row.PartnerName, &row.S3FileURL)
 		if err != nil {
 			logrus.Errorf(util.ScanDBFieldErr, err)
 		}
