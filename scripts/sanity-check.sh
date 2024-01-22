@@ -19,6 +19,8 @@ fi
 
 # Get results from collector
 results=$(./scripts/get-from-collector.sh "$ENDPOINT" "$COLLECTOR_USERNAME" "$COLLECTOR_PASSWORD")
+start_index=${results%%[*} start_index=$((${#start_index} + 1))
+results="${results:start_index-1}"
 results_test_ids=$(echo "$results" | jq -r '.[-1].ClaimResults[].test_id')
 
 # Get generated policy requiredPassingTests ids
