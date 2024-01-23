@@ -29,6 +29,7 @@ LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
 MYSQL_DEPLOYMENT_PATH = ./k8s/deployment/database.yaml
 COLLECTOR_DEPLOYMENT_PATH = ./k8s/deployment/app.yml
+DB_URL = database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.com
 
 S3_BUCKET_NAME?=cnf-suite-claims
 S3_BUCKET_REGION?=us-east-1
@@ -92,7 +93,7 @@ run-collector-rds: clone-tnf-secrets stop-running-collector-container
 	docker run -d -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
-		-e DB_URL='database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
+		-e DB_URL='${DB_URL}' \
 		-e DB_PORT='3306' \
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
@@ -109,7 +110,7 @@ run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
 	docker run -d --name ${COLLECTOR_CONTAINER_NAME} -p ${HOST_PORT}:${TARGET_PORT} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
-		-e DB_URL='database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.com' \
+		-e DB_URL='${DB_URL}' \
 		-e DB_PORT='3306'\
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
@@ -143,7 +144,7 @@ push-image-collector-by-version:
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG}
 	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
 
-run-initial-mysql-scripts: clone-tnf-secrets
+create-initial-mysql-scripts: 
 	sed \
 		-e 's|CollectorAdminUser|$(shell jq -r ".CollectorAdminUser" "./tnf-secrets/collector-secrets.json" | base64 -d)|g' \
 		-e 's|CollectorAdminPassword|$(shell jq -r ".CollectorAdminPassword" "./tnf-secrets/collector-secrets.json")|g' \
@@ -152,11 +153,28 @@ run-initial-mysql-scripts: clone-tnf-secrets
 		-e 's/MysqlUsername/$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
 		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
 		./scripts/database/create_user.sql > create_user_prod.sql
+
+# Runs initial mysql scripts locally
+run-initial-mysql-scripts: clone-tnf-secrets create-initial-mysql-scripts
 	mysql -uroot -p < create_schema_prod.sql	# enter local mysql root password
 	mysql -uroot -p < create_user_prod.sql		# enter local mysql root password
 	rm create_schema_prod.sql create_user_prod.sql
 	rm -rf tnf-secrets
 
+# Runs initial mysql scripts on RDS instance
+run-initial-mysql-scripts-rds: clone-tnf-secrets create-initial-mysql-scripts
+	mysql \
+		-h ${DB_URL} \
+		-u$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d) \
+		-p$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)
+		< create_schema_prod.sql
+	mysql \
+		-h ${DB_URL} \
+		-u$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d) \
+		-p$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d) \
+		< create_user_prod.sql
+	rm create_schema_prod.sql create_user_prod.sql
+	rm -rf tnf-secrets
 
 # Deploys collector for CI test purposes
 deploy-collector-for-CI:
