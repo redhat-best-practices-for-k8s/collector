@@ -73,7 +73,7 @@ stop-running-collector-container:
 
 # Runs collector locally with docker
 run-collector: clone-tnf-secrets stop-running-collector-container
-	docker run -d -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run -d --pull always -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='localhost' \
@@ -90,7 +90,7 @@ run-collector: clone-tnf-secrets stop-running-collector-container
 
 # Runs collector on rds with docker
 run-collector-rds: clone-tnf-secrets stop-running-collector-container
-	docker run -d -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run -d --pull always -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='${DB_URL}' \
@@ -107,7 +107,7 @@ run-collector-rds: clone-tnf-secrets stop-running-collector-container
 
 # Runs collector on rds with docker in headless mode
 run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
-	docker run -d --name ${COLLECTOR_CONTAINER_NAME} -p ${HOST_PORT}:${TARGET_PORT} \
+	docker run -d --pull always --name ${COLLECTOR_CONTAINER_NAME} -p ${HOST_PORT}:${TARGET_PORT} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='${DB_URL}' \
