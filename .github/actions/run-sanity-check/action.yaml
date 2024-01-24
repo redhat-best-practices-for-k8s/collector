@@ -4,6 +4,10 @@ inputs:
   working_directory:
     description: Default directory
     default: .
+  collector_username:
+    required: true
+  collector_password:
+    required: true
   oc_collector_timeout:
     description: Default timeout
     default: 5m
@@ -14,8 +18,8 @@ runs:
     - name: Run sanity check script
       run: |
         ENDPOINT=44.195.143.94 \
-        COLLECTOR_USERNAME=ciuser \
-        COLLECTOR_PASSWORD=cipassword \
+        COLLECTOR_USERNAME=${{ inputs.collector_username }} \
+        COLLECTOR_PASSWORD=${{ inputs.collector_password }} \
         ./scripts/sanity-check.sh
       working-directory: ${{ inputs.working_directory }}
       shell: bash
