@@ -61,11 +61,14 @@
         groups: docker
         append: yes
         state: present
-        
+
+    - set_fact: collector_version="{{ lookup('env','COLLECTOR_VERSION') }}"
+
     - name: Clone the collector repo
       become: no
       ansible.builtin.git:
         repo: 'https://github.com/test-network-function/collector.git'
+        version: '{{collector_version}}'
         dest: /home/ec2-user/collector
         clone: yes
         force: true
