@@ -102,3 +102,5 @@ jobs:
       - name: (if on main and upstream) Deploy the newly built image to the cluster
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
         run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml
+        env:
+          COLLECTOR_VERSION: ${{ env.COLLECTOR_VERSION }}

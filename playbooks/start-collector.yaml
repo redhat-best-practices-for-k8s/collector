@@ -73,7 +73,8 @@
     - name: Start Collector container 
       shell: |
         cd collector
-        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa_git -o IdentitiesOnly=yes' make run-collector-rds
+        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa_git -o IdentitiesOnly=yes'\
+          COLLECTOR_VERSION={{ lookup('env', 'COLLECTOR_VERSION') }} make run-collector-rds
 
     - name: Start Grafana container 
       shell: |
