@@ -70,9 +70,6 @@
         clone: yes
         force: true
 
-    - name: Ensure $COLLECTOR_VERSION and $COLLECTOR_IMAGE_TAG are set
-      shell: '[[ -n "$COLLECTOR_VERSION" ]]'
-
     - name: Start Collector container 
       shell: |
         cd collector
