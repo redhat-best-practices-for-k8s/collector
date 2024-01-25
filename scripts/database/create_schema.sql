@@ -35,7 +35,8 @@ EXECUTE stmt;
 
 create table if not exists authenticator (
   partner_name varchar(255) not null,
-  encoded_password varchar(255) not null
+  encoded_password varchar(255) not null,
+  creation_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- CollectorAdminUser's and CollectorAdminPassword's values are in tnf-secrets/collector-secrets.json

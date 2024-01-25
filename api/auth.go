@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/test-network-function/collector/util"
 	"golang.org/x/crypto/bcrypt"
@@ -44,7 +45,7 @@ func VerifyCredentialsAndCreateIfNotExists(partnerName, partnerPassword string, 
 			return err
 		}
 		// Create partner entry into the database
-		_, txErr := db.Exec(util.InsertPartnerToAuthSQLCmd, partnerName, encodedPartnerPassword)
+		_, txErr := db.Exec(util.InsertPartnerToAuthSQLCmd, partnerName, encodedPartnerPassword, time.Now())
 		if txErr != nil {
 			return txErr
 		}

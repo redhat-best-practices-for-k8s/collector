@@ -55,7 +55,9 @@ const InsertToClaimResSQLCmd = `INSERT INTO claim_result
 							VALUES (?, ?, ?, ?);`
 const ExtractLastClaimID = `SELECT id FROM cnf.claim ORDER BY id DESC LIMIT 1;`
 const ExtractPartnerAndPasswordCmd = `SELECT encoded_password FROM cnf.authenticator WHERE partner_name = ?`
-const InsertPartnerToAuthSQLCmd = `INSERT INTO cnf.authenticator (partner_name, encoded_password) VALUES (?, ?)`
+const InsertPartnerToAuthSQLCmd = `INSERT INTO cnf.authenticator 
+									(partner_name, encoded_password, creation_time)
+									VALUES (?, ?, ?)`
 const ParseLowerBound = 10
 const ParseUpperBound = 20
 const FileStoredIntoClaimTableSuccessfully = `Claim is stored into table successfully.`
