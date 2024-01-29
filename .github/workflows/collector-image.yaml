@@ -93,12 +93,12 @@ jobs:
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
 
       - uses: webfactory/ssh-agent@v0.8.0
-        name: (if on main and upstream) Add SSH key to agent
+        name: Add SSH key to agent
         with:
           ssh-private-key: ${{ secrets.COLLECTOR_KEYPAIR }}
 
         # run ansible deployment to deploy the new image to the cluster
-      - name: (if on main and upstream) Deploy the newly built image to the cluster
+      - name: Deploy the newly built image to the cluster
         run: |
           ANSIBLE_HOST_KEY_CHECKING=false \
           COLLECTOR_VERSION=${{ env.COLLECTOR_VERSION }} \
