@@ -103,6 +103,7 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
         
+      # Build Collector image with unstable tag
       - name: Build the image
         run: make build-image-collector
 

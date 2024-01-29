@@ -72,7 +72,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ env.COLLECTOR_VERSION }}
-
+      
+      # Build Collector image with latest and version tags
       - name: Build the `collector` image
         run: |
           make build-image-collector-by-version

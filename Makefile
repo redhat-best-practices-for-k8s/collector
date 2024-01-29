@@ -11,6 +11,7 @@ endif
 MYSQL_CONTAINER_NAME?=mysql-container
 COLLECTOR_IMAGE_NAME?=testnetworkfunction/collector
 COLLECTOR_IMAGE_TAG?=latest
+COLLECTOR_IMAGE_UNSTABLE?=unstable
 COLLECTOR_CONTAINER_NAME?=cnf-collector
 COLLECTOR_NS?=cnf-collector
 GRAFANA_CONTAINER_NAME?=grafana
@@ -122,10 +123,10 @@ run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
 		-d ${COLLECTOR_IMAGE_NAME}
 	rm -rf tnf-secrets
 
-# Builds collector image locally
+# Builds collector image with unstable tag
 build-image-collector:
 	docker build \
-		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_UNSTABLE} \
 		-f Dockerfile .
 
 # Builds collector image with latest and version tags
@@ -135,9 +136,9 @@ build-image-collector-by-version:
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
 
-# Pushes collector image with latest tag
+# Pushes collector image with unstable tag
 push-image-collector:
-	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG}
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_UNSTABLE}
 
 # Pushes collector image with latest tag and version tags
 push-image-collector-by-version:
