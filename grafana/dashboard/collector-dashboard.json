@@ -18,6 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": 2,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -1196,7 +1197,10 @@
       "type": "piechart"
     },
     {
-      "datasource": {},
+      "datasource": {
+        "type": "mysql",
+        "uid": "0"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1297,7 +1301,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT partner_name, COUNT(*) AS num \nFROM cnf.claim\nGROUP BY partner_name;",
+          "rawSql": "SELECT \n  subquery.partner_name,\n  COUNT(*) AS num\nFROM (\n  SELECT \n    CASE \n        WHEN partner_name LIKE 'ciuser\\_%' THEN 'ci_users'\n        ELSE partner_name\n    END AS partner_name\n  FROM \n    cnf.claim\n) subquery\nGROUP BY \n    partner_name;\n",
           "refId": "A",
           "sql": {
             "columns": [
