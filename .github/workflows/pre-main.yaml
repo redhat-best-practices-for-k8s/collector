@@ -122,7 +122,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
       
-      - uses: webfactory/ssh-agent@v0.8.0
+      - uses: webfactory/ssh-agent@v0.9.0
         name: (if on main and upstream) Add SSH key to agent
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
         with:
