@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.48.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/sirupsen/logrus v1.9.3
-	golang.org/x/crypto v0.18.0
+	golang.org/x/crypto v0.19.0
 )
 
 require (
@@ -29,5 +29,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.26.7 // indirect
 	github.com/aws/smithy-go v1.19.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 )
