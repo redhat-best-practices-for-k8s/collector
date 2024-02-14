@@ -144,213 +144,6 @@
         "x": 0,
         "y": 4
       },
-      "id": 6,
-      "panels": [],
-      "title": "Suite Tests Results",
-      "type": "row"
-    },
-    {
-      "datasource": {},
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "left",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false,
-            "minWidth": 180
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 5
-      },
-      "id": 7,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 0,
-        "showHeader": true
-      },
-      "pluginVersion": "10.2.2",
-      "targets": [
-        {
-          "dataset": "cnf",
-          "datasource": {
-            "type": "mysql",
-            "uid": "f3b9aa1e-ceb4-4700-8891-3e2c93408e86"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT * FROM cnf.claim;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Claims",
-      "type": "table"
-    },
-    {
-      "datasource": {},
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "left",
-            "cellOptions": {
-              "mode": "basic",
-              "type": "color-background"
-            },
-            "filterable": true,
-            "inspect": false
-          },
-          "mappings": [
-            {
-              "options": {
-                "failed": {
-                  "color": "super-light-red",
-                  "index": 2
-                },
-                "passed": {
-                  "color": "super-light-green",
-                  "index": 1
-                },
-                "skipped": {
-                  "color": "super-light-yellow",
-                  "index": 0
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "transparent",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 14
-      },
-      "id": 8,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 1,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "id"
-          }
-        ]
-      },
-      "pluginVersion": "10.2.2",
-      "targets": [
-        {
-          "dataset": "cnf",
-          "datasource": {
-            "type": "mysql",
-            "uid": "f3b9aa1e-ceb4-4700-8891-3e2c93408e86"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT * FROM cnf.claim_result;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Claims Results",
-      "type": "table"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 24
-      },
       "id": 5,
       "panels": [],
       "title": "Suite Tests Status Summary",
@@ -440,7 +233,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 5
       },
       "id": 2,
       "options": {
@@ -540,7 +333,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 13
       },
       "id": 1,
       "options": {
@@ -707,7 +500,7 @@
         "h": 9,
         "w": 4,
         "x": 7,
-        "y": 40
+        "y": 20
       },
       "id": 9,
       "options": {
@@ -963,7 +756,7 @@
         "h": 9,
         "w": 6,
         "x": 11,
-        "y": 40
+        "y": 20
       },
       "id": 11,
       "options": {
@@ -1088,7 +881,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 29
       },
       "id": 10,
       "panels": [],
@@ -1134,7 +927,7 @@
         "h": 9,
         "w": 5,
         "x": 0,
-        "y": 50
+        "y": 30
       },
       "id": 4,
       "options": {
@@ -1263,7 +1056,7 @@
         "h": 9,
         "w": 5,
         "x": 5,
-        "y": 50
+        "y": 30
       },
       "id": 12,
       "options": {
@@ -1301,7 +1094,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n  subquery.partner_name,\n  COUNT(*) AS num\nFROM (\n  SELECT \n    CASE \n        WHEN partner_name LIKE 'ciuser\\_%' THEN 'ci_users'\n        ELSE partner_name\n    END AS partner_name\n  FROM \n    cnf.claim\n) subquery\nGROUP BY \n    partner_name;\n",
+          "rawSql": "SELECT \n  subquery.partner_name,\n  COUNT(*) AS num\nFROM (\n  SELECT \n    CASE \n        WHEN partner_name LIKE 'ciuser\\_%' THEN 'ci_users'\n        WHEN partner_name LIKE 'qeuser%' THEN 'qeusers'\n        ELSE partner_name\n    END AS partner_name\n  FROM \n    cnf.claim\n) subquery\nGROUP BY \n    partner_name;\n",
           "refId": "A",
           "sql": {
             "columns": [
