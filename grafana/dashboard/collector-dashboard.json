@@ -23,7 +23,10 @@
   "liveNow": false,
   "panels": [
     {
-      "datasource": {},
+      "datasource": {
+        "type": "mysql",
+        "uid": "0"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -78,7 +81,7 @@
       "gridPos": {
         "h": 4,
         "w": 10,
-        "x": 7,
+        "x": 2,
         "y": 0
       },
       "id": 3,
@@ -112,7 +115,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT Min(upload_time) AS earliest_time,  Max(upload_time) AS latest_time, COUNT(*) AS claim_num FROM cnf.claim;\n\n",
+          "rawSql": "SELECT\n  Min(upload_time) AS earliest_time, \n  Max(upload_time) AS latest_time,\n  COUNT(*) AS claim_num\nFROM cnf.claim\nWHERE executed_by = 'qe' OR executed_by = 'ci'\n\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -133,559 +136,22 @@
           }
         }
       ],
-      "transparent": true,
+      "title": "CI and QE Claims",
       "type": "stat"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 4
-      },
-      "id": 5,
-      "panels": [],
-      "title": "Suite Tests Status Summary",
-      "type": "row"
-    },
-    {
-      "datasource": {},
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisGridShow": true,
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisWidth": 5,
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "total_failed"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "total_skipped"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 5
-      },
-      "id": 2,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.46,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "orientation": "vertical",
-        "showValue": "auto",
-        "stacking": "percent",
-        "text": {
-          "valueSize": 15
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "targets": [
-        {
-          "dataset": "cnf",
-          "datasource": {
-            "type": "mysql",
-            "uid": "f3b9aa1e-ceb4-4700-8891-3e2c93408e86"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  suite_name,\n  SUM(CASE WHEN test_status = \"passed\" THEN 1 ELSE 0 END) AS total_passed,\n  SUM(CASE WHEN test_status = \"failed\" THEN 1 ELSE 0 END) AS total_failed,\n  SUM(CASE WHEN test_status = \"skipped\" THEN 1 ELSE 0 END) AS total_skipped\nFROM cnf.claim_result\nGROUP BY suite_name;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Total Status by Suite Name",
-      "type": "barchart"
-    },
-    {
-      "datasource": {},
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "align": "left",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false,
-            "minWidth": 50
-          },
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 13
-      },
-      "id": 1,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "suite_name"
-          }
-        ]
-      },
-      "pluginVersion": "10.2.2",
-      "targets": [
-        {
-          "dataset": "cnf",
-          "datasource": {
-            "type": "mysql",
-            "uid": "f3b9aa1e-ceb4-4700-8891-3e2c93408e86"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  suite_name,\n  test_id,\n  SUM(CASE WHEN test_status = \"passed\" THEN 1 ELSE 0 END) AS total_passed,\n  SUM(CASE WHEN test_status = \"failed\" THEN 1 ELSE 0 END) AS total_failed,\n  SUM(CASE WHEN test_status = \"skipped\" THEN 1 ELSE 0 END) AS total_skipped\nFROM cnf.claim_result\nGROUP BY test_id;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "claim_result"
-        }
-      ],
-      "title": "Total Status by Test ID",
-      "type": "table"
-    },
-    {
-      "datasource": {},
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "failed_tests (sum)"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-red",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "displayName",
-                "value": "failed tests"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "passed_tests (sum)"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-green",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "displayName",
-                "value": "passed tests"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "skipped_tests (sum)"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-yellow",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "displayName",
-                "value": "skipped tests"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 4,
-        "x": 7,
-        "y": 20
-      },
-      "id": 9,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "percent",
-        "text": {
-          "valueSize": 15
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "pluginVersion": "10.2.0",
-      "targets": [
-        {
-          "dataset": "cnf",
-          "datasource": {
-            "type": "mysql",
-            "uid": "f3b9aa1e-ceb4-4700-8891-3e2c93408e86"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \ncnf_version,\nid AS claim_id\nFROM cnf.claim;\n  \n\n",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "cnf_version",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "id",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "name": "cnf_version",
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "claim"
-        },
-        {
-          "dataset": "cnf",
-          "datasource": {
-            "type": "mysql",
-            "uid": "f3b9aa1e-ceb4-4700-8891-3e2c93408e86"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "hide": false,
-          "rawQuery": true,
-          "rawSql": "SELECT \n  claim_id,\n  SUM(CASE WHEN test_status = \"passed\" THEN 1 ELSE 0 END) AS passed_tests,\n  SUM(CASE WHEN test_status = \"failed\" THEN 1 ELSE 0 END) AS failed_tests,\n  SUM(CASE WHEN test_status = \"skipped\" THEN 1 ELSE 0 END) AS skipped_tests\nFROM\n  claim_result\nGROUP BY\n  claim_id;\n",
-          "refId": "B",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "cnf_version",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "id",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "name": "cnf_version",
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "claim"
-        }
-      ],
-      "title": "Total Status by CNF Version",
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "claim_id",
-            "mode": "outer"
-          }
-        },
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "claim_id": {
-                "aggregations": [
-                  "count"
-                ]
-              },
-              "cnf_version": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
-              "failed_tests": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              },
-              "passed_tests": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              },
-              "skipped_tests": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              }
-            }
-          }
-        }
-      ],
-      "type": "barchart"
     },
     {
       "datasource": {
         "type": "mysql",
         "uid": "0"
       },
-      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "blue",
+            "mode": "fixed"
           },
-          "custom": {
-            "align": "left",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false
-          },
+          "displayName": "Earliest Upload",
+          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -699,78 +165,85 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "partner_name"
+              "options": "latest_time"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "claim_num"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "earliest_time"
             },
             "properties": [
               {
                 "id": "noValue",
-                "value": "Anonymous partner"
+                "value": "-"
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "passed_tests (sum)"
+              "options": "latest_time"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "total_passed"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "failed_tests (sum)"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "total_failed"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "skipped_tests (sum)"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "total_skipped"
+                "id": "noValue",
+                "value": "-"
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 9,
-        "w": 6,
-        "x": 11,
-        "y": 20
+        "h": 4,
+        "w": 10,
+        "x": 12,
+        "y": 0
       },
-      "id": 11,
+      "id": 20,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
           ],
-          "show": false
+          "fields": "/.*/",
+          "values": true
         },
-        "frameIndex": 1,
-        "showHeader": true
+        "text": {
+          "titleSize": 15,
+          "valueSize": 25
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "10.2.2",
       "targets": [
@@ -778,12 +251,12 @@
           "dataset": "cnf",
           "datasource": {
             "type": "mysql",
-            "uid": "d532efe4-e8ea-499b-9f43-c9c3cb2371e5"
+            "uid": "f3b9aa1e-ceb4-4700-8891-3e2c93408e86"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \npartner_name,\nid AS claim_id\nFROM cnf.claim;",
+          "rawSql": "SELECT\n  Min(upload_time) AS earliest_time, \n  Max(upload_time) AS latest_time,\n  COUNT(*) AS claim_num\nFROM cnf.claim\nWHERE executed_by <> 'qe' AND executed_by <> 'ci'\n\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -802,94 +275,16 @@
             ],
             "limit": 50
           }
-        },
-        {
-          "dataset": "cnf",
-          "datasource": {
-            "type": "mysql",
-            "uid": "d532efe4-e8ea-499b-9f43-c9c3cb2371e5"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "hide": false,
-          "rawQuery": true,
-          "rawSql": "SELECT \n  claim_id,\n  SUM(CASE WHEN test_status = \"passed\" THEN 1 ELSE 0 END) AS passed_tests,\n  SUM(CASE WHEN test_status = \"failed\" THEN 1 ELSE 0 END) AS failed_tests,\n  SUM(CASE WHEN test_status = \"skipped\" THEN 1 ELSE 0 END) AS skipped_tests\nFROM\n  claim_result\nGROUP BY\n  claim_id;\n",
-          "refId": "B",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
         }
       ],
-      "title": "Total Status by Partner Name",
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "claim_id",
-            "mode": "outer"
-          }
-        },
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "failed_tests": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              },
-              "partner_name": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
-              "passed_tests": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              },
-              "skipped_tests": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              }
-            }
-          }
-        }
-      ],
-      "type": "table"
+      "title": "Partners Claims",
+      "type": "stat"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 29
+      "datasource": {
+        "type": "mysql",
+        "uid": "0"
       },
-      "id": 10,
-      "panels": [],
-      "title": "Suite Tests Usage Summary",
-      "type": "row"
-    },
-    {
-      "datasource": {},
       "description": "Who executed the CNF certification tests.",
       "fieldConfig": {
         "defaults": {
@@ -903,7 +298,8 @@
               "viz": false
             }
           },
-          "mappings": []
+          "mappings": [],
+          "unit": "percent"
         },
         "overrides": [
           {
@@ -926,8 +322,8 @@
       "gridPos": {
         "h": 9,
         "w": 5,
-        "x": 0,
-        "y": 30
+        "x": 7,
+        "y": 4
       },
       "id": 4,
       "options": {
@@ -965,7 +361,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT executed_by, COUNT(*) AS num \nFROM cnf.claim\nGROUP BY executed_by;",
+          "rawSql": "SELECT \n  executed_by,\n  (COUNT(*) / (SELECT COUNT(*) FROM cnf.claim)) * 100 AS percent\nFROM cnf.claim\nGROUP BY executed_by;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1017,46 +413,17 @@
               },
               "type": "value"
             }
-          ]
+          ],
+          "noValue": "No partners found",
+          "unit": "percent"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "default-executed-by"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Mavenir"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 9,
         "w": 5,
-        "x": 5,
-        "y": 30
+        "x": 12,
+        "y": 4
       },
       "id": 12,
       "options": {
@@ -1094,7 +461,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n  subquery.partner_name,\n  COUNT(*) AS num\nFROM (\n  SELECT \n    CASE \n        WHEN partner_name LIKE 'ciuser\\_%' THEN 'ci_users'\n        WHEN partner_name LIKE 'qeuser%' THEN 'qeusers'\n        ELSE partner_name\n    END AS partner_name\n  FROM \n    cnf.claim\n) subquery\nGROUP BY \n    partner_name;\n",
+          "rawSql": "SELECT \n  partner_name,\n  (COUNT(*) / (SELECT COUNT(*) FROM cnf.claim WHERE partner_name NOT LIKE 'ciuser_%' AND partner_name NOT LIKE 'qeuser%')) * 100 AS percent\nFROM cnf.claim\nWHERE partner_name NOT LIKE 'ciuser_%' AND partner_name NOT LIKE 'qeuser%'\nGROUP BY \n    partner_name;\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1118,17 +485,391 @@
       "title": "Partners Usage",
       "transformations": [],
       "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "0"
+      },
+      "description": "The presented percent is calculated out of ran tests only (not including skips) ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 65,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total_passed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total_failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total_skipped"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 15,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.65,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "normal",
+        "text": {
+          "valueSize": 16
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "dataset": "cnf",
+          "datasource": {
+            "type": "mysql",
+            "uid": "0"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  cr.test_id,\n  (SUM(CASE WHEN test_status = \"passed\" THEN 1 ELSE 0 END) / SUM(CASE WHEN cr.test_status <> 'skipped' THEN 1 ELSE 0 END)) * 100 AS total_passed,\n  (SUM(CASE WHEN test_status = \"failed\" THEN 1 ELSE 0 END) / SUM(CASE WHEN cr.test_status <> 'skipped' THEN 1 ELSE 0 END)) * 100 AS total_failed\nFROM cnf.claim_result cr\nJOIN claim c ON cr.claim_id = c.id\nWHERE \n  SUBSTRING_INDEX(cnf_version, '.', 2) IN ($cnf_version)\n  OR cnf_version IN ($cnf_version)\nGROUP BY cr.test_id\nORDER BY total_failed DESC\nLIMIT 10;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "10 Most failed tests summary",
+      "type": "barchart"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 13,
+      "panels": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "0"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 65,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "total_failed"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "total_skipped"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 24
+          },
+          "id": 17,
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.65,
+            "fullHighlight": false,
+            "groupWidth": 1,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "orientation": "auto",
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            },
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 0
+          },
+          "targets": [
+            {
+              "dataset": "cnf",
+              "datasource": {
+                "type": "mysql",
+                "uid": "0"
+              },
+              "editorMode": "code",
+              "format": "table",
+              "rawQuery": true,
+              "rawSql": "SELECT\n  cr.suite_name,\n  (SUM(CASE WHEN test_status = \"passed\" THEN 1 ELSE 0 END) / COUNT(*)) * 100 AS total_passed,\n  (SUM(CASE WHEN test_status = \"failed\" THEN 1 ELSE 0 END) / COUNT(*)) * 100 AS total_failed,\n  (SUM(CASE WHEN test_status = \"skipped\" THEN 1 ELSE 0 END) / COUNT(*)) * 100  AS total_skipped\nFROM cnf.claim_result cr\nJOIN claim c ON cr.claim_id = c.id\nWHERE\n  suite_name = $suite_name \n  AND (SUBSTRING_INDEX(cnf_version, '.', 2) IN ($cnf_version) OR cnf_version IN ($cnf_version))\nGROUP BY\n  suite_name;\n\n",
+              "refId": "A",
+              "sql": {
+                "columns": [
+                  {
+                    "parameters": [],
+                    "type": "function"
+                  }
+                ],
+                "groupBy": [
+                  {
+                    "property": {
+                      "type": "string"
+                    },
+                    "type": "groupBy"
+                  }
+                ],
+                "limit": 50
+              }
+            }
+          ],
+          "type": "barchart"
+        }
+      ],
+      "repeat": "suite_name",
+      "repeatDirection": "h",
+      "title": "$suite_name suite status summary",
+      "type": "row"
     }
   ],
   "refresh": "",
   "schemaVersion": 38,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "access-control"
+          ],
+          "value": [
+            "access-control"
+          ]
+        },
+        "datasource": {
+          "type": "mysql",
+          "uid": "0"
+        },
+        "definition": "select suite_name from cnf.claim_result",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "suite_name",
+        "options": [],
+        "query": "select suite_name from cnf.claim_result",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "4.14"
+          ],
+          "value": [
+            "4.14"
+          ]
+        },
+        "datasource": {
+          "type": "mysql",
+          "uid": "0"
+        },
+        "definition": "SELECT \n        SUBSTRING_INDEX(cnf_version, '.', 2) \nFROM cnf.claim;",
+        "description": "",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "cnf_version",
+        "options": [],
+        "query": "SELECT \n        SUBSTRING_INDEX(cnf_version, '.', 2) \nFROM cnf.claim;",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
   },
   "time": {
-    "from": "2023-11-01T12:50:27.897Z",
-    "to": "2023-11-01T13:00:27.897Z"
+    "from": "now-5m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
