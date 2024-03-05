@@ -10,7 +10,7 @@ env:
   COLLECTOR_CONTAINER_NAME: tnf-collector
   REGISTRY: quay.io
   COLLECTOR_IMAGE_NAME: testnetworkfunction/collector
-  COLLECTOR_IMAGE_TAG: latest
+  COLLECTOR_IMAGE_TAG: unstable
 
 
 jobs:
@@ -106,6 +106,9 @@ jobs:
       # Build Collector image with unstable tag
       - name: Build the image
         run: make build-image-collector
+        env:
+          COLLECTOR_IMAGE_TAG: ${{ env.COLLECTOR_IMAGE_TAG }}
+
 
       # Push the new unstable TNF image to Quay.io.
       - name: (if on main and upstream) Authenticate against Quay.io
