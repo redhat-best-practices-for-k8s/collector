@@ -11,7 +11,6 @@ endif
 MYSQL_CONTAINER_NAME?=mysql-container
 COLLECTOR_IMAGE_NAME?=testnetworkfunction/collector
 COLLECTOR_IMAGE_TAG?=latest
-COLLECTOR_IMAGE_UNSTABLE?=unstable
 COLLECTOR_CONTAINER_NAME?=cnf-collector
 COLLECTOR_NS?=cnf-collector
 GRAFANA_CONTAINER_NAME?=grafana
@@ -19,6 +18,7 @@ COLLECTOR_VERSION?=v0.0.3
 REGISTRY?=quay.io
 HOST_PORT?=80
 TARGET_PORT?=80
+LOCAL_DB_URL?=localhost
 
 COMMON_GO_ARGS=-race
 GIT_COMMIT=$(shell scripts/create-version-files.sh)
@@ -72,12 +72,12 @@ stop-running-collector-container:
 	docker ps -q --filter "name=${COLLECTOR_CONTAINER_NAME}" | xargs -r docker stop
 	docker ps -aq --filter "name=${COLLECTOR_CONTAINER_NAME}" | xargs -r docker rm
 
-# Runs collector locally with docker
+# Runs collector locally with docker using latest tag
 run-collector: clone-tnf-secrets stop-running-collector-container
 	docker run -d --pull always -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
-		-e DB_URL='localhost' \
+		-e DB_URL=${LOCAL_DB_URL} \
 		-e DB_PORT='3306' \
 		-e SERVER_ADDR=':${HOST_PORT}' \
 		-e SERVER_READ_TIMEOUT=10 \
@@ -86,7 +86,7 @@ run-collector: clone-tnf-secrets stop-running-collector-container
 		-e AWS_SECRET_ACCESS_KEY=$(shell jq -r ".CollectorAWSSecretAccessKey" "./tnf-secrets/collector-secrets.json") \
 		-e S3_BUCKET_NAME=${S3_BUCKET_NAME} \
 		-e S3_BUCKET_REGION=${S3_BUCKET_REGION} \
-		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION}
+		${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG}
 	rm -rf tnf-secrets
 
 # Runs collector on rds with docker
@@ -123,10 +123,10 @@ run-collector-rds-headless: clone-tnf-secrets stop-running-collector-container
 		-d ${COLLECTOR_IMAGE_NAME}
 	rm -rf tnf-secrets
 
-# Builds collector image with unstable tag
+# Builds collector image with latest tag
 build-image-collector:
 	docker build \
-		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_UNSTABLE} \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
 		-f Dockerfile .
 
 # Builds collector image with latest and version tags
@@ -136,9 +136,9 @@ build-image-collector-by-version:
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
 
-# Pushes collector image with unstable tag
+# Pushes collector image with latest tag
 push-image-collector:
-	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_UNSTABLE}
+	docker push ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG}
 
 # Pushes collector image with latest tag and version tags
 push-image-collector-by-version:
