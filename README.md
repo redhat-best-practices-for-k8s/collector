@@ -31,7 +31,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
 
 ### Send data to Collector
 
-#### Option 1 - Run CNF Certifiaction test suites and send results to Collector
+#### Option 1 - Run CNF Certification test suites and send results to Collector
 
 1. Enable Collector's data collection:
 
@@ -39,7 +39,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
     export TNF_ENABLE_DATA_COLLECTION=true
     ```
 
-2. Adjust CNF Certifiaction configuration file:\
+2. Adjust CNF Certification configuration file:\
     (see [CNF Certification configuration description](https://test-network-function.github.io/cnf-certification-test/configuration/))
 
     1. Specify who executed the suites:\
@@ -47,7 +47,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
     specify who executed the CNF Certification suites (QE\CI\Partner).
 
     2. (Optional) Save your data in the Collector under partner name:
-        * Option 1: Parnter's first use of the Collector\
+        * Option 1: Partner's first use of the Collector\
         Under the `partnerName` entry enter your partner name,
         and under the `collectorAppPassword` entry enter a password as you like.\
         **Note:** Make sure to save the password for future use.
@@ -57,7 +57,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
         and under the `collectorAppPassword` entry enter the password
         you defined in your first use of the collector.
 
-    Example of filled entries in CNF Certifiaction configuration file,
+    Example of filled entries in CNF Certification configuration file,
     to allow data collection by partner name:
 
     ```sh
@@ -66,7 +66,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
     collectorAppPassword: "password_example"
     ```
 
-3. Run CNF Certifiaction suites with the adjusted configuration file.\
+3. Run CNF Certification suites with the adjusted configuration file.\
  (see [CNF Certification Test description](https://test-network-function.github.io/cnf-certification-test/test-container/))
 
 #### Option 2 - send a claim.json file directly to Collector
@@ -85,14 +85,14 @@ From collector's repo root directory, use the following command:
 ```
 <!-- markdownlint-enable -->
 
-**Note:** To get Collector's endpoint, contant us by email (mentioned at the bottom).
+**Note:** To get Collector's endpoint, contact us by email (mentioned at the bottom).
 
 ### Get data from Collector
 
 #### Option 1 - For both Admin and Partners
 
 Partners who use collector to store data by their name,
-can have acess to their saved data.\
+can have access to their saved data.\
 If you haven't already, clone Collector's repository:
 
 ```sh
@@ -122,7 +122,7 @@ Access the data through
 
 ### Build and Run Collector's container locally
 
-Use the Following commands to build and run Collector's container and database locally:
+Use the following commands to build and run Collector's container and database locally:
 
 * **Clone Collector's repository:**
 
@@ -145,7 +145,7 @@ Use the Following commands to build and run Collector's container and database l
     **Note:** If skipping this step, the colletor container will use
     `quay.io/testnetworkfunction/collector:latest` image by default.
 
-* **Intialize local Collector DB:**
+* **Initialize local Collector DB:**
 
     ```sh
     make run-initial-mysql-scripts
