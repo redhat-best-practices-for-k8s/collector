@@ -39,58 +39,57 @@ jobs:
         with:
           ref: ${{ github.sha }}
 
-      # TODO: golangci-lint team recommends using a GitHub Action to perform golangci-lint responsibilities.  However
-      # there does not appear to be a way to honor our existing .golangci.yml.  For now, mimic developer behavior.
-      - name: Install golangci-lint
-        run: make install-lint
+      - name: Install yaml dependency
+        run: pip3 install pyyaml
+        env:
+          SHELL: /bin/bash
 
-      - name: Install checkmake (Linux)
-        run: curl --location --output $CM_BIN --silent $CM_URL_LINUX
-        if: runner.os == 'Linux'
+      - name: Extract dependent Pull Requests
+        uses: depends-on/depends-on-action@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install checkmake (MacOS)
-        run: brew install checkmake
-        if: runner.os == 'macOS'
-
-      - run: chmod +x $CM_BIN
-
-      - name: Install hadolint (Linux)
+      - name: Install checkmake
         run: |
-          curl \
-              --location \
-              --output /usr/local/bin/hadolint \
-              https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
-          chmod +x /usr/local/bin/hadolint
-        if: runner.os == 'Linux'
+          curl --location --output $CM_BIN --silent $CM_URL_LINUX
+          chmod +x $CM_BIN
 
-      - name: Install hadolint (MacOS)
-        run: |
-          brew install hadolint
-        if: runner.os == 'macOS'
+      - name: Install Shfmt
+        uses: mfinelli/setup-shfmt@v3
 
-      - name: Run yamllint
+      - name: Golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.56
+          args: --timeout 10m0s
+
+      - name: Checkmake
+        run: checkmake --config=.checkmake Makefile
+
+      - name: Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          recursive: true
+
+      - name: Shfmt
+        run: shfmt -d scripts/*.sh
+
+      - name: Markdownlint
+        uses: nosborn/github-action-markdown-cli@v3.3.0
+        with:
+          files: .
+
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@master
+
+      - name: Typos
+        uses: crate-ci/typos@master
+
+      - name: Yamllint
         uses: ibiqlik/action-yamllint@v3
         with:
-          config_data: |
-            extends: default
-            rules:
-              line-length:
-                level: warning
-              trailing-spaces:
-                level: warning
-              brackets:
-                level: warning
-              empty-lines:
-                level: warning
-
-      - uses: mfinelli/setup-shfmt@v3
-      - run: shfmt -d scripts
-      - uses: ludeeus/action-shellcheck@master
-        with:
-          additional_files: ./scripts/*.sh
-
-      - name: make lint
-        run: make lint
+          config_file: .yamllint.yml
 
       - name: make vet
         run: make vet

@@ -105,7 +105,7 @@ From collector's repo root directory, use the following command:
 ./scripts/get-from-collector.sh "enter_endpoint" "enter_partner_name" "enter_password"
 ```
 
-**Note:** To get Collector's endpoint, contant us by email
+**Note:** To get Collector's endpoint, constant us by email
 (mentioned at the bottom).
 
 #### Option 2 - For Admin only
@@ -130,7 +130,7 @@ Use the following commands to build and run Collector's container and database l
     git pull https://github.com/test-network-function/collector.git
     ```
 
-* **(Optinal) Build and Push your Collector image:**
+* **(Optional) Build and Push your Collector image:**
 
     You can build your own collector image
 
