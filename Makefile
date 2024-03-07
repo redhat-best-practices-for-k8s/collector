@@ -24,6 +24,7 @@ COMMON_GO_ARGS=-race
 GIT_COMMIT=$(shell scripts/create-version-files.sh)
 GIT_RELEASE=$(shell scripts/get-git-release.sh)
 GIT_PREVIOUS_RELEASE=$(shell scripts/get-git-previous-release.sh)
+BASH_SCRIPTS=$(shell find . -name "*.sh" -not -path "./.git/*")
 GOLANGCI_VERSION=v1.56.2
 LINKER_TNF_RELEASE_FLAGS=-X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitCommit=${GIT_COMMIT}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitRelease=${GIT_RELEASE}
@@ -54,9 +55,14 @@ install-lint:
 
 # Runs configured linters
 lint:
-	checkmake Makefile
+	checkmake --config=.checkmake Makefile
 	golangci-lint run --timeout 10m0s
 	hadolint Dockerfile
+	shfmt -d scripts/*.sh
+	typos
+	markdownlint '**/*.md'
+	yamllint --no-warnings .
+	shellcheck --format=gcc ${BASH_SCRIPTS}
 
 install-mac-brew-tools:
 	brew install \
