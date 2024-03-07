@@ -72,6 +72,7 @@ jobs:
         with:
           dockerfile: Dockerfile
           recursive: true
+        if: runner.os == 'Linux'
 
       - name: Shfmt
         run: shfmt -d scripts/*.sh
