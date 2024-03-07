@@ -65,6 +65,7 @@ jobs:
 
       - name: Checkmake
         run: checkmake --config=.checkmake Makefile
+        if: runner.os == 'Linux'
 
       - name: Hadolint
         uses: hadolint/hadolint-action@v3.1.0
