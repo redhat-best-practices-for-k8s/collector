@@ -81,6 +81,7 @@ jobs:
         uses: nosborn/github-action-markdown-cli@v3.3.0
         with:
           files: .
+        if: runner.os == 'Linux'
 
       - name: ShellCheck
         uses: ludeeus/action-shellcheck@master
