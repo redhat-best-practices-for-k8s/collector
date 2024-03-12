@@ -8,8 +8,6 @@ inputs:
     required: true
   collector_password:
     required: true
-  collector_eip:
-    required: true
   oc_collector_timeout:
     description: Default timeout
     default: 5m
@@ -19,7 +17,7 @@ runs:
   steps:
     - name: Run sanity check script
       run: |
-        ENDPOINT=${{ inputs.collector_eip }} \
+        ENDPOINT="http://claims-collector.cnf-certifications.sysdeseng.com" \
         COLLECTOR_USERNAME=${{ inputs.collector_username }} \
         COLLECTOR_PASSWORD=${{ inputs.collector_password }} \
         ./scripts/sanity-check.sh
