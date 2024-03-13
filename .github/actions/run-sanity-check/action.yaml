@@ -17,7 +17,7 @@ runs:
   steps:
     - name: Run sanity check script
       run: |
-        ENDPOINT=44.195.143.94 \
+        ENDPOINT="http://claims-collector.cnf-certifications.sysdeseng.com" \
         COLLECTOR_USERNAME=${{ inputs.collector_username }} \
         COLLECTOR_PASSWORD=${{ inputs.collector_password }} \
         ./scripts/sanity-check.sh

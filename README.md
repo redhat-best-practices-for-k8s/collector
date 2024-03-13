@@ -85,7 +85,9 @@ From collector's repo root directory, use the following command:
 ```
 <!-- markdownlint-enable -->
 
-**Note:** To get Collector's endpoint, contact us by email (mentioned at the bottom).
+<!-- markdownlint-disable -->
+Collector's app endpoint: http://claims-collector.cnf-certifications.sysdeseng.com
+<!-- markdownlint-enable -->
 
 ### Get data from Collector
 
@@ -105,8 +107,9 @@ From collector's repo root directory, use the following command:
 ./scripts/get-from-collector.sh "enter_endpoint" "enter_partner_name" "enter_password"
 ```
 
-**Note:** To get Collector's endpoint, constant us by email
-(mentioned at the bottom).
+<!-- markdownlint-disable -->
+Collector's app endpoint: http://claims-collector.cnf-certifications.sysdeseng.com
+<!-- markdownlint-enable -->
 
 #### Option 2 - For Admin only
 
@@ -163,10 +166,3 @@ Use the following commands to build and run Collector's container and database l
     ```sh
     make stop-running-collector-container
     ```
-
-## Contact us to get your collected data
-
-In order to get your data from the collector, contact us to get Collector's endpoint:
-
-Brandon Palm: [bpalm@redhat.com](mailto:bpalm@redhat.com)\
-Shir Moran: [shmoran@redhat.com](mailto:shmoran@redhat.com)
