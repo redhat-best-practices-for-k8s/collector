@@ -1,10 +1,11 @@
+---
 name: Test Incoming Changes
 
-on:
+'on':
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 env:
   COLLECTOR_CONTAINER_NAME: tnf-collector
@@ -94,6 +95,8 @@ jobs:
         uses: ibiqlik/action-yamllint@v3
         with:
           config_file: .yamllint.yml
+          file_or_dir: .github/*.yml .github/workflows/*.yaml .yamllint.yml
+          strict: true
 
       - name: make vet
         run: make vet
@@ -105,7 +108,7 @@ jobs:
 
       - name: Check out the code
         uses: actions/checkout@v4
-        
+
       # Build Collector image with unstable tag
       - name: Build the image
         run: make build-image-collector
@@ -127,7 +130,7 @@ jobs:
       - name: (if on main and upstream) Push the newly built image to Quay.io
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
-      
+
       - uses: webfactory/ssh-agent@v0.9.0
         name: (if on main and upstream) Add SSH key to agent
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'test-network-function' }}
