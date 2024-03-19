@@ -88,6 +88,9 @@ jobs:
 
       - name: Typos
         uses: crate-ci/typos@master
+        with:
+          files: ./depends-on.json
+          isolated: true
         if: runner.os == 'Linux'
 
       - name: Yamllint
