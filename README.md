@@ -57,6 +57,15 @@ and has to be enabled manually by the user running the CNF Certification Suites.
         and under the `collectorAppPassword` entry enter the password
         you defined in your first use of the collector.
 
+    3. (Optional) Send your data to your own collector:\
+        Under the `collectorAppEndpoint` entry enter your collector app
+        endpoint.\
+        **Note:** If won't be specified, the collector app endpoint
+        will be set to CNF Certification's Collector app endpoint
+        by default: <!-- markdownlint-disable -->
+        http://claims-collector.cnf-certifications.sysdeseng.com
+        <!-- markdownlint-enable -->
+
     Example of filled entries in CNF Certification configuration file,
     to allow data collection by partner name:
 
@@ -64,6 +73,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
     executedBy: "Partner"
     partnerName: "partner_example"
     collectorAppPassword: "password_example"
+    collectorAppEndpoint: "endpoint_example"
     ```
 
 3. Run CNF Certification suites with the adjusted configuration file.\
@@ -86,7 +96,8 @@ From collector's repo root directory, use the following command:
 <!-- markdownlint-enable -->
 
 <!-- markdownlint-disable -->
-Collector's app endpoint: http://claims-collector.cnf-certifications.sysdeseng.com
+(CNF Certification's Collector app endpoint:
+http://claims-collector.cnf-certifications.sysdeseng.com)
 <!-- markdownlint-enable -->
 
 ### Get data from Collector
@@ -108,8 +119,43 @@ From collector's repo root directory, use the following command:
 ```
 
 <!-- markdownlint-disable -->
-Collector's app endpoint: http://claims-collector.cnf-certifications.sysdeseng.com
+(CNF Certification's Collector app endpoint:
+http://claims-collector.cnf-certifications.sysdeseng.com)
 <!-- markdownlint-enable -->
+
+See an output example:
+
+```sh
+[
+        {
+                "Claim": {
+                        "id": 180788,
+                        "cnf_version": "n/a, (non-OpenShift cluster)",
+                        "executed_by": "ci",
+                        "upload_time": "2024-03-20 11:49:33",
+                        "partner_name": "ciuser_8357965459",
+                        "s3_file_url": "ci/ciuser_8357965459/claim_2024-03-20-11:49:33"
+                },
+                "ClaimResults": [
+                        {
+                                "id": 15909169,
+                                "claim_id": 180788,
+                                "suite_name": "affiliated-certification",
+                                "test_id": "affiliated-certification-operator-is-certified",
+                                "test_status": "passed"
+                        },
+                        {
+                                "id": 15909170,
+                                "claim_id": 180788,
+                                "suite_name": "lifecycle",
+                                "test_id": "lifecycle-container-poststart",
+                                "test_status": "passed"
+                        },
+                        ...
+                ]
+        }
+]
+```
 
 #### Option 2 - For Admin only
 
@@ -160,6 +206,16 @@ Use the following commands to build and run Collector's container and database l
     export LOCAL_DB_URL=enter_your_local_IP_address
     make run-collector
     ```
+
+* **Test it out:**
+
+    1. Send data to your collector in one of the ways mentioned [above](https://github.com/test-network-function/collector?tab=readme-ov-file#send-data-to-collector),
+    setting the endpoint of your local collector app endpoint.
+
+    2. Get the data from your collector using the
+    [above instructions](https://github.com/test-network-function/collector?tab=readme-ov-file#option-1---for-both-admin-and-partners)
+    , setting the endpoint of your local collector app endpoint and
+    credentials of the sent data.
 
 * **Cleanup after:**
 
