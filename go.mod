@@ -4,9 +4,9 @@ go 1.22.1
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.1
-	github.com/aws/aws-sdk-go-v2/config v1.27.9
+	github.com/aws/aws-sdk-go-v2/config v1.27.10
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.10
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.16.13
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.16.14
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.53.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/sirupsen/logrus v1.9.3
