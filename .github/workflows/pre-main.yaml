@@ -87,9 +87,10 @@ jobs:
       - name: ShellCheck
         uses: ludeeus/action-shellcheck@master
 
-      - name: Typos
-        uses: crate-ci/typos@master
-        if: runner.os == 'Linux'
+      # Temporarily disabled due to issues with the action
+      # - name: Typos
+      #   uses: crate-ci/typos@master
+      #   if: runner.os == 'Linux'
 
       - name: Yamllint
         uses: ibiqlik/action-yamllint@v3
