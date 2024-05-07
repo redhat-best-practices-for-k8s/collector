@@ -12,8 +12,6 @@ env:
   REGISTRY: quay.io
   COLLECTOR_IMAGE_NAME: testnetworkfunction/collector
   COLLECTOR_IMAGE_TAG: unstable
-
-
 jobs:
   lint:
     name: Run Linter and Vet
@@ -40,10 +38,15 @@ jobs:
         with:
           ref: ${{ github.sha }}
 
-      - name: Install yaml dependency
+      - name: Install yaml dependency MacOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          pip3 install pyyaml --break-system-packages
+          brew install yamllint
+
+      - name: Install yaml dependency Ubuntu
+        if: matrix.os == 'ubuntu-22.04'
         run: pip3 install pyyaml
-        env:
-          SHELL: /bin/bash
 
       - name: Extract dependent Pull Requests
         uses: depends-on/depends-on-action@main
