@@ -41,7 +41,7 @@ jobs:
           ref: ${{ github.sha }}
 
       - name: Install yaml dependency
-        run: pip3 --break-system-packages install pyyaml
+        run: pip3 install pyyaml --break-system-packages
         env:
           SHELL: /bin/bash
 
