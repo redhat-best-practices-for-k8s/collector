@@ -41,11 +41,11 @@ jobs:
           ref: ${{ github.sha }}
 
       - name: Install yaml dependency MacOS
-        if: matrix.os == macos-latest
+        if: matrix.os == 'macos-latest'
         run: pip3 install pyyaml --break-system-packages
 
       - name: Install yaml dependency Ubuntu
-        if: matrix.os == ubuntu-22.04
+        if: matrix.os == 'ubuntu-22.04'
         run: pip3 install pyyaml
 
       - name: Extract dependent Pull Requests
