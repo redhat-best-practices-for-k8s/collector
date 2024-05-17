@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-latest]
+        os: [ubuntu-24.04]
     env:
       SHELL: /bin/bash
       CM_BIN: /usr/local/bin/checkmake
@@ -37,16 +37,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-
-      - name: Install yaml dependency MacOS
-        if: matrix.os == 'macos-latest'
-        run: |
-          pip3 install pyyaml --break-system-packages
-          brew install yamllint
-
-      - name: Install yaml dependency Ubuntu
-        if: matrix.os == 'ubuntu-22.04'
-        run: pip3 install pyyaml
 
       - name: Extract dependent Pull Requests
         uses: depends-on/depends-on-action@main
@@ -107,7 +97,7 @@ jobs:
 
   build-and-push-image:
     name: "Build and Push Image"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
 
       - name: Check out the code
