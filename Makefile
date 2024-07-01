@@ -25,7 +25,7 @@ GIT_COMMIT=$(shell scripts/create-version-files.sh)
 GIT_RELEASE=$(shell scripts/get-git-release.sh)
 GIT_PREVIOUS_RELEASE=$(shell scripts/get-git-previous-release.sh)
 BASH_SCRIPTS=$(shell find . -name "*.sh" -not -path "./.git/*")
-GOLANGCI_VERSION=v1.58.1
+GOLANGCI_VERSION=v1.59.1
 LINKER_TNF_RELEASE_FLAGS=-X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitCommit=${GIT_COMMIT}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitRelease=${GIT_RELEASE}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
