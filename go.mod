@@ -1,6 +1,6 @@
 module github.com/test-network-function/collector
 
-go 1.22.4
+go 1.22.5
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.1
