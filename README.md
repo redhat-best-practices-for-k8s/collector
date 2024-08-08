@@ -1,13 +1,13 @@
 # Cnf Certification's Collector
 
-[![release)](https://img.shields.io/github/v/release/test-network-function/collector?color=blue&label=%20&logo=semver&logoColor=white&style=flat)](https://github.com/test-network-function/collector/releases)
+[![release)](https://img.shields.io/github/v/release/redhat-best-practices-for-k8s/collector?color=blue&label=%20&logo=semver&logoColor=white&style=flat)](https://github.com/redhat-best-practices-for-k8s/collector/releases)
 [![red hat](https://img.shields.io/badge/red%20hat---?color=gray&logo=redhat&logoColor=red&style=flat)](https://www.redhat.com)
 [![openshift](https://img.shields.io/badge/openshift---?color=gray&logo=redhatopenshift&logoColor=red&style=flat)](https://www.redhat.com/en/technologies/cloud-computing/openshift)
 
 ## Description
 
 A Go-based endpoint for collecting
-[Cnf Certification Suites](https://github.com/test-network-function/cnf-certification-test)
+[Cnf Certification Suites](https://github.com/redhat-best-practices-for-k8s/certsuite)
 results.
 
 The CNF Certification Suites provide a set of test cases for the
@@ -40,7 +40,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
     ```
 
 2. Adjust CNF Certification configuration file:\
-    (see [CNF Certification configuration description](https://test-network-function.github.io/cnf-certification-test/configuration/))
+    (see [CNF Certification configuration description](https://redhat-best-practices-for-k8s.github.io/certsuite/configuration/))
 
     1. Specify who executed the suites:\
     Under the `executedBy` entry in the `tnf_config.yml` file,
@@ -77,14 +77,14 @@ and has to be enabled manually by the user running the CNF Certification Suites.
     ```
 
 3. Run CNF Certification suites with the adjusted configuration file.\
- (see [CNF Certification Test description](https://test-network-function.github.io/cnf-certification-test/test-container/))
+ (see [CNF Certification Test description](https://redhat-best-practices-for-k8s.github.io/certsuite/test-container/))
 
 #### Option 2 - send a claim.json file directly to Collector
 
 If you haven't already, clone Collector's repository:
 
 ```sh
-git pull https://github.com/test-network-function/collector.git
+git pull https://github.com/redhat-best-practices-for-k8s/collector.git
 ```
 
 From collector's repo root directory, use the following command:
@@ -109,7 +109,7 @@ can have access to their saved data.\
 If you haven't already, clone Collector's repository:
 
 ```sh
-git pull https://github.com/test-network-function/collector.git
+git pull https://github.com/redhat-best-practices-for-k8s/collector.git
 ```
 
 From collector's repo root directory, use the following command:
@@ -176,7 +176,7 @@ Use the following commands to build and run Collector's container and database l
 * **Clone Collector's repository:**
 
     ```sh
-    git pull https://github.com/test-network-function/collector.git
+    git pull https://github.com/redhat-best-practices-for-k8s/collector.git
     ```
 
 * **(Optional) Build and Push your Collector image:**
@@ -192,7 +192,7 @@ Use the following commands to build and run Collector's container and database l
     ```
 
     **Note:** If skipping this step, the colletor container will use
-    `quay.io/testnetworkfunction/collector:latest` image by default.
+    `quay.io/redhat-best-practices-for-k8s/collector:latest` image by default.
 
 * **Initialize local Collector DB:**
 
@@ -209,11 +209,11 @@ Use the following commands to build and run Collector's container and database l
 
 * **Test it out:**
 
-    1. Send data to your collector in one of the ways mentioned [above](https://github.com/test-network-function/collector?tab=readme-ov-file#send-data-to-collector),
+    1. Send data to your collector in one of the ways mentioned [above](https://github.com/redhat-best-practices-for-k8s/collector?tab=readme-ov-file#send-data-to-collector),
     setting the endpoint of your local collector app endpoint.
 
     2. Get the data from your collector using the
-    [above instructions](https://github.com/test-network-function/collector?tab=readme-ov-file#option-1---for-both-admin-and-partners)
+    [above instructions](https://github.com/redhat-best-practices-for-k8s/collector?tab=readme-ov-file#option-1---for-both-admin-and-partners)
     , setting the endpoint of your local collector app endpoint and
     credentials of the sent data.
 

@@ -3,8 +3,8 @@ package storage
 import (
 	"database/sql"
 
+	"github.com/redhat-best-practices-for-k8s/collector/util"
 	"github.com/sirupsen/logrus"
-	"github.com/test-network-function/collector/util"
 )
 
 type MySQLStorage struct{ MySQL *sql.DB }

@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/redhat-best-practices-for-k8s/collector/storage"
+	"github.com/redhat-best-practices-for-k8s/collector/types"
+	"github.com/redhat-best-practices-for-k8s/collector/util"
 	"github.com/sirupsen/logrus"
-	"github.com/test-network-function/collector/storage"
-	"github.com/test-network-function/collector/types"
-	"github.com/test-network-function/collector/util"
 )
 
 func ResultsHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage.MySQLStorage) {

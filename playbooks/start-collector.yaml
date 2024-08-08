@@ -67,7 +67,7 @@
     - name: Clone the collector repo
       become: no
       ansible.builtin.git:
-        repo: 'https://github.com/test-network-function/collector.git'
+        repo: 'https://github.com/redhat-best-practices-for-k8s/collector.git'
         version: '{{collector_version}}'
         dest: /home/ec2-user/collector
         clone: yes

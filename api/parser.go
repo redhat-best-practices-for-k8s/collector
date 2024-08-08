@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/test-network-function/collector/util"
+	"github.com/redhat-best-practices-for-k8s/collector/util"
 )
 
 func parseClaimFile(w http.ResponseWriter, r *http.Request) (map[string]interface{}, error) {

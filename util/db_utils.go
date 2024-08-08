@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/redhat-best-practices-for-k8s/collector/types"
 	"github.com/sirupsen/logrus"
-	"github.com/test-network-function/collector/types"
 )
 
 func HandleTransactionRollback(tx *sql.Tx) {
