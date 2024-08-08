@@ -158,7 +158,7 @@ jobs:
       # Build Collector image with latest and version tags
       - name: Build the `collector` image
         run: |
-          make build-image-collector-by-version
+          make build-image-collector-by-version-legacy
         env:
           COLLECTOR_VERSION: ${{ env.COLLECTOR_VERSION }}
 

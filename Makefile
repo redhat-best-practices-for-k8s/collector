@@ -10,6 +10,7 @@ endif
 
 MYSQL_CONTAINER_NAME?=mysql-container
 COLLECTOR_IMAGE_NAME?=redhat-best-practices-for-k8s/collector
+COLLECTOR_IMAGE_NAME_LEGACY?=testnetworkfunction/collector
 COLLECTOR_IMAGE_TAG?=latest
 COLLECTOR_CONTAINER_NAME?=cnf-collector
 COLLECTOR_NS?=cnf-collector
@@ -135,11 +136,22 @@ build-image-collector:
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
 		-f Dockerfile .
 
+build-image-collector-legacy:
+	docker build \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME_LEGACY}:${COLLECTOR_IMAGE_TAG} \
+		-f Dockerfile .
+
 # Builds collector image with latest and version tags
 build-image-collector-by-version:
 	docker build \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_IMAGE_TAG} \
 		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME}:${COLLECTOR_VERSION} \
+		-f Dockerfile .
+
+build-image-collector-by-version-legacy:
+	docker build \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME_LEGACY}:${COLLECTOR_IMAGE_TAG} \
+		-t ${REGISTRY}/${COLLECTOR_IMAGE_NAME_LEGACY}:${COLLECTOR_VERSION} \
 		-f Dockerfile .
 
 # Pushes collector image with latest tag
