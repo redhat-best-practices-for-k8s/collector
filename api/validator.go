@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/test-network-function/collector/types"
-	"github.com/test-network-function/collector/util"
+	"github.com/redhat-best-practices-for-k8s/collector/types"
+	"github.com/redhat-best-practices-for-k8s/collector/util"
 )
 
 func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, error) {

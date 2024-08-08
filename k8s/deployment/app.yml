@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: collector-container
-          image: quay.io/testnetworkfunction/collector:latest
+          image: quay.io/redhat-best-practices-for-k8s/collector:latest
           env:
             - name: DB_URL
               value: "mysql.cnf-collector.svc.cluster.local"

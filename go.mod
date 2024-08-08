@@ -1,4 +1,4 @@
-module github.com/test-network-function/collector
+module github.com/redhat-best-practices-for-k8s/collector
 
 go 1.22.5
 

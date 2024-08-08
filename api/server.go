@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/redhat-best-practices-for-k8s/collector/storage"
+	"github.com/redhat-best-practices-for-k8s/collector/util"
 	"github.com/sirupsen/logrus"
-	"github.com/test-network-function/collector/storage"
-	"github.com/test-network-function/collector/util"
 )
 
 type Server struct {

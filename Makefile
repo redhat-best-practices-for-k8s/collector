@@ -9,7 +9,7 @@ else
 endif
 
 MYSQL_CONTAINER_NAME?=mysql-container
-COLLECTOR_IMAGE_NAME?=testnetworkfunction/collector
+COLLECTOR_IMAGE_NAME?=redhat-best-practices-for-k8s/collector
 COLLECTOR_IMAGE_TAG?=latest
 COLLECTOR_CONTAINER_NAME?=cnf-collector
 COLLECTOR_NS?=cnf-collector
@@ -26,9 +26,9 @@ GIT_RELEASE=$(shell scripts/get-git-release.sh)
 GIT_PREVIOUS_RELEASE=$(shell scripts/get-git-previous-release.sh)
 BASH_SCRIPTS=$(shell find . -name "*.sh" -not -path "./.git/*")
 GOLANGCI_VERSION=v1.59.1
-LINKER_TNF_RELEASE_FLAGS=-X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitCommit=${GIT_COMMIT}
-LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitRelease=${GIT_RELEASE}
-LINKER_TNF_RELEASE_FLAGS+= -X github.com/test-network-function/cnf-certification-test/cnf-certification-test.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
+LINKER_TNF_RELEASE_FLAGS=-X github.com/redhat-best-practices-for-k8s/certsuite/certsuite.GitCommit=${GIT_COMMIT}
+LINKER_TNF_RELEASE_FLAGS+= -X github.com/redhat-best-practices-for-k8s/certsuite/certsuite.GitRelease=${GIT_RELEASE}
+LINKER_TNF_RELEASE_FLAGS+= -X github.com/redhat-best-practices-for-k8s/certsuite/certsuite.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
 MYSQL_DEPLOYMENT_PATH = ./k8s/deployment/database.yaml
 COLLECTOR_DEPLOYMENT_PATH = ./k8s/deployment/app.yml
 DB_URL = database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.com
@@ -212,4 +212,4 @@ run-grafana: clone-tnf-secrets stop-running-grafana-container
 # Clones tnf-secret private repo if does not exist
 clone-tnf-secrets:
 	rm -rf tnf-secrets
-	git clone git@github.com:test-network-function/tnf-secrets.git 
+	git clone git@github.com:redhat-best-practices-for-k8s/tnf-secrets.git 
