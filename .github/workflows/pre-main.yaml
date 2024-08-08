@@ -140,7 +140,7 @@ jobs:
 
       # Build Collector image with unstable tag
       - name: Build the image
-        run: make build-image-collector
+        run: make build-image-collector-legacy
         env:
           COLLECTOR_IMAGE_TAG: ${{ env.COLLECTOR_IMAGE_TAG }}
 
