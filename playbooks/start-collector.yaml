@@ -62,6 +62,9 @@
         append: yes
         state: present
 
+    - name: Clean dangling images
+      shell: docker image prune -f
+
     - set_fact: collector_version="{{ lookup('env','COLLECTOR_VERSION') }}"
 
     - name: Clone the collector repo
