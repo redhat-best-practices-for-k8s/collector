@@ -26,7 +26,7 @@ GIT_COMMIT=$(shell scripts/create-version-files.sh)
 GIT_RELEASE=$(shell scripts/get-git-release.sh)
 GIT_PREVIOUS_RELEASE=$(shell scripts/get-git-previous-release.sh)
 BASH_SCRIPTS=$(shell find . -name "*.sh" -not -path "./.git/*")
-GOLANGCI_VERSION=v1.60.1
+GOLANGCI_VERSION=v1.60.3
 LINKER_TNF_RELEASE_FLAGS=-X github.com/redhat-best-practices-for-k8s/certsuite/certsuite.GitCommit=${GIT_COMMIT}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/redhat-best-practices-for-k8s/certsuite/certsuite.GitRelease=${GIT_RELEASE}
 LINKER_TNF_RELEASE_FLAGS+= -X github.com/redhat-best-practices-for-k8s/certsuite/certsuite.GitPreviousRelease=${GIT_PREVIOUS_RELEASE}
