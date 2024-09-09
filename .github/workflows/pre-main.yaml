@@ -186,18 +186,18 @@ jobs:
 
       # needed by depends-on-action
       - name: Set up Go 1.23
-        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32  # v5.0.2
         with:
           go-version: 1.23.1
 
       # Perform smoke tests using a Certsuite container.
       - name: Check out code
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
         with:
           ref: ${{ github.sha }}
 
       - name: Check out `certsuite`
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
         with:
           repository: redhat-best-practices-for-k8s/certsuite
           path: certsuite
@@ -209,7 +209,7 @@ jobs:
           make-command: 'install'
 
       - name: Extract dependent Pull Requests
-        uses: depends-on/depends-on-action@9e8a61fce18b15281e831f1bba0e14c71d1e1f46 # main
+        uses: depends-on/depends-on-action@9e8a61fce18b15281e831f1bba0e14c71d1e1f46  # main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -252,6 +252,9 @@ jobs:
             -e '/partnerName/s/""/"${{ env.COLLECTOR_CIUSER }}"/g' \
             -e '/collectorAppPassword/s/""/"${{ env.COLLECTOR_CIPASSWORD }}"/g' \
             $CERTSUITE_CONFIG_DIR/certsuite_config.yml
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: 'Test: Run Smoke Tests in a Certsuite container with the certsuite command'
         run: |
