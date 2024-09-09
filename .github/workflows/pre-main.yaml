@@ -17,6 +17,7 @@ env:
   CERTSUITE_IMAGE_TAG: latest
   CERTSUITE_CONFIG_DIR: /tmp/certsuite/config
   CERTSUITE_OUTPUT_DIR: /tmp/certsuite/output
+  SMOKE_TESTS_LABELS_FILTER: all
 jobs:
   lint:
     name: Run Linter and Vet
@@ -253,8 +254,8 @@ jobs:
             -e '/collectorAppPassword/s/""/"${{ env.COLLECTOR_CIPASSWORD }}"/g' \
             $CERTSUITE_CONFIG_DIR/certsuite_config.yml
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
       - name: 'Test: Run Smoke Tests in a Certsuite container with the certsuite command'
         run: |
