@@ -274,16 +274,16 @@ jobs:
             --label-filter="${SMOKE_TESTS_LABELS_FILTER}"
 
       - name: Run sanity check on collector
-        uses: ./collector/.github/actions/run-sanity-check
+        uses: ./.github/actions/run-sanity-check
         with:
           collector_username: ${COLLECTOR_CIUSER}
           collector_password: ${COLLECTOR_CIPASSWORD}
         continue-on-error: true
 
-      # - name: Send chat msg to dev team if collector's sanity check failed.
-      #   if: ${{ steps.collector_sanity_check.outcome == 'failure' }}
-      #   uses: ./certsuite/.github/actions/slack-webhook-sender
-      #   with:
-      #     working_directory: certsuite
-      #     message: 'Collector sanity check has failed'
-      #     slack_webhook: '${{ secrets.SLACK_ALERT_WEBHOOK_URL }}'
+        # - name: Send chat msg to dev team if collector's sanity check failed.
+        #   if: ${{ steps.collector_sanity_check.outcome == 'failure' }}
+        #   uses: ./certsuite/.github/actions/slack-webhook-sender
+        #   with:
+        #     working_directory: certsuite
+        #     message: 'Collector sanity check has failed'
+        #     slack_webhook: '${{ secrets.SLACK_ALERT_WEBHOOK_URL }}'
