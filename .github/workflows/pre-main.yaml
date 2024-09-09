@@ -274,6 +274,7 @@ jobs:
             --label-filter="${SMOKE_TESTS_LABELS_FILTER}"
 
       - name: Run sanity check on collector
+        id: collector_sanity_check
         uses: ./.github/actions/run-sanity-check
         with:
           collector_username: ${COLLECTOR_CIUSER}
