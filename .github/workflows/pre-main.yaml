@@ -13,6 +13,8 @@ env:
   COLLECTOR_IMAGE_NAME: redhat-best-practices-for-k8s/collector
   COLLECTOR_IMAGE_TAG: unstable
   COLLECTOR_IMAGE_NAME_LEGACY: testnetworkfunction/collector
+  CERTSUITE_IMAGE_NAME: redhat-best-practices-for-k8s/certsuite
+  CERTSUITE_IMAGE_TAG: latest
 jobs:
   lint:
     name: Run Linter and Vet
@@ -254,7 +256,7 @@ jobs:
           docker run --rm --network host \
             -v $CERTSUITE_CONFIG_DIR:/usr/certsuite/config:Z \
             -v $CERTSUITE_OUTPUT_DIR:/usr/certsuite/output:Z \
-            ${REGISTRY_LOCAL}/${CERTSUITE_IMAGE_NAME}:${CERTSUITE_IMAGE_TAG} \
+            ${REGISTRY}/${CERTSUITE_IMAGE_NAME}:${CERTSUITE_IMAGE_TAG} \
             certsuite run \
             --output-dir=/usr/certsuite/output \
             --preflight-dockerconfig=/usr/certsuite/config/dockerconfig \
