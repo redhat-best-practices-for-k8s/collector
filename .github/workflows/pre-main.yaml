@@ -15,6 +15,8 @@ env:
   COLLECTOR_IMAGE_NAME_LEGACY: testnetworkfunction/collector
   CERTSUITE_IMAGE_NAME: redhat-best-practices-for-k8s/certsuite
   CERTSUITE_IMAGE_TAG: latest
+  CERTSUITE_CONFIG_DIR: /tmp/certsuite/config
+  CERTSUITE_OUTPUT_DIR: /tmp/certsuite/output
 jobs:
   lint:
     name: Run Linter and Vet
@@ -276,7 +278,7 @@ jobs:
 
       # - name: Send chat msg to dev team if collector's sanity check failed.
       #   if: ${{ steps.collector_sanity_check.outcome == 'failure' }}
-      #   uses: ./.github/actions/slack-webhook-sender
+      #   uses: ./certsuite/.github/actions/slack-webhook-sender
       #   with:
       #     working_directory: certsuite
       #     message: 'Collector sanity check has failed'
