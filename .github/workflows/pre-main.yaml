@@ -280,10 +280,10 @@ jobs:
           collector_password: ${COLLECTOR_CIPASSWORD}
         continue-on-error: true
 
-        # - name: Send chat msg to dev team if collector's sanity check failed.
-        #   if: ${{ steps.collector_sanity_check.outcome == 'failure' }}
-        #   uses: ./certsuite/.github/actions/slack-webhook-sender
-        #   with:
-        #     working_directory: certsuite
-        #     message: 'Collector sanity check has failed'
-        #     slack_webhook: '${{ secrets.SLACK_ALERT_WEBHOOK_URL }}'
+      - name: Send chat msg to dev team if collector's sanity check failed.
+        if: ${{ steps.collector_sanity_check.outcome == 'failure' }}
+        uses: ./certsuite/.github/actions/slack-webhook-sender
+        with:
+          working_directory: certsuite
+          message: 'Collector sanity check has failed'
+          slack_webhook: '${{ secrets.SLACK_ALERT_WEBHOOK_URL }}'
