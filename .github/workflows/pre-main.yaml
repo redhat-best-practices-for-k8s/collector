@@ -201,7 +201,7 @@ jobs:
           path: certsuite
 
       - name: Setup partner cluster
-        uses: ./.github/actions/setup-partner-cluster
+        uses: ./certsuite/.github/actions/setup-partner-cluster
         with:
           working_directory: certsuite
           make-command: 'install'
