@@ -14,8 +14,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: 'Perform a GET request to collector'
+        id: collector_sanity_check
         run: |
           curl $ENDPOINT || exit $?
+        continue-on-error: true
+
+      - name: Check out `certsuite`
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+        with:
+          repository: redhat-best-practices-for-k8s/certsuite
+          path: certsuite
 
       - name: Send chat msg to dev team if collector's GET request failed.
         if: ${{ steps.collector_sanity_check.outcome == 'failure' }}
