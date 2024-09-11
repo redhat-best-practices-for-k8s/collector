@@ -3,6 +3,7 @@ name: 'Perform a GET request to collector'
 'on':
   schedule:
     - cron: "0 */6 * * *"
+  workflow_dispatch:
 env:
   ENDPOINT: "44.195.143.94"
 defaults:
