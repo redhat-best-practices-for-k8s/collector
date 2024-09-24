@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.27.37
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.35
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.22
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.63.0
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.63.1
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/crypto v0.27.0
