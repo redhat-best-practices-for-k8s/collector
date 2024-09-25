@@ -21,7 +21,7 @@ COPY . .
 RUN go build
 
 #### Build small image ####
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.10-1052.1724178568
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.10-1086
 
 # Copy the user from the build image
 COPY --from=builder /etc/passwd /etc/passwd
