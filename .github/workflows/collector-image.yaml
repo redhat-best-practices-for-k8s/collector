@@ -107,7 +107,7 @@ jobs:
           ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml
 
   test-and-push-collector-image-legacy:
-    name: 'Test and push the collector image'
+    name: 'Test and push the collector image (legacy)'
     runs-on: ubuntu-22.04
     env:
       SHELL: /bin/bash
