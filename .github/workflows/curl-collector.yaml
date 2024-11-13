@@ -2,7 +2,7 @@
 name: 'Perform a GET request to collector'
 'on':
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "* * * * *"
   workflow_dispatch:
 env:
   ENDPOINT: "44.195.143.94"
@@ -30,5 +30,8 @@ jobs:
         if: ${{ failure() }}
         uses: ./certsuite/.github/actions/slack-webhook-sender
         with:
-          message: 'Collector GET request has failed'
+          message: >-
+            Collector GET request has failed.
+            Please trigger the job manually
+            https://github.com/redhat-best-practices-for-k8s/collector/actions/workflows/collector-image.yaml
           slack_webhook: '${{ secrets.SLACK_ALERT_WEBHOOK_URL }}'
