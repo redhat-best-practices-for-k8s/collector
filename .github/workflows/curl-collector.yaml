@@ -32,3 +32,11 @@ jobs:
         with:
           message: 'Collector GET request has failed'
           slack_webhook: '${{ secrets.SLACK_ALERT_WEBHOOK_URL }}'
+
+      - name : Deploy collector on EC2
+        if: ${{ failure() }}
+        id: rerun-collector
+        run: |
+          ANSIBLE_HOST_KEY_CHECKING=false \
+          COLLECTOR_VERSION=latest \
+          ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml
