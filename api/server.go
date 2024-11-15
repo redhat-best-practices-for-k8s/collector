@@ -27,10 +27,11 @@ func NewServer(listenAddr string, db *storage.MySQLStorage, objectStore *storage
 	}
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start() {
 	logrus.Info("Starting server")
 	http.HandleFunc("/", s.handler)
-	return s.server.ListenAndServe()
+	//nolint:errcheck
+	s.server.ListenAndServe()
 }
 
 func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
