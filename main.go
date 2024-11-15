@@ -22,5 +22,6 @@ func main() {
 
 	server := api.NewServer(addr, mysqlStore, s3Store,
 		time.Duration(readTimeOut)*time.Second, time.Duration(writeTimeOut)*time.Second)
-	logrus.Fatal(server.Start())
+
+	server.Start()
 }
