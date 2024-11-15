@@ -17,6 +17,7 @@ env:
   CERTSUITE_CONFIG_DIR: /tmp/certsuite/config
   CERTSUITE_OUTPUT_DIR: /tmp/certsuite/output
   SMOKE_TESTS_LABELS_FILTER: all
+  SKIP_PRELOAD_IMAGES: true
 jobs:
   lint:
     name: Run Linter and Vet
