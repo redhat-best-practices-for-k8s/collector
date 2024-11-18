@@ -98,7 +98,7 @@ run-collector: clone-tnf-secrets stop-running-collector-container
 
 # Runs collector on rds with docker
 run-collector-rds: clone-tnf-secrets stop-running-collector-container
-	docker run -d --pull always -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
+	docker run --restart always -d --pull always -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_PASSWORD='$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
 		-e DB_URL='${DB_URL}' \
