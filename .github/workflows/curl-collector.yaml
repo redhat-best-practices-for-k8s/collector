@@ -26,9 +26,9 @@ jobs:
           repository: redhat-best-practices-for-k8s/certsuite
           path: certsuite
 
-      - name: Send chat msg to dev team if collector's GET request failed.
-        if: ${{ failure() }}
-        uses: ./certsuite/.github/actions/slack-webhook-sender
-        with:
-          message: 'Collector GET request has failed'
-          slack_webhook: '${{ secrets.SLACK_ALERT_WEBHOOK_URL }}'
+# - name: Send chat msg to dev team if collector's GET request failed.
+#   if: ${{ failure() }}
+#   uses: ./certsuite/.github/actions/slack-webhook-sender
+#   with:
+#     message: 'Collector GET request has failed'
+#     slack_webhook: '${{ secrets.SLACK_ALERT_WEBHOOK_URL }}'
