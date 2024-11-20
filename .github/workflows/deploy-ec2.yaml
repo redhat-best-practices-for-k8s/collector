@@ -1,0 +1,62 @@
+---
+name: Deploy Collector on EC2
+
+'on':
+  schedule:
+    - cron: "0 */1 * * *"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  check-collector-endpoint:
+    name: 'Check Collector endpoint'
+    runs-on: ubuntu-latest
+
+    outputs:
+      endpoint_status: ${{ steps.collector_sanity_check.outputs.success }}
+
+    steps:
+      - name: 'Check Collector endpoint'
+        id: collector_sanity_check
+
+        run: |
+          set -e
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://claims-collector.cnf-certifications.sysdeseng.com)
+
+          if [ $? -ne 0 ]; then
+              echo "Failure: curl command failed with $response. Assuming response as 500."
+              response=500
+          fi
+
+          if [ "$response" -eq 200 ]; then
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+          fi
+
+        continue-on-error: true
+
+  start-on-failure:
+    runs-on: ubuntu-latest
+    needs: check-collector-endpoint
+    if: needs.check-collector-endpoint.outputs.endpoint_status == false
+
+    env:
+      PRIVATE_KEY: ${{ secrets.COLLECTOR_KEYPAIR }}
+      ENDPOINT: '44.195.143.94'
+      USER_NAME: ec2-user
+
+    steps:
+      - name: Deploy Collector on EC2
+        run: |
+          echo "Collector not running. So, restarting collector service on EC2."
+          echo "$PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${ENDPOINT} << 'EOF'
+            sudo systemctl stop collector.service
+            sudo systemctl start collector.service
+          EOF
