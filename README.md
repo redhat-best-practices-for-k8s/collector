@@ -191,7 +191,7 @@ Use the following commands to build and run Collector's container and database l
     make push-image-collector
     ```
 
-    **Note:** If skipping this step, the colletor container will use
+    **Note:** If skipping this step, the collector container will use
     `quay.io/redhat-best-practices-for-k8s/collector:latest` image by default.
 
 * **Initialize local Collector DB:**
