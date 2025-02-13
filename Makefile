@@ -50,10 +50,6 @@ vet:
 build:
 	go build -ldflags "${LINKER_TNF_RELEASE_FLAGS}" ${COMMON_GO_ARGS} -o collector
 
-# Installs linters
-install-lint:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_VERSION}
-
 # Runs configured linters
 lint:
 	checkmake --config=.checkmake Makefile
