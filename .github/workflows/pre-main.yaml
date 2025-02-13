@@ -31,18 +31,18 @@ jobs:
       CM_URL_LINUX: https://github.com/mrtazz/checkmake/releases/download/0.2.2/checkmake-0.2.2.linux.amd64 # yamllint disable-line
 
     steps:
-      - name: Set up Go 1.23
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.23.6
-
-      - name: Disable default go problem matcher
-        run: echo "::remove-matcher owner=go::"
-
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Disable default go problem matcher
+        run: echo "::remove-matcher owner=go::"
 
       - name: Extract dependent Pull Requests
         uses: depends-on/depends-on-action@main
