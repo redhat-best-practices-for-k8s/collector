@@ -200,11 +200,8 @@ jobs:
           repository: redhat-best-practices-for-k8s/certsuite
           path: certsuite
 
-      - name: Setup partner cluster
-        uses: ./certsuite/.github/actions/setup-partner-cluster
-        with:
-          working_directory: certsuite
-          make-command: 'install'
+      - name: Set up k8s cluster
+        uses: palmsoftware/quick-k8s@v0.0.21
 
       # Clean up unused container image layers. We need to filter out a possible error return code
       # from docker with "|| true" as some images might still be used by running kind containers and
@@ -245,9 +242,6 @@ jobs:
             -e '/partnerName/s/""/"${{ env.COLLECTOR_CIUSER }}"/g' \
             -e '/collectorAppPassword/s/""/"${{ env.COLLECTOR_CIPASSWORD }}"/g' \
             $CERTSUITE_CONFIG_DIR/certsuite_config.yml
-
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
 
       - name: 'Run Smoke Tests in a Certsuite unstable container with the certsuite command'
         run: |
