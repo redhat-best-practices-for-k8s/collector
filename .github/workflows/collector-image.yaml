@@ -94,7 +94,7 @@ jobs:
       - name: Push the newly built image to Quay.io
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
 
-      - uses: webfactory/ssh-agent@v0.9.0
+      - uses: webfactory/ssh-agent@v0.9.1
         name: Add SSH key to agent
         with:
           ssh-private-key: ${{ secrets.COLLECTOR_KEYPAIR }}
