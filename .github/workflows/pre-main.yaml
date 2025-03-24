@@ -130,7 +130,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'redhat-best-practices-for-k8s' }}
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME}
 
-      - uses: webfactory/ssh-agent@v0.9.0
+      - uses: webfactory/ssh-agent@v0.9.1
         name: (if on main and upstream) Add SSH key to agent
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'redhat-best-practices-for-k8s' }}
         with:
@@ -164,7 +164,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'redhat-best-practices-for-k8s' }}
         run: docker push --all-tags ${REGISTRY}/${COLLECTOR_IMAGE_NAME_LEGACY}
 
-      - uses: webfactory/ssh-agent@v0.9.0
+      - uses: webfactory/ssh-agent@v0.9.1
         name: (if on main and upstream) Add SSH key to agent
         if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'redhat-best-practices-for-k8s' }}
         with:
