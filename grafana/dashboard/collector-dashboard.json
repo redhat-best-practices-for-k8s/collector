@@ -1,4 +1,5 @@
 {
+  "__inputs": null,
   "annotations": {
     "list": [
       {
@@ -15,7 +16,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 2,
@@ -35,7 +36,7 @@
           },
           "displayName": "Earliest Upload",
           "fieldMinMax": false,
-          "mappings": [],
+          "mappings": null,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -69,6 +70,102 @@
               "id": "byName",
               "options": "claim_num"
             },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
             "properties": [
               {
                 "id": "displayName",
@@ -114,6 +211,7 @@
           },
           "editorMode": "code",
           "format": "table",
+          "hide": false,
           "rawQuery": true,
           "rawSql": "SELECT\n  Min(upload_time) AS earliest_time, \n  Max(upload_time) AS latest_time,\n  COUNT(*) AS claim_num\nFROM cnf.claim\nWHERE executed_by = 'qe' OR executed_by = 'ci'\n\n",
           "refId": "A",
@@ -137,6 +235,7 @@
         }
       ],
       "title": "CI and QE Claims",
+      "description": "CI and QE Claims",
       "type": "stat"
     },
     {
@@ -152,7 +251,7 @@
           },
           "displayName": "Earliest Upload",
           "fieldMinMax": false,
-          "mappings": [],
+          "mappings": null,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -216,6 +315,198 @@
                 "value": "-"
               }
             ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Latest Upload"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Claims Number"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "-"
+              }
+            ]
           }
         ]
       },
@@ -255,6 +546,7 @@
           },
           "editorMode": "code",
           "format": "table",
+          "hide": false,
           "rawQuery": true,
           "rawSql": "SELECT\n  Min(upload_time) AS earliest_time, \n  Max(upload_time) AS latest_time,\n  COUNT(*) AS claim_num\nFROM cnf.claim\nWHERE executed_by <> 'qe' AND executed_by <> 'ci'\n\n",
           "refId": "A",
@@ -278,6 +570,7 @@
         }
       ],
       "title": "Partners Claims",
+      "description": "Partners Claims",
       "type": "stat"
     },
     {
@@ -298,7 +591,7 @@
               "viz": false
             }
           },
-          "mappings": [],
+          "mappings": null,
           "unit": "percent"
         },
         "overrides": [
@@ -307,6 +600,72 @@
               "id": "byName",
               "options": "default-executed-by"
             },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
             "properties": [
               {
                 "id": "color",
@@ -331,11 +690,11 @@
           "percent"
         ],
         "legend": {
-          "calcs": [],
+          "calcs": null,
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true,
-          "values": []
+          "values": null
         },
         "pieType": "donut",
         "reduceOptions": {
@@ -360,6 +719,7 @@
           },
           "editorMode": "code",
           "format": "table",
+          "hide": false,
           "rawQuery": true,
           "rawSql": "SELECT \n  executed_by,\n  (COUNT(*) / (SELECT COUNT(*) FROM cnf.claim)) * 100 AS percent\nFROM cnf.claim\nGROUP BY executed_by;",
           "refId": "A",
@@ -431,11 +791,11 @@
           "percent"
         ],
         "legend": {
-          "calcs": [],
+          "calcs": null,
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true,
-          "values": []
+          "values": null
         },
         "pieType": "donut",
         "reduceOptions": {
@@ -460,6 +820,7 @@
           },
           "editorMode": "code",
           "format": "table",
+          "hide": false,
           "rawQuery": true,
           "rawSql": "SELECT \n  partner_name,\n  (COUNT(*) / (SELECT COUNT(*) FROM cnf.claim WHERE partner_name NOT LIKE 'ciuser_%' AND partner_name NOT LIKE 'qeuser%')) * 100 AS percent\nFROM cnf.claim\nWHERE partner_name NOT LIKE 'ciuser_%' AND partner_name NOT LIKE 'qeuser%'\nGROUP BY \n    partner_name;\n",
           "refId": "A",
@@ -518,7 +879,7 @@
               "mode": "off"
             }
           },
-          "mappings": [],
+          "mappings": null,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -579,6 +940,204 @@
                 }
               }
             ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
@@ -595,7 +1154,7 @@
         "fullHighlight": false,
         "groupWidth": 0.65,
         "legend": {
-          "calcs": [],
+          "calcs": null,
           "displayMode": "list",
           "placement": "right",
           "showLegend": true
@@ -622,6 +1181,7 @@
           },
           "editorMode": "code",
           "format": "table",
+          "hide": false,
           "rawQuery": true,
           "rawSql": "SELECT\n  cr.test_id,\n  (SUM(CASE WHEN test_status = \"passed\" THEN 1 ELSE 0 END) / SUM(CASE WHEN cr.test_status <> 'skipped' THEN 1 ELSE 0 END)) * 100 AS total_passed,\n  (SUM(CASE WHEN test_status = \"failed\" THEN 1 ELSE 0 END) / SUM(CASE WHEN cr.test_status <> 'skipped' THEN 1 ELSE 0 END)) * 100 AS total_failed\nFROM cnf.claim_result cr\nJOIN claim c ON cr.claim_id = c.id\nWHERE \n  SUBSTRING_INDEX(cnf_version, '.', 2) IN ($cnf_version)\n  OR cnf_version IN ($cnf_version)\nGROUP BY cr.test_id\nORDER BY total_failed DESC\nLIMIT 10;",
           "refId": "A",
@@ -688,7 +1248,7 @@
                   "mode": "off"
                 }
               },
-              "mappings": [],
+              "mappings": null,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -734,6 +1294,138 @@
                     }
                   }
                 ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -750,7 +1442,7 @@
             "fullHighlight": false,
             "groupWidth": 1,
             "legend": {
-              "calcs": [],
+              "calcs": null,
               "displayMode": "list",
               "placement": "right",
               "showLegend": true
@@ -774,6 +1466,7 @@
               },
               "editorMode": "code",
               "format": "table",
+              "hide": false,
               "rawQuery": true,
               "rawSql": "SELECT\n  cr.suite_name,\n  (SUM(CASE WHEN test_status = \"passed\" THEN 1 ELSE 0 END) / COUNT(*)) * 100 AS total_passed,\n  (SUM(CASE WHEN test_status = \"failed\" THEN 1 ELSE 0 END) / COUNT(*)) * 100 AS total_failed,\n  (SUM(CASE WHEN test_status = \"skipped\" THEN 1 ELSE 0 END) / COUNT(*)) * 100  AS total_skipped\nFROM cnf.claim_result cr\nJOIN claim c ON cr.claim_id = c.id\nWHERE\n  suite_name = $suite_name \n  AND (SUBSTRING_INDEX(cnf_version, '.', 2) IN ($cnf_version) OR cnf_version IN ($cnf_version))\nGROUP BY\n  suite_name;\n\n",
               "refId": "A",
@@ -796,6 +1489,7 @@
               }
             }
           ],
+          "title": "",
           "type": "barchart"
         }
       ],
@@ -827,11 +1521,12 @@
         "definition": "select suite_name from cnf.claim_result",
         "hide": 0,
         "includeAll": true,
+        "label": "",
         "multi": true,
         "name": "suite_name",
         "options": [],
         "query": "select suite_name from cnf.claim_result",
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
@@ -855,11 +1550,12 @@
         "description": "",
         "hide": 0,
         "includeAll": true,
+        "label": "",
         "multi": true,
         "name": "cnf_version",
         "options": [],
         "query": "SELECT \n        SUBSTRING_INDEX(cnf_version, '.', 2) \nFROM cnf.claim;",
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
