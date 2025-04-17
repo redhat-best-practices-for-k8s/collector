@@ -202,21 +202,42 @@ stop-running-grafana-container:
 	docker ps -q --filter "name=${GRAFANA_CONTAINER_NAME}" | xargs -r docker stop
 	docker ps -aq --filter "name=${GRAFANA_CONTAINER_NAME}" | xargs -r docker rm
 
-run-grafana: clone-tnf-secrets stop-running-grafana-container
+run-grafana: clone-tnf-secrets clone-certsuite-overview stop-running-grafana-container
+
+# Replace the collector's datasource config variables.
 	sed \
 		-e 's/MysqlUsername/$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
 		-e 's/MysqlPassword/$(shell jq -r ".MysqlPassword" "./tnf-secrets/collector-secrets.json" | base64 -d)/g' \
-		./grafana/datasource/datasource-config.yaml > datasource-config-prod.yaml
+		./grafana/datasource/datasource-config.yaml > datasource-config-prod.yaml \
+
+# Replace the certsuite-overview's datasource config variables.
+	sed \
+		-e 's/DB_USER/$(shell jq -r ".MysqlUser" "./tnf-secrets/certsuite-overview-secrets.json")/g' \
+		-e 's/DB_PASSWORD/$(shell jq -r ".MysqlPassword" "./tnf-secrets/certsuite-overview-secrets.json" | base64 -d)/g' \
+		-e 's/DB_URL/$(shell jq -r ".MysqlURL" "./tnf-secrets/certsuite-overview-secrets.json")/g' \
+		-e 's/DB_PORT/$(shell jq -r ".MysqlPort" "./tnf-secrets/certsuite-overview-secrets.json")/g' \
+		./certsuite-overview/grafana/datasource/datasource.yaml > datasource-certsuite-overview.yaml \
+
+# Copy the certsuite-overview's dashboards to the collector's dashboard folder
+	cp ./certsuite-overview/grafana/dashboard/dashboard.json grafana/dashboard/dashboard-certsuite-overview.json \
+
 	docker run -d -p 3000:3000 --name=${GRAFANA_CONTAINER_NAME} \
 	  	-e "GF_SECURITY_ADMIN_USER=$(shell jq -r ".GrafanaUsername" "./tnf-secrets/collector-secrets.json")" \
   		-e "GF_SECURITY_ADMIN_PASSWORD=$(shell jq -r ".GrafanaPassword" "./tnf-secrets/collector-secrets.json")" \
 		-v ./grafana/dashboard:/etc/grafana/provisioning/dashboards \
 		-v ./datasource-config-prod.yaml:/etc/grafana/provisioning/datasources/datasource-config-prod.yaml \
+		-v ./datasource-certsuite-overview.yaml:/etc/grafana/provisioning/datasources/datasource-certsuite-overview.yaml \
 		grafana/grafana
 	rm datasource-config-prod.yaml
+	rm datasource-certsuite-overview.yaml
 	rm -rf tnf-secrets
 
 # Clones tnf-secret private repo if does not exist
 clone-tnf-secrets:
 	rm -rf tnf-secrets
-	git clone git@github.com:redhat-best-practices-for-k8s/tnf-secrets.git 
+	git clone git@github.com:redhat-best-practices-for-k8s/tnf-secrets.git
+
+clone-certsuite-overview:
+	rm -rf certsuite-overview
+	git clone git@github.com:redhat-best-practices-for-k8s/certsuite-overview.git
+
