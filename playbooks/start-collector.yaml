@@ -66,7 +66,12 @@
       shell: docker image prune -f
 
     - name: Stop all running containers
-      shell: docker stop $(docker ps -q)
+      shell: |
+        if [ "$(docker ps -q)" ]; then
+          docker stop $(docker ps -q)
+        else
+          echo "No containers are running."
+        fi   
 
     - name: Remove the grafana/grafana image
       shell: docker rmi grafana/grafana -f
