@@ -65,6 +65,12 @@
     - name: Clean dangling images
       shell: docker image prune -f
 
+    - name: Stop all running containers
+      shell: docker stop $(docker ps -q)
+
+    - name: Remove the grafana/grafana image
+      shell: docker rmi grafana/grafana   
+      
     - set_fact: collector_version="{{ lookup('env','COLLECTOR_VERSION') }}"
 
     - name: Clone the collector repo
