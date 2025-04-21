@@ -69,7 +69,7 @@
       shell: docker stop $(docker ps -q)
 
     - name: Remove the grafana/grafana image
-      shell: docker rmi grafana/grafana   
+      shell: docker rmi grafana/grafana -f
       
     - set_fact: collector_version="{{ lookup('env','COLLECTOR_VERSION') }}"
 
