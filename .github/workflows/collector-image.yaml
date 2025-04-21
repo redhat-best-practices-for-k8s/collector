@@ -99,12 +99,15 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.COLLECTOR_KEYPAIR }}
 
-      # run ansible deployment to deploy the new image to the cluster
       - name: Deploy the newly built image to the cluster
-        run: |
-          ANSIBLE_HOST_KEY_CHECKING=false \
-          COLLECTOR_VERSION=${{ env.COLLECTOR_VERSION }} \
-          ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08
+        with:
+          timeout_minutes: 90
+          max_attempts: 3
+          command: |
+            ANSIBLE_HOST_KEY_CHECKING=false \
+            COLLECTOR_VERSION=${{ env.COLLECTOR_VERSION }} \
+            ansible-playbook -i playbooks/inventory.ini playbooks/start-collector.yaml
 
   test-and-push-collector-image-legacy:
     name: 'Test and push the collector image (legacy)'
