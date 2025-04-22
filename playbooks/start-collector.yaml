@@ -7,6 +7,7 @@
     # Note: Keeping docker packages separate just for organization
     docker_package_names: [docker-ce, docker-ce-cli, containerd.io, docker-compose-plugin, docker-buildx-plugin]
     yum_packages: [yum-utils, git, device-mapper-persistent-data, lvm2, make]
+    go_version: "1.24.2"
 
   tasks:
     - name: Add ec2-user to sudoers
@@ -62,6 +63,20 @@
         append: yes
         state: present
 
+    - name: Restart Docker Service
+      service:
+        name: docker
+        state: restarted
+
+    - name: Print 'groups'
+      shell: groups ec2-user
+      register: groups_output
+
+    - name: Print 'groups' output
+      debug:
+        var: groups_output.stdout_lines
+      when: groups_output.stdout_lines is defined
+
     - name: Clean dangling images
       shell: docker image prune -f
 
@@ -78,22 +93,119 @@
       
     - set_fact: collector_version="{{ lookup('env','COLLECTOR_VERSION') }}"
 
+    # - name: Check installed Golang version
+    #   shell: |
+    #     if command -v go &> /dev/null; then
+    #       go version | awk '{print $3}' | sed 's/go//'
+    #     else
+    #       echo "not_installed"
+    #     fi
+    #   register: go_version_installed
+
+    # - name: Install Golang if not installed or version mismatch
+    #   shell: |
+    #     curl -LO https://golang.org/dl/go{{ go_version }}.linux-amd64.tar.gz
+    #     tar -C /usr/local -xzf go{{ go_version }}.linux-amd64.tar.gz
+    #     echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+    #     source /etc/profile
+    #   args:
+    #     creates: /usr/local/go/bin/go
+    #   when: go_version_installed.stdout != go_version
+
     - name: Clone the collector repo
       become: no
       ansible.builtin.git:
         repo: 'https://github.com/redhat-best-practices-for-k8s/collector.git'
-        version: '{{collector_version}}'
+        version: playbook_update
         dest: /home/ec2-user/collector
         clone: yes
         force: true
 
-    - name: Start Collector container 
+    - name: Check if id_rsa_git exists
+      stat:
+        path: /home/ec2-user/.ssh/id_rsa_git
+      register: id_rsa_git_stat
+
+    - name: Fail if id_rsa_git does not exist
+      fail:
+        msg: "The SSH key /home/ec2-user/.ssh/id_rsa_git does not exist. Please ensure it is present before proceeding."
+      when: not id_rsa_git_stat.stat.exists
+
+    - name: Start ssh-agent and export environment variables
+      shell: |
+        eval "$(ssh-agent -s)" && echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" && echo "SSH_AGENT_PID=$SSH_AGENT_PID"
+      register: ssh_agent_output
+      changed_when: "'Agent pid' in ssh_agent_output.stdout"
+
+    - name: Set ssh-agent environment variables
+      set_fact:
+        ssh_auth_sock: "{{ ssh_agent_output.stdout_lines | select('search', '^SSH_AUTH_SOCK=') | list | first | regex_replace('^SSH_AUTH_SOCK=', '') }}"
+        ssh_agent_pid: "{{ ssh_agent_output.stdout_lines | select('search', '^SSH_AGENT_PID=') | list | first | regex_replace('^SSH_AGENT_PID=', '') }}"
+      when: "'Agent pid' in ssh_agent_output.stdout"
+
+    - name: Add id_rsa_git to ssh-agent
+      shell: ssh-add /home/ec2-user/.ssh/id_rsa_git
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_auth_sock }}"
+      when: ssh_auth_sock is defined
+
+    - name: Check if id_rsa_git is added to ssh-agent
+      shell: ssh-add -l | grep -q "$(ssh-keygen -lf /home/ec2-user/.ssh/id_rsa_git | awk '{print $2}')"
+      register: ssh_key_added
+      failed_when: ssh_key_added.rc != 0
+      changed_when: false
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_auth_sock }}"
+
+    - name: Fail if id_rsa_git is not added to ssh-agent
+      fail:
+        msg: "The SSH key /home/ec2-user/.ssh/id_rsa_git is not added to the ssh-agent. Please add it before proceeding."
+      when: ssh_key_added.rc != 0
+
+    - name: Ensure GitHub host key is added to known_hosts
+      become: no
+      shell: |
+        ssh-keyscan -H github.com >> /home/ec2-user/.ssh/known_hosts
+      args:
+        creates: /home/ec2-user/.ssh/known_hosts
+
+    - name: Stop running containers
       shell: |
         cd collector
-        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa_git -o IdentitiesOnly=yes'\
-          COLLECTOR_VERSION={{ lookup('env', 'COLLECTOR_VERSION') }} make run-collector-rds
+        make stop-running-collector-container
+      environment:
+        PATH: "/usr/local/go/bin:{{ ansible_env.PATH }}"
 
-    - name: Start Grafana container 
+    - name: Clone tnf-secrets repo into collector directory
+      become: no
+      ansible.builtin.git:
+        repo: 'git@github.com:redhat-best-practices-for-k8s/tnf-secrets.git'
+        dest: /home/ec2-user/collector/tnf-secrets
+        key_file: /home/ec2-user/.ssh/id_rsa_git
+        version: main
+        force: true
+
+    - name: Run 'make clone-tnf-secrets'
+      become: no
+      shell: |
+        cd collector
+        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa_git -o IdentitiesOnly=yes' make clone-tnf-secrets
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_auth_sock }}"
+
+    - name: Start Collector container
+      become: no
+      shell: |
+        cd collector
+        GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa_git -o IdentitiesOnly=yes' make run-collector
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_auth_sock }}"
+        PATH: "/usr/local/go/bin:{{ ansible_env.PATH }}"
+
+    - name: Start Grafana container
+      become: no
       shell: |
         cd collector
         GIT_SSH_COMMAND='ssh -i /home/ec2-user/.ssh/id_rsa_git -o IdentitiesOnly=yes' make run-grafana
+      environment:
+        PATH: "/usr/local/go/bin:{{ ansible_env.PATH }}"

@@ -92,6 +92,7 @@ run-collector: clone-tnf-secrets stop-running-collector-container
 	rm -rf tnf-secrets
 
 # Runs collector on rds with docker
+# run-collector-rds: clone-tnf-secrets stop-running-collector-container
 run-collector-rds: clone-tnf-secrets stop-running-collector-container
 	docker run --restart always -d --pull always -p ${HOST_PORT}:${TARGET_PORT} --name ${COLLECTOR_CONTAINER_NAME} \
 		-e DB_USER='$(shell jq -r ".MysqlUsername" "./tnf-secrets/collector-secrets.json" | base64 -d)' \
@@ -234,10 +235,16 @@ run-grafana: clone-tnf-secrets clone-certsuite-overview stop-running-grafana-con
 
 # Clones tnf-secret private repo if does not exist
 clone-tnf-secrets:
-	rm -rf tnf-secrets
-	git clone git@github.com:redhat-best-practices-for-k8s/tnf-secrets.git
+	@if [ ! -d "tnf-secrets" ]; then \
+		git clone git@github.com:redhat-best-practices-for-k8s/tnf-secrets.git; \
+	else \
+		echo "tnf-secrets already exists, skipping clone."; \
+	fi
 
 clone-certsuite-overview:
-	rm -rf certsuite-overview
-	git clone git@github.com:redhat-best-practices-for-k8s/certsuite-overview.git
+	@if [ ! -d "certsuite-overview" ]; then \
+		git clone git@github.com:redhat-best-practices-for-k8s/certsuite-overview.git; \
+	else \
+		echo "certsuite-overview already exists, skipping clone."; \
+	fi
 
