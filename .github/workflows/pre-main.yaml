@@ -24,7 +24,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-24.04]
     env:
       SHELL: /bin/bash
       CM_BIN: /usr/local/bin/checkmake
@@ -102,7 +102,7 @@ jobs:
 
   build-and-push-image:
     name: "Build and Push Image"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
 
       - name: Check out the code
@@ -137,7 +137,7 @@ jobs:
 
   build-and-push-image-legacy:
     name: "Build and Push Image (Legacy)"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
@@ -171,7 +171,7 @@ jobs:
 
   sanity-check:
     name: Run Collector's sanity check
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         certsuite_img_tag: [unstable, latest]

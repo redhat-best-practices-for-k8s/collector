@@ -27,7 +27,7 @@ env:
 jobs:
   test-and-push-collector-image-main:
     name: 'Test and push the collector image'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       SHELL: /bin/bash
       COLLECTOR_VERSION: ""
@@ -111,7 +111,7 @@ jobs:
 
   test-and-push-collector-image-legacy:
     name: 'Test and push the collector image (legacy)'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       SHELL: /bin/bash
       COLLECTOR_VERSION: ""

@@ -12,7 +12,7 @@ defaults:
 jobs:
   get-from-collector:
     name: 'Perform a GET request to collector'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: 'Perform a GET request to collector'
         id: collector_sanity_check
