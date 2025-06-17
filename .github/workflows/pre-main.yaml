@@ -77,7 +77,7 @@ jobs:
         run: shfmt -d scripts/*.sh
 
       - name: Markdownlint
-        uses: nosborn/github-action-markdown-cli@v3.4.0
+        uses: nosborn/github-action-markdown-cli@v3.5.0
         with:
           files: .
         if: runner.os == 'Linux'
