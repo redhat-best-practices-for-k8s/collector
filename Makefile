@@ -36,7 +36,7 @@ DB_URL = database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.
 S3_BUCKET_NAME?=cnf-suite-claims
 S3_BUCKET_REGION?=us-east-1
 
-.PHONY: all clean test
+.PHONY: all clean test tool-precheck
 
 # Build and run unit tests
 test:
@@ -49,8 +49,21 @@ vet:
 build:
 	go build -ldflags "${LINKER_TNF_RELEASE_FLAGS}" ${COMMON_GO_ARGS} -o collector
 
+# Checks that all required linting tools are installed
+tool-precheck:
+	@echo "Checking for required linting tools..."
+	@which checkmake > /dev/null || (echo "❌ checkmake not found. Please install checkmake" && exit 1)
+	@which golangci-lint > /dev/null || (echo "❌ golangci-lint not found. Please install golangci-lint" && exit 1)
+	@which hadolint > /dev/null || (echo "❌ hadolint not found. Please install hadolint" && exit 1)
+	@which shfmt > /dev/null || (echo "❌ shfmt not found. Please install shfmt" && exit 1)
+	@which typos > /dev/null || (echo "❌ typos not found. Please install typos-cli" && exit 1)
+	@which markdownlint > /dev/null || (echo "❌ markdownlint not found. Please install markdownlint-cli" && exit 1)
+	@which yamllint > /dev/null || (echo "❌ yamllint not found. Please install yamllint" && exit 1)
+	@which shellcheck > /dev/null || (echo "❌ shellcheck not found. Please install shellcheck" && exit 1)
+	@echo "✅ All required linting tools are installed"
+
 # Runs configured linters
-lint:
+lint: tool-precheck
 	checkmake --config=.checkmake Makefile
 	golangci-lint run --timeout 10m0s
 	hadolint Dockerfile
@@ -60,11 +73,18 @@ lint:
 	yamllint --no-warnings .
 	shellcheck --format=gcc ${BASH_SCRIPTS}
 
+# Install linting tools on macOS using Homebrew
+# For other platforms, use your package manager (apt, yum, pacman, etc.)
 install-mac-brew-tools:
 	brew install \
 		checkmake \
 		golangci-lint \
-		hadolint
+		hadolint \
+		shfmt \
+		typos-cli \
+		markdownlint-cli \
+		yamllint \
+		shellcheck
 
 # Pulls collector image from quay.io
 pull-image-collector:
