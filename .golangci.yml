@@ -61,6 +61,10 @@ linters:
       require-explanation: false
       require-specific: true
       allow-unused: false
+    revive:
+      rules:
+        - name: var-naming
+          disabled: true
   exclusions:
     generated: lax
     presets:
