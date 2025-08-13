@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.sha }}
 
@@ -106,7 +106,7 @@ jobs:
     steps:
 
       - name: Check out the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Build Collector image with unstable tag
       - name: Build the image
@@ -140,7 +140,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Build Collector image with unstable tag
       - name: Build the image
@@ -189,12 +189,12 @@ jobs:
 
       # Perform smoke tests using a Certsuite container.
       - name: Check out code
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493  # v4.1.7
         with:
           ref: ${{ github.sha }}
 
       - name: Check out `certsuite`
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493  # v4.1.7
         with:
           repository: redhat-best-practices-for-k8s/certsuite
           path: certsuite
