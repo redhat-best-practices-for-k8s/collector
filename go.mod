@@ -4,13 +4,13 @@ go 1.25.4
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.39.6
-	github.com/aws/aws-sdk-go-v2/config v1.31.17
-	github.com/aws/aws-sdk-go-v2/credentials v1.18.21
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.4
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.90.0
+	github.com/aws/aws-sdk-go-v2/config v1.31.20
+	github.com/aws/aws-sdk-go-v2/credentials v1.18.24
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.7
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.90.2
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/sirupsen/logrus v1.9.3
-	golang.org/x/crypto v0.43.0
+	golang.org/x/crypto v0.44.0
 )
 
 require (
@@ -25,9 +25,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.13 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.30.1 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.5 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.39.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.30.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.7 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.40.2 // indirect
 	github.com/aws/smithy-go v1.23.2 // indirect
-	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 )
