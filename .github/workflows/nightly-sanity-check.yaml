@@ -36,12 +36,12 @@ jobs:
 
       # Perform smoke tests using a Certsuite container.
       - name: Check out code
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v4.1.7
+        uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5  # v4.1.7
         with:
           ref: ${{ github.sha }}
 
       - name: Check out `certsuite`
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v4.1.7
+        uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5  # v4.1.7
         with:
           repository: redhat-best-practices-for-k8s/certsuite
           path: certsuite
