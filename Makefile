@@ -36,7 +36,14 @@ DB_URL = database-collectordb-1hykanj2mxdh.cn9luyhgvfkp.us-east-1.rds.amazonaws.
 S3_BUCKET_NAME?=cnf-suite-claims
 S3_BUCKET_REGION?=us-east-1
 
-.PHONY: all clean test tool-precheck
+.PHONY: all clean test tool-precheck run-grafana
+
+# Default target
+all: build
+
+# Clean build artifacts
+clean:
+	rm -f collector cover.out.tmp
 
 # Build and run unit tests
 test:
