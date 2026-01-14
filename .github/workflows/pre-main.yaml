@@ -22,8 +22,6 @@ jobs:
         os: [ubuntu-24.04]
     env:
       SHELL: /bin/bash
-      CM_BIN: /usr/local/bin/checkmake
-      CM_URL_LINUX: https://github.com/mrtazz/checkmake/releases/download/0.2.2/checkmake-0.2.2.linux.amd64 # yamllint disable-line
 
     steps:
       - name: Check out code into the Go module directory
@@ -45,9 +43,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install checkmake
-        run: |
-          curl --location --output $CM_BIN --silent $CM_URL_LINUX
-          chmod +x $CM_BIN
+        run: go install github.com/checkmake/checkmake/cmd/checkmake@latest
 
       - name: Install Shfmt
         uses: mfinelli/setup-shfmt@v4
