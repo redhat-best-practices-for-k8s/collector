@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           ref: ${{ github.sha }}
 
@@ -97,7 +97,7 @@ jobs:
     steps:
 
       - name: Check out the code
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       # Build Collector image with unstable tag
       - name: Build the image
@@ -131,7 +131,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out the code
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       # Build Collector image with unstable tag
       - name: Build the image
