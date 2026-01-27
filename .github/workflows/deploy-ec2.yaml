@@ -14,7 +14,7 @@ jobs:
 
   check-collector-endpoint:
     name: 'Check Collector endpoint'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
 
     outputs:
       endpoint_status: ${{ steps.collector_sanity_check.outputs.success }}
