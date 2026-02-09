@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/redhat-best-practices-for-k8s/collector/util"
 	"github.com/sirupsen/logrus"
@@ -41,9 +41,9 @@ func deleteFileFromS3(awsS3Client *s3.Client, s3FileKey, s3BucketName string) {
 }
 
 func uploadFileToS3(awsS3Client *s3.Client, file multipart.File, executedBy, partner, s3BucketName string) (string, error) {
-	uploader := manager.NewUploader(awsS3Client)
+	uploader := transfermanager.New(awsS3Client)
 	s3FileKey := executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")
-	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
+	_, err := uploader.UploadObject(context.TODO(), &transfermanager.UploadObjectInput{
 		Bucket: aws.String(s3BucketName),
 		Key:    aws.String(s3FileKey),
 		Body:   file,
