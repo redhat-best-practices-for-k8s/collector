@@ -46,7 +46,7 @@ jobs:
         run: go install github.com/checkmake/checkmake/cmd/checkmake@latest
 
       - name: Install Shfmt
-        uses: mfinelli/setup-shfmt@v4
+        run: go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
       - name: Golangci-lint
         uses: golangci/golangci-lint-action@v9

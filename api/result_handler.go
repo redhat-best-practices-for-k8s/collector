@@ -44,12 +44,10 @@ func processResults(partnerName string, db *sql.DB) []types.ClaimCollector {
 }
 
 func printCollectorJSONFile(w http.ResponseWriter, collector []types.ClaimCollector) {
-	claimFileJSON, err := json.MarshalIndent(collector, "", "	")
-	if err != nil {
-		logrus.Errorf(util.MarshalErr, err)
-	}
-	_, err = w.Write(append(claimFileJSON, '\n'))
-	if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "\t")
+	if err := encoder.Encode(collector); err != nil {
 		logrus.Errorf(util.WritingResponseErr, err)
 	}
 }
