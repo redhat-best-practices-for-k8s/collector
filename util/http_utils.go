@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -12,8 +13,8 @@ import (
 
 // Writes Error or Msg using http response writer.
 func WriteMsg(w http.ResponseWriter, err string) {
-	_, writeErr := w.Write([]byte(err + "\n"))
-	if writeErr != nil {
+	w.Header().Set("Content-Type", "text/plain")
+	if _, writeErr := fmt.Fprintln(w, err); writeErr != nil { //nolint:gosec // response is text/plain, not HTML
 		logrus.Errorf(WritingResponseErr, writeErr)
 	}
 }
