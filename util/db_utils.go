@@ -48,15 +48,26 @@ func GetCollectorTablesByPartner(db *sql.DB, partnerName string) (claimRows, cla
 	for claimIDsRows.Next() {
 		var claimID string
 		claimIDErr := claimIDsRows.Scan(&claimID)
-		if err != nil {
+		if claimIDErr != nil {
 			logrus.Errorf(ScanDBFieldErr, claimIDErr)
 		}
 		claimIDsList = append(claimIDsList, claimID)
 	}
 
 	// Extract claim results of found claim IDs
-	claimResultsQuery := fmt.Sprintf(SelectAllFromClaimResultByClaimIDs, strings.Join(claimIDsList, ","))
-	claimResultsRows, err = db.Query(claimResultsQuery)
+	if len(claimIDsList) == 0 {
+		// No claims found, return empty result set
+		claimResultsRows, err = db.Query(SelectAllFromClaimResult + " WHERE 1=0")
+	} else {
+		placeholders := strings.Repeat("?,", len(claimIDsList))
+		placeholders = placeholders[:len(placeholders)-1] // trim trailing comma
+		claimResultsQuery := fmt.Sprintf(SelectAllFromClaimResultByClaimIDs, placeholders)
+		args := make([]interface{}, len(claimIDsList))
+		for i, id := range claimIDsList {
+			args[i] = id
+		}
+		claimResultsRows, err = db.Query(claimResultsQuery, args...)
+	}
 	if err != nil {
 		logrus.Errorf(ExecQueryErr, err)
 	}

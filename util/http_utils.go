@@ -20,6 +20,7 @@ func WriteMsg(w http.ResponseWriter, err string) {
 }
 
 func GetClaimFile(w http.ResponseWriter, r *http.Request) multipart.File {
+	r.Body = http.MaxBytesReader(w, r.Body, MaxRequestBodySize)
 	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
 	if err != nil {
 		WriteMsg(w, err.Error())

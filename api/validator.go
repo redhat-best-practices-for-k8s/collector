@@ -10,8 +10,9 @@ import (
 )
 
 func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimResult, []string, error) {
+	r.Body = http.MaxBytesReader(w, r.Body, util.MaxRequestBodySize)
 	partnerName := r.FormValue(util.PartnerNameInputName)
-	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
+	decodedPassword := r.FormValue(util.DecodedPasswordInputName)
 
 	executedBy := r.FormValue(util.ExecutedByInputName)
 
@@ -36,12 +37,13 @@ func validatePostRequest(w http.ResponseWriter, r *http.Request) ([]types.ClaimR
 		return nil, nil, err
 	}
 
-	return claimResults, []string{partnerName, decodedPassword, executedBy, versions["ocp"].(string)}, nil
+	ocpVersion, _ := versions["ocp"].(string)
+	return claimResults, []string{partnerName, decodedPassword, executedBy, ocpVersion}, nil
 }
 
 func validateGetRequest(r *http.Request, db *sql.DB) (string, error) {
 	partnerName := r.FormValue(util.PartnerNameInputName)
-	decodedPassword := r.FormValue(util.DedcodedPasswordInputName)
+	decodedPassword := r.FormValue(util.DecodedPasswordInputName)
 
 	// If partner name and password are not given return
 	if partnerName == "" || decodedPassword == "" {
@@ -76,10 +78,13 @@ func verifyClaimResultInJSON(claimFileMap map[string]interface{}) ([]types.Claim
 			return nil, keyErr
 		}
 
+		suiteName, _ := testID["suite"].(string)
+		testIDStr, _ := testID["id"].(string)
+		testStatus, _ := testData["state"].(string)
 		claimResult := types.ClaimResult{
-			SuiteName:  testID["suite"].(string),
-			TestID:     testID["id"].(string),
-			TestStatus: testData["state"].(string),
+			SuiteName:  suiteName,
+			TestID:     testIDStr,
+			TestStatus: testStatus,
 		}
 
 		claimResults = append(claimResults, claimResult)

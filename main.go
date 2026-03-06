@@ -16,11 +16,10 @@ func main() {
 		logrus.Errorf(util.ServerEnvVarsError, envErr)
 	}
 
-	s3Store := storage.NewS3Storage()
 	mysqlStore := storage.NewMySQLStorage()
 	defer mysqlStore.MySQL.Close()
 
-	server := api.NewServer(addr, mysqlStore, s3Store,
+	server := api.NewServer(addr, mysqlStore,
 		time.Duration(readTimeOut)*time.Second, time.Duration(writeTimeOut)*time.Second)
 
 	logrus.Fatal(server.Start())

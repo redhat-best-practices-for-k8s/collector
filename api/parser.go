@@ -21,9 +21,9 @@ func parseClaimFile(w http.ResponseWriter, r *http.Request) (map[string]interfac
 		return nil, err
 	}
 
-	_, keyExists := claimFileMap[util.ClaimTag]
-	if !keyExists {
+	claimData, ok := claimFileMap[util.ClaimTag].(map[string]interface{})
+	if !ok {
 		return nil, fmt.Errorf(util.ClaimFieldMissingErr)
 	}
-	return claimFileMap[util.ClaimTag].(map[string]interface{}), nil
+	return claimData, nil
 }
