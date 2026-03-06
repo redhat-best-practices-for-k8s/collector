@@ -9,11 +9,6 @@ import (
 
 type MySQLStorage struct{ MySQL *sql.DB }
 
-func (s *MySQLStorage) Get() *MySQLStorage {
-	return NewMySQLStorage()
-}
-
-// constructor
 func NewMySQLStorage() *MySQLStorage {
 	logrus.Info("Retrieving database information")
 	DBUsername, DBPassword, DBURL, DBPort := util.GetDatabaseEnvVars()

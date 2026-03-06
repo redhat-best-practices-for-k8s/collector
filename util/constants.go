@@ -44,7 +44,7 @@ const ResultsTag = "results"
 const ClaimFileInputName = "claimFile"
 const ExecutedByInputName = "executed_by"
 const PartnerNameInputName = "partner_name"
-const DedcodedPasswordInputName = "decoded_password"
+const DecodedPasswordInputName = "decoded_password"
 
 const UseCollectorSQLCmd = `USE cnf; `
 const InsertToClaimSQLCmd = `INSERT INTO claim
@@ -58,6 +58,7 @@ const ExtractPartnerAndPasswordCmd = `SELECT encoded_password FROM cnf.authentic
 const InsertPartnerToAuthSQLCmd = `INSERT INTO cnf.authenticator (partner_name, encoded_password) VALUES (?, ?)`
 const ParseLowerBound = 10
 const ParseUpperBound = 20
+const MaxRequestBodySize = ParseLowerBound << ParseUpperBound // ~10MB
 const FileStoredIntoClaimTableSuccessfully = `Claim is stored into table successfully.`
 const FileStoredIntoClaimResultTableSuccessfully = `Claim is stored into table CLAIM_RESULT successfully.`
 const FileUploadedSuccessfullyToBucket = `Claim file is successfully uploaded to bucket %s`

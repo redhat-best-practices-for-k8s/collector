@@ -79,16 +79,18 @@ func mapClaimResultsToStruct(claimResultsRows *sql.Rows) []types.ClaimResult {
 }
 
 func combineClaimAndResultsToStruct(claims []types.Claim, claimResults []types.ClaimResult) []types.ClaimCollector {
-	var collector []types.ClaimCollector
+	// Index results by claim ID for O(N+M) instead of O(N*M)
+	resultsByClaimID := make(map[int][]types.ClaimResult)
+	for _, res := range claimResults {
+		resultsByClaimID[res.ClaimID] = append(resultsByClaimID[res.ClaimID], res)
+	}
+
+	collector := make([]types.ClaimCollector, 0, len(claims))
 	for _, claim := range claims {
-		var curClaim types.ClaimCollector
-		curClaim.Claim = claim
-		for _, res := range claimResults {
-			if res.ClaimID == claim.ID {
-				curClaim.ClaimResults = append(curClaim.ClaimResults, res)
-			}
-		}
-		collector = append(collector, curClaim)
+		collector = append(collector, types.ClaimCollector{
+			Claim:        claim,
+			ClaimResults: resultsByClaimID[claim.ID],
+		})
 	}
 	return collector
 }

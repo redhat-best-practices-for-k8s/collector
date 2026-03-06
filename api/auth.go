@@ -8,21 +8,21 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func checkPassword(encodedPassword, plainPassword string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(encodedPassword), []byte(plainPassword))
+	if err != nil {
+		return fmt.Errorf(util.InvalidPasswordErr)
+	}
+	return nil
+}
+
 func CheckIfValidCredentials(partnerName, decodePassword string, db *sql.DB) error {
-	// Search for partner in authenticator table
 	var encodedPassword string
 	err := db.QueryRow(util.ExtractPartnerAndPasswordCmd, partnerName).Scan(&encodedPassword)
 	if err != nil {
 		return fmt.Errorf(util.InvalidUsernameErr)
 	}
-
-	// Compare encoded and given passwords
-	err = bcrypt.CompareHashAndPassword([]byte(encodedPassword), []byte(decodePassword))
-	if err != nil {
-		return fmt.Errorf(util.InvalidPasswordErr)
-	}
-
-	return nil
+	return checkPassword(encodedPassword, decodePassword)
 }
 
 // Already non-empty partner name and decoded password are given
@@ -51,9 +51,5 @@ func VerifyCredentialsAndCreateIfNotExists(partnerName, partnerPassword string, 
 		return nil
 	}
 	// If partner is found then check if password matches
-	err := bcrypt.CompareHashAndPassword([]byte(encodedPassword), []byte(partnerPassword))
-	if err != nil {
-		return fmt.Errorf(util.InvalidPasswordErr)
-	}
-	return nil
+	return checkPassword(encodedPassword, partnerPassword)
 }

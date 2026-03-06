@@ -10,15 +10,13 @@ import (
 )
 
 type Server struct {
-	database    *storage.MySQLStorage
-	objectStore *storage.S3Storage
-	server      *http.Server
+	database *storage.MySQLStorage
+	server   *http.Server
 }
 
-func NewServer(listenAddr string, db *storage.MySQLStorage, objectStore *storage.S3Storage, rTimeout, wTimeout time.Duration) *Server {
+func NewServer(listenAddr string, db *storage.MySQLStorage, rTimeout, wTimeout time.Duration) *Server {
 	return &Server{
-		database:    db,
-		objectStore: objectStore,
+		database: db,
 		server: &http.Server{
 			Addr:         listenAddr,
 			ReadTimeout:  rTimeout,
@@ -34,7 +32,7 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
-	printServerUpMessage(w)
+	logrus.Info(util.ServerIsUpMsg)
 
 	switch r.Method {
 	case http.MethodGet:
@@ -44,13 +42,5 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 	default:
 		util.WriteMsg(w, util.InvalidRequestErr)
 		logrus.Errorf(util.InvalidRequestErr)
-	}
-}
-
-func printServerUpMessage(w http.ResponseWriter) {
-	logrus.Info(util.ServerIsUpMsg)
-	_, writeErr := w.Write([]byte(util.ServerIsUpMsg + "\n"))
-	if writeErr != nil {
-		logrus.Errorf(util.WritingResponseErr, writeErr)
 	}
 }
