@@ -21,7 +21,7 @@ func WriteMsg(w http.ResponseWriter, err string) {
 
 func GetClaimFile(w http.ResponseWriter, r *http.Request) multipart.File {
 	r.Body = http.MaxBytesReader(w, r.Body, MaxRequestBodySize)
-	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound)
+	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound) //nolint:gosec // body is already bounded by MaxBytesReader above
 	if err != nil {
 		WriteMsg(w, err.Error())
 		logrus.Errorf(RequestContentTypeErr, err)
