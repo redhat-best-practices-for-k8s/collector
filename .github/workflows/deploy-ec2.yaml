@@ -41,7 +41,7 @@ jobs:
         continue-on-error: true
 
   start-on-failure:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: check-collector-endpoint
     if: needs.check-collector-endpoint.outputs.endpoint_status == false
 
