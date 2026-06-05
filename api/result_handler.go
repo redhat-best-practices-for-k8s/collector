@@ -17,7 +17,7 @@ func ResultsHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storag
 	partnerName, err := validateGetRequest(r, db)
 
 	if err != nil {
-		util.WriteMsg(w, err.Error())
+		util.WriteMsg(w, http.StatusUnauthorized, err.Error())
 		logrus.Errorf(util.AuthError, err)
 		return
 	}

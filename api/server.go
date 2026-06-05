@@ -34,12 +34,10 @@ func (s *Server) Start() error {
 
 func (s *Server) healthHandler(w http.ResponseWriter, _ *http.Request) {
 	if err := s.database.MySQL.Ping(); err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		util.WriteMsg(w, "database unreachable")
+		util.WriteMsg(w, http.StatusServiceUnavailable, "database unreachable")
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	util.WriteMsg(w, "ok")
+	util.WriteMsg(w, http.StatusOK, "ok")
 }
 
 func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +49,7 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		ParserHandler(w, r, s.database)
 	default:
-		util.WriteMsg(w, util.InvalidRequestErr)
+		util.WriteMsg(w, http.StatusMethodNotAllowed, util.InvalidRequestErr)
 		logrus.Errorf(util.InvalidRequestErr)
 	}
 }

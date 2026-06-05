@@ -16,7 +16,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	// 1. Validate the request (includes validation of the claim file format)
 	claimResults, params, err := validatePostRequest(w, r)
 	if err != nil {
-		util.WriteMsg(w, err.Error())
+		util.WriteMsg(w, http.StatusBadRequest, err.Error())
 		logrus.Errorf(util.PostRequestIsNotValidErr, err)
 		return
 	}
@@ -31,7 +31,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	// which he has to use each time even when the claim file error happens
 	err = VerifyCredentialsAndCreateIfNotExists(partnerName, decodedPassword, db)
 	if err != nil {
-		util.WriteMsg(w, err.Error())
+		util.WriteMsg(w, http.StatusUnauthorized, err.Error())
 		logrus.Errorf(util.AuthError, err)
 		return
 	}
@@ -46,7 +46,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	awsS3Client := configS3(ctx, region, accessKey, secretAccessKey)
 	s3FileKey, err := uploadFileToS3(ctx, awsS3Client, claimFile, executedBy, partnerName, s3BucketName)
 	if err != nil {
-		util.WriteMsg(w, err.Error())
+		util.WriteMsg(w, http.StatusInternalServerError, err.Error())
 		logrus.Errorf(util.FailedToUploadFileToS3Err, err)
 		return
 	}
@@ -55,11 +55,11 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	err = util.StoreClaimFileInDatabase(db, claimResults, partnerName, executedBy, ocpVersion, s3FileKey)
 	if err != nil {
 		deleteFileFromS3(ctx, awsS3Client, s3FileKey, s3BucketName)
-		util.WriteMsg(w, err.Error())
+		util.WriteMsg(w, http.StatusInternalServerError, err.Error())
 		logrus.Errorf(util.ClaimFileError, err)
 		return
 	}
 
 	// Successfully uploaded file
-	util.WriteMsg(w, util.SuccessUploadingFileMSG)
+	util.WriteMsg(w, http.StatusOK, util.SuccessUploadingFileMSG)
 }
