@@ -39,7 +39,7 @@ func VerifyCredentialsAndCreateIfNotExists(partnerName, partnerPassword string, 
 	// If partner name is not recorded, add partner with encoded password
 	if searchPartnerErr == sql.ErrNoRows {
 		// Encode the given password to make a new entry
-		encodedPartnerPassword, err := bcrypt.GenerateFromPassword([]byte(partnerPassword), bcrypt.MinCost)
+		encodedPartnerPassword, err := bcrypt.GenerateFromPassword([]byte(partnerPassword), bcrypt.DefaultCost)
 		if err != nil {
 			return err
 		}
