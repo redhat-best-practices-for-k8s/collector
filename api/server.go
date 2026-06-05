@@ -27,8 +27,19 @@ func NewServer(listenAddr string, db *storage.MySQLStorage, rTimeout, wTimeout t
 
 func (s *Server) Start() error {
 	logrus.Info("Starting server")
+	http.HandleFunc("/healthz", s.healthHandler)
 	http.HandleFunc("/", s.handler)
 	return s.server.ListenAndServe()
+}
+
+func (s *Server) healthHandler(w http.ResponseWriter, _ *http.Request) {
+	if err := s.database.MySQL.Ping(); err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		util.WriteMsg(w, "database unreachable")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	util.WriteMsg(w, "ok")
 }
 
 func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
