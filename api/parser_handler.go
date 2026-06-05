@@ -38,6 +38,9 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 
 	// 3. Store file to S3
 	claimFile := util.GetClaimFile(w, r)
+	if claimFile == nil {
+		return
+	}
 	s3BucketName, region, accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
 	awsS3Client := configS3(region, accessKey, secretAccessKey)
 	s3FileKey, err := uploadFileToS3(awsS3Client, claimFile, executedBy, partnerName, s3BucketName)
