@@ -11,10 +11,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Writes Error or Msg using http response writer.
-func WriteMsg(w http.ResponseWriter, err string) {
+func WriteMsg(w http.ResponseWriter, statusCode int, msg string) {
 	w.Header().Set("Content-Type", "text/plain")
-	if _, writeErr := fmt.Fprintln(w, err); writeErr != nil { //nolint:gosec // response is text/plain, not HTML
+	w.WriteHeader(statusCode)
+	if _, writeErr := fmt.Fprintln(w, msg); writeErr != nil { //nolint:gosec // response is text/plain, not HTML
 		logrus.Errorf(WritingResponseErr, writeErr)
 	}
 }
@@ -23,14 +23,14 @@ func GetClaimFile(w http.ResponseWriter, r *http.Request) multipart.File {
 	r.Body = http.MaxBytesReader(w, r.Body, MaxRequestBodySize)
 	err := r.ParseMultipartForm(ParseLowerBound << ParseUpperBound) //nolint:gosec // body is already bounded by MaxBytesReader above
 	if err != nil {
-		WriteMsg(w, err.Error())
+		WriteMsg(w, http.StatusBadRequest, err.Error())
 		logrus.Errorf(RequestContentTypeErr, err)
 		return nil
 	}
 
 	claimFile, _, err := r.FormFile(ClaimFileInputName)
 	if err != nil {
-		WriteMsg(w, err.Error())
+		WriteMsg(w, http.StatusBadRequest, err.Error())
 		logrus.Errorf(FormFileErr, err)
 		return nil
 	}
