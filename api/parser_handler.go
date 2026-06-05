@@ -41,9 +41,10 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	if claimFile == nil {
 		return
 	}
+	ctx := r.Context()
 	s3BucketName, region, accessKey, secretAccessKey := util.GetS3ConnectEnvVars()
-	awsS3Client := configS3(region, accessKey, secretAccessKey)
-	s3FileKey, err := uploadFileToS3(awsS3Client, claimFile, executedBy, partnerName, s3BucketName)
+	awsS3Client := configS3(ctx, region, accessKey, secretAccessKey)
+	s3FileKey, err := uploadFileToS3(ctx, awsS3Client, claimFile, executedBy, partnerName, s3BucketName)
 	if err != nil {
 		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.FailedToUploadFileToS3Err, err)
@@ -53,7 +54,7 @@ func ParserHandler(w http.ResponseWriter, r *http.Request, mysqlStorage *storage
 	// 4. Store claim + claim result into the database
 	err = util.StoreClaimFileInDatabase(db, claimResults, partnerName, executedBy, ocpVersion, s3FileKey)
 	if err != nil {
-		deleteFileFromS3(awsS3Client, s3FileKey, s3BucketName)
+		deleteFileFromS3(ctx, awsS3Client, s3FileKey, s3BucketName)
 		util.WriteMsg(w, err.Error())
 		logrus.Errorf(util.ClaimFileError, err)
 		return
