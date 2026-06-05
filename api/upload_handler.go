@@ -14,10 +14,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func configS3(region, accessKey, secretAccessKey string) *s3.Client {
+func configS3(ctx context.Context, region, accessKey, secretAccessKey string) *s3.Client {
 	creds := credentials.NewStaticCredentialsProvider(accessKey, secretAccessKey, "")
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(creds), config.WithRegion(region))
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithCredentialsProvider(creds), config.WithRegion(region))
 	if err != nil {
 		logrus.Errorf("error: %v", err)
 		return nil
@@ -26,13 +26,13 @@ func configS3(region, accessKey, secretAccessKey string) *s3.Client {
 	return s3.NewFromConfig(cfg)
 }
 
-func deleteFileFromS3(awsS3Client *s3.Client, s3FileKey, s3BucketName string) {
+func deleteFileFromS3(ctx context.Context, awsS3Client *s3.Client, s3FileKey, s3BucketName string) {
 	deleteFileInput := s3.DeleteObjectInput{
 		Bucket: aws.String(s3BucketName),
 		Key:    aws.String(s3FileKey),
 	}
 
-	_, err := awsS3Client.DeleteObject(context.TODO(), &deleteFileInput)
+	_, err := awsS3Client.DeleteObject(ctx, &deleteFileInput)
 	if err != nil {
 		logrus.Errorf(util.FailedToDeleteFileFromS3Err, err)
 	}
@@ -40,10 +40,10 @@ func deleteFileFromS3(awsS3Client *s3.Client, s3FileKey, s3BucketName string) {
 	logrus.Infof(util.FileHasBeenDeletedFromBucket, s3BucketName)
 }
 
-func uploadFileToS3(awsS3Client *s3.Client, file multipart.File, executedBy, partner, s3BucketName string) (string, error) {
+func uploadFileToS3(ctx context.Context, awsS3Client *s3.Client, file multipart.File, executedBy, partner, s3BucketName string) (string, error) {
 	uploader := transfermanager.New(awsS3Client)
 	s3FileKey := executedBy + "/" + partner + "/claim_" + time.Now().Format("2006-01-02-15:04:05")
-	_, err := uploader.UploadObject(context.TODO(), &transfermanager.UploadObjectInput{
+	_, err := uploader.UploadObject(ctx, &transfermanager.UploadObjectInput{
 		Bucket: aws.String(s3BucketName),
 		Key:    aws.String(s3FileKey),
 		Body:   file,
