@@ -2,9 +2,16 @@ package storage
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/redhat-best-practices-for-k8s/collector/util"
 	"github.com/sirupsen/logrus"
+)
+
+const (
+	dbMaxOpenConns    = 25
+	dbMaxIdleConns    = 5
+	dbConnMaxLifetime = 5 * time.Minute
 )
 
 type MySQLStorage struct{ MySQL *sql.DB }
@@ -24,6 +31,10 @@ func NewMySQLStorage() *MySQLStorage {
 	if err != nil {
 		return nil
 	}
+	db.SetMaxOpenConns(dbMaxOpenConns)
+	db.SetMaxIdleConns(dbMaxIdleConns)
+	db.SetConnMaxLifetime(dbConnMaxLifetime)
+
 	logrus.Info("Connection successful")
 	return &MySQLStorage{MySQL: db}
 }
