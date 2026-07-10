@@ -84,7 +84,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
 If you haven't already, clone Collector's repository:
 
 ```sh
-git pull https://github.com/redhat-best-practices-for-k8s/collector.git
+git clone https://github.com/redhat-best-practices-for-k8s/collector.git
 ```
 
 From collector's repo root directory, use the following command:
@@ -109,7 +109,7 @@ can have access to their saved data.\
 If you haven't already, clone Collector's repository:
 
 ```sh
-git pull https://github.com/redhat-best-practices-for-k8s/collector.git
+git clone https://github.com/redhat-best-practices-for-k8s/collector.git
 ```
 
 From collector's repo root directory, use the following command:
@@ -159,13 +159,14 @@ See an output example:
 
 #### Option 2 - For Admin only
 
-Access the data through
-[Collector's grafana dashboard](http://44.195.143.94:3000/d/e5530a23-24b9-4e7f-ab28-8e778d99f429/collector-s-dashboard?orgId=1).
+Access the data through the Collector's Grafana dashboard.
+To run Grafana locally, see the `make run-grafana` target.
 
 ## Run Collector Locally
 
 ### Prerequisites
 
+* Go 1.26 or later
 * Docker or Podman
 * MySQL
 
@@ -176,7 +177,7 @@ Use the following commands to build and run Collector's container and database l
 * **Clone Collector's repository:**
 
     ```sh
-    git pull https://github.com/redhat-best-practices-for-k8s/collector.git
+    git clone https://github.com/redhat-best-practices-for-k8s/collector.git
     ```
 
 * **(Optional) Build and Push your Collector image:**
