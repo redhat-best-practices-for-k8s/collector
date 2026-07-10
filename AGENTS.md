@@ -29,16 +29,35 @@ make install-mac-brew-tools  # Install linting tools on macOS via Homebrew
 
 ### Container Images
 ```bash
-make build-image-collector   # Build Docker image
-make push-image-collector    # Push image to registry
-make run-collector           # Run collector locally in Docker (requires tnf-secrets)
-make stop-running-collector-container  # Stop running container
+make build-image-collector              # Build Docker image with latest tag
+make build-image-collector-legacy       # Build Docker image under legacy image name (testnetworkfunction/collector)
+make build-image-collector-by-version   # Build Docker image with both latest and version tags
+make push-image-collector               # Push image with latest tag to registry
+make push-image-collector-by-version    # Push image with both latest and version tags
+make pull-image-collector               # Pull collector image from quay.io
+make run-collector                      # Run collector locally in Docker (requires tnf-secrets)
+make run-collector-rds                  # Run collector against AWS RDS database (requires tnf-secrets)
+make run-collector-rds-headless         # Run collector against RDS in headless mode (requires tnf-secrets)
+make stop-running-collector-container   # Stop running collector container
 ```
 
 ### Database Setup
 ```bash
 make run-initial-mysql-scripts      # Initialize local MySQL (requires tnf-secrets)
 make run-initial-mysql-scripts-rds  # Initialize AWS RDS MySQL
+```
+
+### Kubernetes / CI Deployment
+```bash
+make deploy-collector-for-CI   # Deploy collector to OpenShift namespace for CI testing
+make deploy-mysql-for-CI       # Deploy MySQL to OpenShift namespace for CI testing
+```
+
+### Grafana
+```bash
+make run-grafana                       # Start local Grafana with collector + certsuite-overview dashboards (requires tnf-secrets)
+make stop-running-grafana-container    # Stop running Grafana container
+make clone-certsuite-overview          # Clone the certsuite-overview repo (used by run-grafana)
 ```
 
 ### Client Scripts
@@ -89,6 +108,19 @@ util/
   constants.go    # SQL queries, error messages, form field names
   http_utils.go   # Environment variable handling, HTTP utilities
   db_utils.go     # Database transaction management
+k8s/
+  deployment/
+    app.yml       # Kubernetes Deployment manifest for the collector
+    database.yaml # Kubernetes Deployment manifest for MySQL
+playbooks/
+  start-collector.yaml  # Ansible playbook for starting the collector
+  inventory.ini         # Ansible inventory file
+grafana/
+  datasource/
+    datasource-config.yaml  # Grafana datasource configuration template
+  dashboard/
+    dashboard-config.yaml       # Grafana dashboard provisioning config
+    collector-dashboard.json    # Collector Grafana dashboard definition
 ```
 
 ### Database Schema
@@ -120,4 +152,4 @@ Production secrets are stored in a separate private repository (`tnf-secrets`). 
 
 ## Go Version
 
-This project uses Go 1.25.5.
+This project uses Go 1.26.
