@@ -77,7 +77,7 @@ and has to be enabled manually by the user running the CNF Certification Suites.
     ```
 
 3. Run CNF Certification suites with the adjusted configuration file.\
- (see [CNF Certification Test description](https://redhat-best-practices-for-k8s.github.io/certsuite/test-container/))
+ (see [CNF Certification Test description](https://redhat-best-practices-for-k8s.github.io/certsuite/test-run/))
 
 #### Option 2 - send a claim.json file directly to Collector
 
