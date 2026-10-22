@@ -15,6 +15,9 @@ env:
   SMOKE_TESTS_LABELS_FILTER: all
   SKIP_PRELOAD_IMAGES: true
 
+permissions:
+  contents: read
+
 jobs:
   sanity-check:
     name: Run Collector's sanity check

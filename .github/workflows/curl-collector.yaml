@@ -9,6 +9,10 @@ env:
 defaults:
   run:
     shell: bash
+
+permissions:
+  contents: read
+
 jobs:
   get-from-collector:
     name: 'Perform a GET request to collector'

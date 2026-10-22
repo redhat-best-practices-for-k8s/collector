@@ -24,6 +24,9 @@ env:
   COLLECTOR_IMAGE_TAG: latest
   COLLECTOR_SRC_URL: 'https://github.com/${{ github.repository }}'
 
+permissions:
+  contents: read
+
 jobs:
   test-and-push-collector-image-main:
     name: 'Test and push the collector image'
