@@ -50,7 +50,7 @@ jobs:
           path: certsuite
 
       - name: Set up k8s cluster
-        uses: palmsoftware/quick-k8s@v1.0.7
+        uses: palmsoftware/quick-k8s@v1.0.9
 
       # Clean up unused container image layers. We need to filter out a possible error return code
       # from docker with "|| true" as some images might still be used by running kind containers and
